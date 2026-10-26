@@ -9,6 +9,8 @@ import { buildFresh, unseenCount, clearSeen, bankFor } from "./bank.js";
 import { Duck, DuckMark, DuckSign } from "./Duck.jsx";
 import { Player } from "./Listening.jsx";
 import { loadHeavy, H } from "./heavy.js";
+import RealPapers from "./RealPapers.jsx";
+import Review from "./Review.jsx";
 
 function useHeavy() {
   const [ready, setReady] = useState(() => H() !== null);
@@ -263,6 +265,22 @@ function Feedback({ qs, answers, secondsAllowed, secondsLeft, onDrill }) {
 // Builds one section's paper. Generated sections run at true full length.
 // Pool backed sections are capped at however many authored items exist, and
 // the caller shows that as a short form rather than repeating questions.
+// A numbered practice test is the same paper for everyone: the draw is seeded by the
+// test, the section and the number, so Practice Test 4 is always Practice Test 4.
+function seeded(seed, fn) {
+  let a = seed >>> 0;
+  const real = Math.random;
+  Math.random = () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  try { return fn(); } finally { Math.random = real; }
+}
+const seedOf = (text) => { let h = 2166136261; for (const c of text) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+
+function buildNumbered(test, sec, no) {
+  const built = seeded(seedOf(`${test.id}/${sec.id}/${no}`), () => buildPaper(test, sec));
+  // fixed ids, so a numbered test is recognised as the same one each time
+  return { ...built, qs: built.qs.map((q, n) => ({ ...q, id: `pt${no}-${test.id}-${sec.id}-${n}` })) };
+}
+
 function buildPaper(test, sec) {
   if (sec.build) return { qs: H().BUILDERS[sec.build](sec.real), full: true };
 
@@ -290,6 +308,8 @@ function buildPaper(test, sec) {
 function TestPrep({ grade }) {
   const ready = useHeavy();
   const [openId, setOpenId] = useState(null);
+  const [view, setView] = useState("real"); // the real papers list, or the practice tests
+  const [paperNo, setPaperNo] = useState(0); // 0 is a fresh paper; 1 to 10 are the numbered practice tests
   const [paper, setPaper] = useState(null);
   const [building, setBuilding] = useState(null); // { sec, have, wanted }
   const [askClear, setAskClear] = useState(false); // sure you want to forget what you have seen?
@@ -320,6 +340,13 @@ function TestPrep({ grade }) {
   // Sitting a section assembles a paper you have not seen. Authored questions
   // come first, then anything written for you previously, then new ones.
   async function sit(sec) {
+    // A numbered test is built from the saved questions alone, so it is the same every time.
+    if (paperNo > 0 && (sec.build || sec.pool)) {
+      const built = buildNumbered(test, sec, paperNo);
+      if (built.qs.length === 0) return;
+      setPaper({ sec, qs: built.qs, full: built.qs.length >= sec.real, label: `Practice Test ${paperNo}` });
+      return;
+    }
     const built = buildPaper(test, sec);
     setBuilding({ sec, have: 0, wanted: sec.real });
 
@@ -395,6 +422,20 @@ function TestPrep({ grade }) {
             <div className="card-head">
               <h3>Choose a section</h3>
               <span className="small muted">Real length and real timing</span>
+            </div>
+
+            <div className="ti-papers">
+              <span className="small muted">Paper</span>
+              <div className="ti-paperchips" role="radiogroup" aria-label="Which paper">
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                  <button key={n} role="radio" aria-checked={paperNo === n} className={"ti-chip" + (paperNo === n ? " on" : "")} onClick={() => setPaperNo(n)}>{n === 0 ? "Fresh" : n}</button>
+                ))}
+              </div>
+              <p className="small muted ti-papernote">
+                {paperNo === 0
+                  ? "Fresh: a new paper every time, with questions written for you."
+                  : `Practice Test ${paperNo}: the same paper for everyone, so you can sit it again later and compare. Tests share a question bank, so a few questions can repeat between them.`}
+              </p>
             </div>
 
             {secs.map((sec) => {
@@ -552,15 +593,28 @@ function TestPrep({ grade }) {
     );
   }
 
+  const head = (
+    <>
+      <PageHead title="Test prep" sub="Real papers from the exam makers, and practice tests in the same format." />
+      <div className="seg tight ti-views" role="tablist" aria-label="What to practise with">
+        <button role="tab" aria-selected={view === "real"} className={view === "real" ? "on" : ""} onClick={() => setView("real")}>Real papers</button>
+        <button role="tab" aria-selected={view === "practice"} className={view === "practice" ? "on" : ""} onClick={() => setView("practice")}>Practice tests</button>
+      </div>
+    </>
+  );
+
+  if (view === "real") return <div className="page wide fade"><RealPapers head={head} /></div>;
+
   return (
     <div className="page wide fade">
-      <PageHead title="Test prep" sub="Pick a test, then sit a whole section at its real length and timing." />
+      {head}
 
       <div className="disclaimer">
         <Icon name="flag" size={14} />
         <span>
-          Structure, timings and score scales are the real published ones. Questions are original and
-          generated fresh each sitting, so no two papers are the same. They are not from any past paper.
+          Structure, timings and score scales are the real published ones. These practice questions are original and
+          generated fresh each sitting, so no two papers are the same. They are not from any past paper. For the real
+          papers, see Real papers.
         </span>
       </div>
 
@@ -587,7 +641,7 @@ function TestPrep({ grade }) {
   );
 }
 
-function TestRun({ test, sec, qs, full, wrote = 0, grade, onExit, onDrill }) {
+function TestRun({ test, sec, qs, full, wrote = 0, label, grade, onExit, onDrill }) {
   const [i, setI] = useState(0);
   const [answers, setAnswers] = useState({});
   const [left, setLeft] = useState(sec.minutes * 60);
@@ -613,7 +667,7 @@ function TestRun({ test, sec, qs, full, wrote = 0, grade, onExit, onDrill }) {
     const wrong = qs.map((q, n) => ({ q, n })).filter(({ q, n }) => !isRight(q, answers[n]));
     return (
       <div className="page fade">
-        <PageHead title={`${test.name}, ${sec.name}`} sub={`${right} of ${qs.length} correct`} />
+        <PageHead title={`${test.name}, ${sec.name}`} sub={`${label ? `${label}. ` : ""}${right} of ${qs.length} correct`} />
 
         <div className="stack">
           <div className="card card-pad score-card">
@@ -650,29 +704,13 @@ function TestRun({ test, sec, qs, full, wrote = 0, grade, onExit, onDrill }) {
             </p>
           </div>
 
-          <div className="card">
-            <div className="card-head">
-              <h3>Review</h3>
-              <span className="small muted">{wrong.length} to look at</span>
-            </div>
-            {wrong.length === 0 && <div className="empty small">Nothing wrong. Every question correct.</div>}
-            {wrong.map(({ q, n }) => (
-              <div key={q.id} className="review">
-                <span className="pill warn">{q.skill}</span>
-                <div>
-                  {q.passage && <div className="small muted" style={{ marginBottom: 4 }}>{q.passage}</div>}
-                  <div className="list-title"><M t={q.q} /></div>
-                  <div className="small muted">
-                    You put {!isAnswered(answers[n])
-                      ? "nothing"
-                      : formatOf(q) === "gap" ? `"${answers[n]}"` : q.choices[answers[n]]}.
-                    Answer: <M t={q.choices[q.answer]} />.
-                  </div>
-                  <div className="small" style={{ marginTop: 4, color: "var(--ink-2)" }}><M t={q.why} /></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Review test={test.name} section={sec.name}
+            items={qs.map((q, n) => ({
+              n,
+              status: !isAnswered(answers[n]) ? "blank" : isRight(q, answers[n]) ? "right" : "wrong",
+              skill: q.skill, passage: q.passage, q: q.q, choices: q.choices,
+              yours: formatOf(q) === "gap" ? answers[n] : answers[n], correct: q.answer, why: q.why,
+            }))} />
 
           <div className="row">
             <button className="btn ghost" onClick={onExit}>Back to {test.name}</button>

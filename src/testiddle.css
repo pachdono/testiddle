@@ -181,3 +181,72 @@ body { background: var(--bg); }
 
 /* questions with lettered statements, such as data sufficiency, keep their line breaks */
 .q-text { white-space: pre-line; }
+
+/* the two ways in: real papers and practice tests */
+.ti-views { display: inline-flex; margin: 0 0 18px; }
+.ti-views button { min-width: 140px; }
+
+/* real papers */
+.rp-intro { max-width: 760px; margin: 0 0 22px; line-height: 1.55; }
+.rp-group { margin: 0 0 30px; }
+.rp-grouphead { margin: 0 0 12px; }
+.rp-grouphead h2 { margin: 0; font-size: 26px; }
+.rp-grouphead p { margin: 2px 0 0; }
+.rp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.rp-card { display: grid; gap: 10px; align-content: start; }
+.rp-card h3 { margin: 0; font-size: 17px; }
+.rp-blurb { margin: 0; line-height: 1.5; color: var(--ink-2); }
+.rp-sects { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.rp-hist { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; }
+.rp-hist + .rp-hist { border-top: 1px solid var(--line); }
+.rp-score { text-align: right; display: grid; }
+
+.rp-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin: 0 0 14px; position: sticky; top: 76px; z-index: 5; }
+.rp-bar > div:not(.row) { display: grid; }
+.rp-clock { font-size: 28px; font-variant-numeric: tabular-nums; }
+.rp-clock.low { color: var(--warn); }
+.rp-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px 20px; }
+.rp-row { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: 8px; }
+.rp-row.done { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.rp-num { width: 28px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.rp-bubbles { display: flex; gap: 6px; }
+.rp-bubble { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--dash); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; padding: 0; touch-action: manipulation; }
+.rp-bubble.on { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
+.rp-row input[type="text"] { flex: 1; min-width: 0; min-height: 36px; padding: 6px 10px; }
+
+/* going back through a finished paper */
+.rv-body { display: grid; gap: 14px; padding: 16px; }
+.rv-filter { display: inline-flex; }
+.rv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rv-chip { min-width: 34px; height: 34px; padding: 0 6px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.rv-chip.right { border-color: var(--good-line); background: var(--good-soft); color: var(--good); }
+.rv-chip.wrong { border-color: var(--warn-line); background: var(--warn-soft); color: var(--warn); }
+.rv-chip.on { outline: 2px solid var(--ink); outline-offset: 1px; }
+.rv-detail { display: grid; gap: 10px; padding-top: 4px; border-top: 1px solid var(--line); }
+.rv-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 12px; }
+.rv-pos { margin-left: auto; }
+.rv-passage { padding: 12px 14px; border-radius: 10px; background: var(--sunken); white-space: pre-line; line-height: 1.55; }
+.rv-q { margin: 0; }
+.rv-choices { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.rv-choices li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); }
+.rv-choices li.right { border-color: var(--good-line); background: var(--good-soft); }
+.rv-choices li.wrong { border-color: var(--warn-line); background: var(--warn-soft); }
+.rv-key { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: 12px; font-weight: 800; background: var(--active); color: var(--ink-2); }
+.rv-text { flex: 1; }
+.rv-choices em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.rv-line { margin: 0; }
+.rv-why { padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); }
+.rv-why p { margin: 4px 0 0; line-height: 1.55; }
+.rv-why.no { border-color: var(--warn-line); background: var(--warn-soft); }
+.rv-why.ok { border-color: var(--good-line); background: var(--good-soft); }
+.rv-explain { display: grid; gap: 8px; padding: 12px 14px; border-radius: 10px; background: var(--sunken); }
+.rv-explain textarea { width: 100%; }
+.rv-nav { display: flex; justify-content: space-between; gap: 10px; }
+.rv-chip.blank { border-style: dashed; }
+
+/* choosing a numbered practice test */
+.ti-papers { display: grid; gap: 6px; padding: 12px 16px 14px; border-bottom: 1px solid var(--line); }
+.ti-paperchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ti-chip { min-width: 40px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.ti-chip.on { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
+.ti-papernote { margin: 0; }

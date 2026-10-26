@@ -630,3 +630,7 @@ export const solveProblem = (problem) =>
       ? { q: tidyQuestion(d.similar.q), answer: tidyMath(d.similar.answer) }
       : null,
   }));
+
+// One question from a real paper, explained with the official key's answer.
+export const explainQuestion = ({ test, section, number, question, yours, correct }) =>
+  post("/api/explain", { test, section, number, question, yours, correct });
