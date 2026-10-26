@@ -58,3 +58,19 @@ test("a seeded draw is repeatable and different seeds differ", async () => {
   assert.equal(a, b);
   assert.notEqual(a, c);
 });
+
+test("past paper browsers have unique codes, years in order and working searches", async () => {
+  const { PPQ, search } = await import("../src/ppq.js");
+  for (const [id, cfg] of Object.entries(PPQ)) {
+    assert.ok(cfg.hubs.every(([, u]) => /^https:\/\//.test(u)), `${id} hubs`);
+    assert.ok(!/[–—]/.test(JSON.stringify({ ...cfg, paperQuery: 0, markQuery: 0, groups: 0 })), `${id} dash`);
+    if (cfg.numbered) { assert.ok(cfg.groups.every((g) => g.count > 0 && /https:/.test(search(g.query(1)))), `${id} groups`); continue; }
+    assert.deepEqual([...cfg.years].sort((a, b) => b - a), cfg.years, `${id} years descend`);
+    for (const l of cfg.levels) {
+      const codes = l.subjects.map((s) => s.code);
+      assert.equal(new Set(codes).size, codes.length, `${id}/${l.id} codes`);
+      const q = cfg.paperQuery(l, l.subjects[0], 2023, cfg.sessions[0]);
+      assert.ok(q.includes("2023") && q.includes(l.subjects[0].code), `${id} query`);
+    }
+  }
+});

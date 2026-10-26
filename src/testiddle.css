@@ -298,3 +298,21 @@ button.rp-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lif
   .rp-pdf { position: static; }
   .rp-pdf iframe { height: 60vh; }
 }
+
+/* past papers by year */
+.ppq-body { display: grid; gap: 14px; padding: 16px 18px 18px; }
+.ppq-body p { margin: 0; line-height: 1.5; }
+.ppq-pickers { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 16px; }
+.ppq-pickers .rp-filters { margin: 0; flex-basis: 100%; }
+.ppq-field { display: grid; gap: 4px; min-width: 200px; flex: 1 1 200px; }
+.ppq-field select { min-height: 42px; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
+.ppq-table { display: grid; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.ppq-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 10px 14px; background: var(--surface); }
+.ppq-row + .ppq-row { border-top: 1px solid var(--line); }
+.ppq-row:nth-child(even) { background: var(--sunken); }
+.ppq-when { display: flex; align-items: baseline; gap: 10px; min-width: 150px; }
+.ppq-when b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.ppq-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.ppq-more { justify-self: start; }
+.ppq-hubs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.ppq-group { display: grid; gap: 8px; }

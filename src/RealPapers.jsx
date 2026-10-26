@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PageHead } from "./ui.jsx";
 import { H } from "./heavy.js";
 import { REAL_GROUPS, REAL_PAPERS, parseKey, markSheet } from "./realpapers.js";
+import { PPQ, search } from "./ppq.js";
 import Review from "./Review.jsx";
 
 const SHEET = "testiddle-sheet";
@@ -141,6 +142,7 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
         <aside className="rp-side card" aria-label="On this page">
           <div className="rp-sidehead"><Tile id={paper.id} /><div><b>{paper.name}</b><span className="small muted">{paper.org}</span></div></div>
           <a className="rp-sidelink on" href="#rp-how">How it works</a>
+          {PPQ[paper.id] && <a className="rp-sidelink" href="#rp-ppq">{PPQ[paper.id].numbered ? "Practice tests" : "Past papers by year"}</a>}
           {hasSheet && <a className="rp-sidelink" href="#rp-sections">Sit a section</a>}
           {hasSheet && <a className="rp-sidelink" href="#rp-yours">Add your paper</a>}
           {history.length > 0 && <a className="rp-sidelink" href="#rp-results">Your results</a>}
@@ -167,6 +169,8 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
               <a className="btn cta" href={paper.url} target="_blank" rel="noopener noreferrer">Open the official paper</a>
             </div>
           </section>
+
+          <Ppq paper={paper} onStart={onStart} />
 
           {hasSheet && (
             <section className="card" id="rp-sections">
@@ -209,6 +213,106 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
         </div>
       </div>
     </div>
+  );
+}
+
+
+/* ---------- past papers by year ---------- */
+
+function Ppq({ paper, onStart }) {
+  const cfg = PPQ[paper.id];
+  if (!cfg) return null;
+  return cfg.numbered ? <Numbered cfg={cfg} /> : <ByYear paper={paper} cfg={cfg} onStart={onStart} />;
+}
+
+const Hubs = ({ hubs }) => (
+  <div className="ppq-hubs">
+    {hubs.map(([label, url]) => <a key={url} className="btn ghost small" href={url} target="_blank" rel="noopener noreferrer">{label}</a>)}
+  </div>
+);
+
+function ByYear({ paper, cfg, onStart }) {
+  const [li, setLi] = useState(0);
+  const lvl = cfg.levels[li];
+  const [si, setSi] = useState(0);
+  const subject = lvl.subjects[Math.min(si, lvl.subjects.length - 1)];
+  const [sess, setSess] = useState("all");
+  const [more, setMore] = useState(false);
+  const years = more ? cfg.years : cfg.years.slice(0, 4);
+  const levelSessions = lvl.sessions || cfg.sessions;
+  const sessions = levelSessions.filter(([k]) => sess === "all" || k === sess);
+
+  return (
+    <section className="card" id="rp-ppq">
+      <div className="card-head"><h3>Past papers by year</h3><span className="small muted">{cfg.board}</span></div>
+      <div className="ppq-body">
+        <p className="small muted">{cfg.note}</p>
+
+        <div className="ppq-pickers">
+          {cfg.levels.length > 1 && (
+            <div className="rp-filters" role="tablist" aria-label="Level">
+              {cfg.levels.map((l, i) => <button key={l.id} role="tab" aria-selected={li === i} className={"rp-filter" + (li === i ? " on" : "")} onClick={() => { setLi(i); setSi(0); }}>{l.name}</button>)}
+            </div>
+          )}
+          <label className="ppq-field"><span className="small muted">Subject</span>
+            <select value={Math.min(si, lvl.subjects.length - 1)} onChange={(e) => setSi(Number(e.target.value))}>
+              {lvl.subjects.map((s, i) => <option key={s.code} value={i}>{s.name} ({s.code})</option>)}
+            </select>
+          </label>
+          <label className="ppq-field"><span className="small muted">Session</span>
+            <select value={sess} onChange={(e) => setSess(e.target.value)}>
+              <option value="all">All sessions</option>
+              {levelSessions.map(([k, name]) => <option key={k} value={k}>{name}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <div className="ppq-table" role="table" aria-label={`${subject.name} past papers`}>
+          {years.map((y) => sessions.map(([k, name]) => (
+            <div key={`${y}-${k}`} className="ppq-row" role="row">
+              <div className="ppq-when"><b>{y}</b><span className="small muted">{name}</span></div>
+              <div className="ppq-actions">
+                <a className="btn ghost small" href={search(cfg.paperQuery(lvl, subject, y, [k, name]))} target="_blank" rel="noopener noreferrer">Question papers</a>
+                <a className="btn ghost small" href={search(cfg.markQuery(lvl, subject, y, [k, name]))} target="_blank" rel="noopener noreferrer">Mark schemes</a>
+                {subject.mcq && paper.sections[0] && <button className="btn small" onClick={() => onStart(paper, paper.sections[0])}>Sit multiple choice here</button>}
+              </div>
+            </div>
+          )))}
+        </div>
+        {!more && cfg.years.length > 4 && <button className="btn ghost small ppq-more" onClick={() => setMore(true)}>Show earlier years, back to {cfg.years[cfg.years.length - 1]}</button>}
+
+        <p className="small muted">Each button opens a search for that exact paper, so you land on the current copy of the file. Download it, then use the answer sheet below with your PDF beside it.</p>
+        <div><span className="small muted">All {subject.name} papers also at</span><Hubs hubs={cfg.hubs} /></div>
+      </div>
+    </section>
+  );
+}
+
+function Numbered({ cfg }) {
+  return (
+    <section className="card" id="rp-ppq">
+      <div className="card-head"><h3>Practice tests</h3><span className="small muted">{cfg.board}</span></div>
+      <div className="ppq-body">
+        <p className="small muted">{cfg.note}</p>
+        {cfg.groups.map((g) => (
+          <div key={g.name} className="ppq-group">
+            <b>{g.name}</b>
+            <div className="ppq-table">
+              {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => (
+                <div key={n} className="ppq-row">
+                  <div className="ppq-when"><b>Test {n}</b></div>
+                  <div className="ppq-actions">
+                    <a className="btn ghost small" href={search(g.query(n))} target="_blank" rel="noopener noreferrer">Find the test</a>
+                    <a className="btn ghost small" href={search(`${g.query(n)} answers scoring`)} target="_blank" rel="noopener noreferrer">Answers</a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div><span className="small muted">The official page</span><Hubs hubs={cfg.hubs} /></div>
+      </div>
+    </section>
   );
 }
 

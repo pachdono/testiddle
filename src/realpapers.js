@@ -110,7 +110,7 @@ export const REAL_PAPERS = [
   },
   {
     id: "igcse-mcq", group: "boards", name: "Cambridge IGCSE past papers", org: "Cambridge International",
-    blurb: "Past papers and mark schemes for Cambridge IGCSE. Paper 1 in the sciences is multiple choice with a key in the mark scheme, so you can sit it here.",
+    blurb: "Past papers and mark schemes for Cambridge IGCSE, by year and session. Papers 1 and 2 in the sciences are multiple choice with a key in the mark scheme, so you can sit them here.",
     url: "https://www.cambridgeinternational.org/",
     sections: [
       { id: "p1", name: "Paper 1, multiple choice (sciences)", questions: 40, minutes: 45, choices: 4 },
