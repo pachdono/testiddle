@@ -1,5 +1,5 @@
-/* Testiddle is a classroom, in Dwiddle's soft colours. Cream ruled paper with a red
-   margin, a light wood desk bar, a sage green chalkboard in a wooden frame for the
+/* Testiddle is a classroom, in Dwiddle's soft colours. A blurred classroom with the duck
+   teaching behind everything, a light wood desk bar, a sage green chalkboard in a wooden frame for the
    headings, and highlighter yellow for the badges. Light is the classroom by day,
    dark is the same room with the lights low. Only these colours change; the
    components are Dwiddle's own. */
@@ -82,17 +82,18 @@
 
 body { background: var(--bg); }
 
-/* ruled paper, with the red margin line down the left */
-.ti-shell {
-  position: relative; min-height: 100vh; display: flex; flex-direction: column; color: var(--ink);
-  background-color: var(--bg);
-  background-image: repeating-linear-gradient(to bottom, transparent 0 35px, rgba(80, 120, 165, 0.14) 35px 36px);
-  background-attachment: local;
+/* the classroom, blurred behind everything: the duck teaching at the board */
+.ti-shell { position: relative; min-height: 100vh; display: flex; flex-direction: column; color: var(--ink); background: var(--bg); isolation: isolate; }
+.ti-shell::before {
+  content: ""; position: fixed; inset: -24px; z-index: -2; pointer-events: none;
+  background: url("/classroom.svg") center / cover no-repeat; filter: blur(7px) saturate(0.92);
 }
-:root[data-theme="dark"] .ti-shell { background-image: repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255, 255, 255, 0.05) 35px 36px); }
-.ti-shell::after { content: ""; position: fixed; top: 0; bottom: 0; left: 58px; width: 2px; background: rgba(214, 105, 105, 0.32); pointer-events: none; z-index: 0; }
-:root[data-theme="dark"] .ti-shell::after { background: rgba(240, 140, 140, 0.18); }
-.ti-shell > * { position: relative; z-index: 1; }
+.ti-shell::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(247, 240, 224, 0.46), rgba(247, 240, 224, 0.62));
+}
+:root[data-theme="dark"] .ti-shell::before { filter: blur(7px) saturate(0.7) brightness(0.55); }
+:root[data-theme="dark"] .ti-shell::after { background: linear-gradient(180deg, rgba(20, 32, 27, 0.5), rgba(20, 32, 27, 0.72)); }
 
 /* the desk bar: light wood with a little grain */
 .ti-top {
@@ -165,9 +166,6 @@ body { background: var(--bg); }
 .ti-signin a { color: var(--accent); }
 .ti-board .warn-text { color: #ffe0c0; }
 
-@media (max-width: 700px) {
-  .ti-shell::after { left: 22px; }
-}
 @media (max-width: 520px) {
   .ti-brand b { font-size: 25px; }
   .ti-board { padding: 24px 16px 20px; border-width: 8px; }
