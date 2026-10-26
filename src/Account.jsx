@@ -213,7 +213,7 @@ export function SignInPanel({ onDone }) {
 
       {state === "error" && <p className="small warn-text auth-error">{message}</p>}
       <p className="small muted" style={{ marginTop: 12, textAlign: "center" }}>
-        By continuing you agree to the <a href="/terms" target="_blank" rel="noreferrer">Terms of Service</a> and have read the <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>.
+        By continuing you agree to the <a href="https://dwiddle.vercel.app/terms" target="_blank" rel="noreferrer">Terms of Service</a> and have read the <a href="https://dwiddle.vercel.app/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>.
       </p>
     </>
   );

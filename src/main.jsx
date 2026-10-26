@@ -1,8 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
+import "@fontsource/patrick-hand/400.css";
+import "@fontsource/caveat/600.css";
 import "./styles.css";
 import "./testiddle.css";
+import { savedTheme, applyTheme } from "./theme.js";
+import { linkFromDwiddle } from "./link.js";
+
+applyTheme(savedTheme());
 
 window.addEventListener("vite:preloadError", (e) => {
   let last = 0;
@@ -13,4 +19,6 @@ window.addEventListener("vite:preloadError", (e) => {
   location.reload();
 });
 
-createRoot(document.getElementById("root")).render(<StrictMode><App /></StrictMode>);
+linkFromDwiddle().finally(() => {
+  createRoot(document.getElementById("root")).render(<StrictMode><App /></StrictMode>);
+});
