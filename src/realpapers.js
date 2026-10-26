@@ -14,7 +14,7 @@ export const REAL_GROUPS = [
 // ACT's A B C D, F G H J, and "text" for answers that are written, not picked.
 export const REAL_PAPERS = [
   {
-    id: "sat", group: "admissions", test: "sat", name: "Official Digital SAT practice tests", org: "College Board",
+    id: "sat", group: "admissions", test: "sat", name: "SAT", org: "College Board", card: { full: "Scholastic Assessment Test", scale: "400 to 1600", length: "2 hr 14 min", who: "US undergraduate admissions" },
     blurb: "Full length digital SAT practice tests, free, with answers and explanations. Also in the Bluebook app, which is how the real test is taken.",
     url: "https://satsuite.collegeboard.org/sat/practice-preparation/practice-tests",
     sections: [
@@ -23,7 +23,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "psat", group: "admissions", test: "psat", name: "Official PSAT/NMSQT practice tests", org: "College Board",
+    id: "psat", group: "admissions", test: "psat", name: "PSAT/NMSQT", org: "College Board", card: { full: "Preliminary SAT and National Merit Qualifying Test", scale: "320 to 1520", length: "2 hr 14 min", who: "US grades 10 and 11" },
     blurb: "Free official practice for the PSAT/NMSQT, in the same digital format as the SAT.",
     url: "https://satsuite.collegeboard.org/psat-nmsqt",
     sections: [
@@ -32,7 +32,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "act", group: "admissions", test: "act", name: "Official ACT practice test", org: "ACT",
+    id: "act", group: "admissions", test: "act", name: "ACT", org: "ACT", card: { full: "American College Testing", scale: "1 to 36 composite", length: "About 3 hr", who: "US undergraduate admissions" },
     blurb: "A full free ACT practice test with the answer key and the score conversion table. The ACT key uses A B C D for odd questions and F G H J for even ones, and this sheet reads either.",
     url: "https://www.act.org/content/act/en/products-and-services/the-act/test-preparation.html",
     letters: "act",
@@ -44,7 +44,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "ssat", group: "admissions", test: "ssat", name: "Official SSAT practice test", org: "SSAT",
+    id: "ssat", group: "admissions", test: "ssat", name: "SSAT", org: "SSAT", card: { full: "Secondary School Admission Test", scale: "500 to 800 per section", length: "3 hr 5 min", who: "Private secondary school admissions" },
     blurb: "The SSAT's own practice material, with a full length test and the answers. Choose the Upper Level for grades 8 to 11.",
     url: "https://www.ssat.org/",
     sections: [
@@ -54,7 +54,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "isee", group: "admissions", test: "isee", name: "Official ISEE practice material", org: "ERB",
+    id: "isee", group: "admissions", test: "isee", name: "ISEE", org: "ERB", card: { full: "Independent School Entrance Examination", scale: "760 to 940 per section", length: "About 2 hr 40 min", who: "Private and independent school admissions" },
     blurb: "Official ISEE sample questions and practice tests from the Educational Records Bureau. Pick the level you are applying at.",
     url: "https://www.erblearn.org/",
     sections: [
@@ -65,7 +65,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "gre", group: "admissions", test: "gre", name: "Official GRE POWERPREP", org: "ETS",
+    id: "gre", group: "admissions", test: "gre", name: "GRE", org: "ETS", card: { full: "Graduate Record Examination", scale: "130 to 170 per section", length: "About 2 hr", who: "Graduate school admissions" },
     blurb: "ETS's free official GRE practice tests, the same software as the real test, with scores and answers.",
     url: "https://www.ets.org/gre/test-takers/general-test/prepare.html",
     sections: [
@@ -74,7 +74,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "gmat", group: "admissions", test: "gmat", name: "Official GMAT Starter Kit", org: "GMAC",
+    id: "gmat", group: "admissions", test: "gmat", name: "GMAT", org: "GMAC", card: { full: "Graduate Management Admission Test", scale: "205 to 805", length: "2 hr 15 min", who: "Business school admissions" },
     blurb: "The free official GMAT Focus practice exams from mba.com, with the question review that shows the right answers.",
     url: "https://www.mba.com/exam-prep",
     sections: [
@@ -84,7 +84,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "ielts", group: "english", test: "ielts", name: "Official IELTS sample tests", org: "IELTS partners",
+    id: "ielts", group: "english", test: "ielts", name: "IELTS", org: "IELTS partners", card: { full: "International English Language Testing System", scale: "Band 0 to 9", length: "2 hr 45 min", who: "Study and migration in the UK, Australia and Canada" },
     blurb: "Official Listening, Reading, Writing and Speaking samples with answers. Reading and Listening answers are written, not picked, so the sheet takes typed answers.",
     url: "https://ielts.org/take-a-test/preparation-resources/sample-test-questions",
     letters: "text",
@@ -94,7 +94,7 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "toefl", group: "english", test: "toefl", name: "Official TOEFL iBT free practice", org: "ETS",
+    id: "toefl", group: "english", test: "toefl", name: "TOEFL iBT", org: "ETS", card: { full: "Test of English as a Foreign Language", scale: "0 to 120", length: "About 2 hr", who: "University admissions, mainly the US and Canada" },
     blurb: "ETS's free full practice test and sample questions for the TOEFL iBT.",
     url: "https://www.ets.org/toefl/test-takers/ibt/prepare.html",
     sections: [
@@ -103,13 +103,13 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "det", group: "english", name: "Official Duolingo English Test practice", org: "Duolingo",
+    id: "det", group: "english", name: "Duolingo English Test", org: "Duolingo", card: { full: "Duolingo English Test", scale: "10 to 160", length: "About 1 hr", who: "University admissions, taken online" },
     blurb: "Duolingo's own practice test. It is adaptive and scored by the app, so it has no answer key to mark here. Take it there, then use Testiddle's Duolingo practice for the skills.",
     url: "https://englishtest.duolingo.com/",
     sections: [],
   },
   {
-    id: "igcse-mcq", group: "boards", name: "Cambridge IGCSE past papers", org: "Cambridge International",
+    id: "igcse-mcq", group: "boards", name: "Cambridge IGCSE", org: "Cambridge International", card: { full: "Cambridge International", scale: "Past papers by year", length: "Papers 1 to 6", who: "School exams for ages 14 to 16" },
     blurb: "Past papers and mark schemes for Cambridge IGCSE, by year and session. Papers 1 and 2 in the sciences are multiple choice with a key in the mark scheme, so you can sit them here.",
     url: "https://www.cambridgeinternational.org/",
     sections: [
@@ -117,19 +117,19 @@ export const REAL_PAPERS = [
     ],
   },
   {
-    id: "edexcel", group: "boards", name: "Pearson Edexcel past papers", org: "Pearson Edexcel",
+    id: "edexcel", group: "boards", name: "Pearson Edexcel", org: "Pearson Edexcel", card: { full: "International GCSE, GCSE and A Level", scale: "Past papers by year", length: "Mark schemes included", who: "School exams for ages 14 to 18" },
     blurb: "Past papers, mark schemes and examiner reports for Edexcel GCSE, IGCSE and A Level. Written papers, so you mark these yourself against the mark scheme.",
     url: "https://qualifications.pearson.com/en/support/support-topics/exams/past-papers.html",
     sections: [],
   },
   {
-    id: "aqa", group: "boards", name: "AQA past papers", org: "AQA",
+    id: "aqa", group: "boards", name: "AQA", org: "AQA", card: { full: "GCSE and A Level", scale: "Past papers by year", length: "Mark schemes included", who: "School exams for ages 14 to 18" },
     blurb: "Every AQA GCSE and A Level past paper, with mark schemes.",
     url: "https://www.aqa.org.uk/find-past-papers-and-mark-schemes",
     sections: [],
   },
   {
-    id: "ocr", group: "boards", name: "OCR past papers", org: "OCR",
+    id: "ocr", group: "boards", name: "OCR", org: "OCR", card: { full: "GCSE and A Level", scale: "Past papers by year", length: "Mark schemes included", who: "School exams for ages 14 to 18" },
     blurb: "OCR GCSE and A Level past papers and mark schemes.",
     url: "https://www.ocr.org.uk/qualifications/past-paper-finder/",
     sections: [],

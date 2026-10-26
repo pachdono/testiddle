@@ -94,21 +94,25 @@ function List({ head, onOpen, history, onClear }) {
       </div>
 
       {shown.length === 0 && <div className="empty small">No exams match that.</div>}
-      <div className="rp-grid">
-        {shown.map((p) => (
-          <button key={p.id} className="card rp-card" onClick={() => onOpen(p.id)}>
-            <Tile id={p.id} />
-            <span className="rp-cardbody">
-              <b className="rp-cardname">{p.name}</b>
-              <span className="small muted">{p.org}</span>
-              <span className="rp-tags">
-                <span className="rp-tag free">Free</span>
-                {p.sections.length > 0 ? <span className="rp-tag key">Timed sheet</span> : <span className="rp-tag">Official site</span>}
-                {p.sections.length > 0 && <span className="rp-tag">{p.sections.length} section{p.sections.length === 1 ? "" : "s"}</span>}
-              </span>
-            </span>
-          </button>
-        ))}
+      <div className="test-grid">
+        {shown.map((p) => {
+          const cfg = PPQ[p.id];
+          const count = cfg?.numbered ? `${cfg.groups.reduce((n, g) => n + g.count, 0)} tests` : cfg ? "By year" : p.sections.length ? `${p.sections.length} sections` : "Official site";
+          return (
+            <button key={p.id} className="test-card" onClick={() => onOpen(p.id)}>
+              <div className="spread">
+                <b className="test-name">{p.name}</b>
+                <span className="pill accent">{count}</span>
+              </div>
+              <span className="small muted">{p.card.full}</span>
+              <div className="test-meta">
+                <span><b>{p.card.scale}</b></span>
+                <span className="muted">{p.card.length}</span>
+              </div>
+              <span className="small muted">{p.card.who}</span>
+            </button>
+          );
+        })}
       </div>
 
       {history.length > 0 && (
@@ -238,17 +242,17 @@ const Hubs = ({ hubs }) => (
 
 function PaperCard({ entry, onOpen }) {
   return (
-    <button className="card rp-card" onClick={() => onOpen(entry)}>
-      <Tile id={entry.tile} />
-      <span className="rp-cardbody">
-        <b className="rp-cardname">{entry.title}</b>
-        <span className="small muted">{entry.subtitle}</span>
-        <span className="rp-tags">
-          <span className="rp-tag free">Free</span>
-          {entry.minutes > 0 && <span className="rp-tag">{entry.minutes} min</span>}
-          {entry.sections?.length > 0 && <span className="rp-tag key">Answer sheet</span>}
-        </span>
-      </span>
+    <button className="test-card" onClick={() => onOpen(entry)}>
+      <div className="spread">
+        <b className="test-name">{entry.title}</b>
+        {entry.sections?.length > 0 && <span className="pill accent">Answer sheet</span>}
+      </div>
+      <span className="small muted">{entry.subtitle}</span>
+      <div className="test-meta">
+        <span><b>{entry.minutes > 0 ? `${entry.minutes} min` : "Official paper"}</b></span>
+        {entry.questions > 0 && <span className="muted">{entry.questions} questions</span>}
+      </div>
+      <span className="small muted">{entry.sections?.length > 0 ? "Sit it here on the answer sheet" : "Open it next to a timer"}</span>
     </button>
   );
 }
@@ -267,8 +271,8 @@ function ByYear({ paper, cfg, onOpenPaper }) {
   const entries = years.flatMap((y) => sessions.map(([k, name]) => ({
     key: `${lvl.id}-${subject.code}-${y}-${k}`,
     tile: paper.id,
-    title: `${cfg.board} ${lvl.name} ${subject.name} ${subject.code}`,
-    subtitle: `${name} ${y}`,
+    title: `${subject.name} ${subject.code}`,
+    subtitle: `${cfg.board} ${lvl.name}, ${name} ${y}`,
     org: cfg.board, code: subject.code, year: y, session: name,
     minutes: subject.mcq ? 45 : 90, minutesEditable: !subject.mcq,
     sections: subject.mcq ? paper.sections : [],
@@ -298,7 +302,7 @@ function ByYear({ paper, cfg, onOpenPaper }) {
           </select>
         </label>
       </div>
-      <div className="rp-grid">{entries.map((e) => <PaperCard key={e.key} entry={e} onOpen={onOpenPaper} />)}</div>
+      <div className="test-grid">{entries.map((e) => <PaperCard key={e.key} entry={e} onOpen={onOpenPaper} />)}</div>
       {!more && cfg.years.length > 4 && <button className="btn ghost small" onClick={() => setMore(true)}>Show earlier years, back to {cfg.years[cfg.years.length - 1]}</button>}
     </section>
   );
@@ -311,7 +315,7 @@ function Numbered({ paper, cfg, onOpenPaper }) {
       {cfg.groups.map((g) => (
         <div key={g.name} className="ppq-group">
           {cfg.groups.length > 1 && <b>{g.name}</b>}
-          <div className="rp-grid">
+          <div className="test-grid">
             {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => (
               <PaperCard key={n} onOpen={onOpenPaper} entry={{
                 key: `${g.name}-${n}`, tile: paper.id, title: g.title(n), subtitle: cfg.board,
