@@ -35,6 +35,14 @@ const PERCENTILES = {
   ielts: [[9, 99], [8.5, 97], [8, 93], [7.5, 86], [7, 75], [6.5, 60], [6, 43], [5.5, 27], [5, 15], [4, 5], [0, 1]],
 };
 
+// The newer tests. All of these are estimates from published score distributions.
+PERCENTILES.psat = [[1520, 99], [1400, 99], [1300, 96], [1200, 90], [1100, 76], [1000, 58], [900, 40], [800, 23], [700, 10], [600, 4], [320, 1]];
+// Percentiles compare you only with students in the same grade.
+PERCENTILES.isee = [[940, 99], [900, 92], [880, 82], [860, 68], [840, 52], [820, 36], [800, 22], [780, 10], [760, 1]];
+PERCENTILES.gre = [[340, 99], [330, 98], [320, 93], [310, 80], [300, 60], [290, 40], [280, 22], [270, 9], [260, 2]];
+PERCENTILES.gmat = [[805, 100], [745, 99], [705, 96], [675, 90], [645, 80], [615, 68], [585, 55], [555, 42], [525, 30], [495, 20], [455, 8], [205, 1]];
+PERCENTILES.det = [[160, 99], [140, 93], [130, 84], [120, 68], [110, 45], [100, 25], [90, 10], [10, 1]];
+
 // IELTS Listening and Reading are marked out of 40 and converted to a band.
 // This is the widely published Academic Reading conversion.
 const IELTS_BANDS = [
@@ -108,6 +116,56 @@ export function estimate(scoring, right, total) {
         unit: "band, out of 9",
         percentile: interpolate(PERCENTILES.ielts, band),
         detail: `Equivalent to about ${Math.round(pct * 40)} out of 40 raw marks.`,
+      };
+    }
+
+    case "psat": {
+      const scaled = clamp(round10(320 + pct * 1200), 320, 1520);
+      return {
+        scaled: String(scaled),
+        unit: "out of 1520",
+        percentile: interpolate(PERCENTILES.psat, scaled),
+        detail: "Each section runs 160 to 760. In grade 11 the National Merit Selection Index doubles the Reading and Writing score and adds Math.",
+      };
+    }
+
+    case "isee": {
+      const scaled = clamp(Math.round(760 + pct * 180), 760, 940);
+      return {
+        scaled: String(scaled),
+        unit: "per section, 760 to 940",
+        percentile: interpolate(PERCENTILES.isee, scaled),
+        detail: `About stanine ${clamp(Math.round(1 + pct * 8), 1, 9)} of 9. Percentiles compare you only with students in the same grade.`,
+      };
+    }
+
+    case "gre": {
+      const scaled = clamp(Math.round(130 + pct * 40), 130, 170);
+      return {
+        scaled: String(scaled),
+        unit: "per section, 130 to 170",
+        percentile: interpolate(PERCENTILES.gre, scaled * 2),
+        detail: `If Verbal and Quantitative were both about this level your total would be near ${scaled * 2} out of 340.`,
+      };
+    }
+
+    case "gmat": {
+      const scaled = clamp(205 + Math.round(pct * 60) * 10, 205, 805);
+      return {
+        scaled: String(scaled),
+        unit: "total, 205 to 805",
+        percentile: interpolate(PERCENTILES.gmat, scaled),
+        detail: `Each section is scored 60 to 90, which would be about ${clamp(Math.round(60 + pct * 30), 60, 90)} here.`,
+      };
+    }
+
+    case "det": {
+      const scaled = clamp(Math.round((10 + pct * 150) / 5) * 5, 10, 160);
+      return {
+        scaled: String(scaled),
+        unit: "out of 160",
+        percentile: interpolate(PERCENTILES.det, scaled),
+        detail: "Many universities read 105 as about IELTS 6.5 and 120 as about IELTS 7. The real score also depends on writing and speaking.",
       };
     }
 

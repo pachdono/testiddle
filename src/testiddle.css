@@ -178,3 +178,6 @@ body { background: var(--bg); }
 /* buttons on the board are chalk too */
 .ti-main .page-head .btn.quiet { color: var(--ti-chalk); background: rgba(255, 255, 255, 0.12); border: 1px dashed rgba(247, 245, 234, 0.5); }
 .ti-main .page-head .btn.quiet:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* questions with lettered statements, such as data sufficiency, keep their line breaks */
+.q-text { white-space: pre-line; }

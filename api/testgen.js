@@ -73,6 +73,25 @@ Rules:
   that settles it.
 - Write in British English. Do not use em dashes or en dashes.`;
 
+// What each test's questions look like, so fresh ones are written in its own style
+// and not as generic multiple choice.
+const STYLE = [
+  [/GMAT.*Data Insights/i, "Write GMAT Focus Data Sufficiency questions. Each gives a question and two statements, (1) and (2), and the five choices are always, in this order: Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient. / Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient. / BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient. / EACH statement ALONE is sufficient. / Statements (1) and (2) TOGETHER are NOT sufficient. Mix in a few table analysis questions, with the table written out as lines of text."],
+  [/GMAT.*Verbal/i, "Write GMAT Focus Verbal questions: critical reasoning (strengthen, weaken, assumption, inference, evaluate) and reading comprehension. Short business and science contexts."],
+  [/GMAT.*Quantitative/i, "Write GMAT Focus Quantitative problem solving: arithmetic, algebra, percentages, rates, ratios, number properties and probability. No geometry. Five answer choices."],
+  [/GRE.*Verbal/i, "Write GRE Verbal Reasoning: text completion with one blank and five choices, vocabulary in context, and short reading comprehension."],
+  [/GRE.*Quantitative/i, "Write GRE Quantitative Reasoning: quantitative comparison (the four choices are always: Quantity A is greater, Quantity B is greater, The two quantities are equal, The relationship cannot be determined), problem solving, and data interpretation written out as text."],
+  [/ISEE.*Verbal/i, "Write ISEE Upper Level Verbal Reasoning: synonyms (a single capitalised word, four choices) and sentence completion with one or two blanks."],
+  [/ISEE.*Quantitative/i, "Write ISEE Upper Level Quantitative Reasoning: number concepts, word problems and quantitative comparison, all four choices."],
+  [/ISEE.*Reading/i, "Write ISEE Upper Level Reading Comprehension: a passage of about 150 words with main idea, detail, inference, vocabulary in context and tone questions, four choices."],
+  [/ISEE.*Math/i, "Write ISEE Upper Level Mathematics Achievement: arithmetic, algebra, geometry and data, four choices."],
+  [/PSAT/i, "Write PSAT/NMSQT questions in the digital SAT style: short passages with one question each for Reading and Writing, and algebra, advanced maths, data and geometry for Math, four choices."],
+  [/Duolingo.*Select/i, "Write Duolingo English Test Read and Select items: 'Which of these is a real English word?' with four choices, exactly one a real word and three invented words that follow English spelling."],
+  [/Duolingo.*Complete/i, "Write Duolingo English Test Read and Complete items: a sentence with a word shown as its first letters and a gap, and four whole words as choices, only one correct in context."],
+  [/Duolingo.*Reading/i, "Write Duolingo English Test Interactive Reading: a passage of about 120 words in clear, plain academic English, with main idea and detail questions."],
+  [/Duolingo.*Listening/i, "Write Duolingo English Test Interactive Listening: a short conversation or announcement in clear everyday English, with detail questions."],
+];
+
 export default async function handler(req, res) {
   if (!allow(req, res, { limit: 10 })) return;
 
@@ -86,9 +105,11 @@ export default async function handler(req, res) {
 
   if (!test || !section) return userError(res, 400, "Which test and section?");
 
+  const style = STYLE.find(([re]) => re.test(`${test} ${section}`))?.[1];
   const brief = [
     `Test: ${test}`,
     `Section: ${section}`,
+    style ? `Style: ${style}` : null,
     skills.length ? `Skills to cover, spread across the set: ${skills.join(", ")}` : null,
     `Write ${count} questions.`,
     avoid.length

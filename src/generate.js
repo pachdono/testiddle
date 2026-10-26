@@ -355,14 +355,14 @@ const MATH_KEYS = Object.keys(MATH);
 
 // Draws n maths questions, cycling templates so the same type never appears
 // twice in a row and the numbers differ every time.
-function mathSet(section, n) {
+function mathSet(section, n, keys = MATH_KEYS) {
   const out = [];
   const seen = new Set();
-  let order = shuffled(MATH_KEYS);
+  let order = shuffled(keys);
   let k = 0;
   let guard = 0;
   while (out.length < n && guard++ < n * 40) {
-    if (k >= order.length) { order = shuffled(MATH_KEYS); k = 0; }
+    if (k >= order.length) { order = shuffled(keys); k = 0; }
     const item = MATH[order[k++]](section);
     if (seen.has(item.q)) continue; // same template, same numbers: draw again
     seen.add(item.q);
@@ -595,6 +595,10 @@ export const POOL = {
   maths: Infinity, // generated, so there is no ceiling
 };
 
+// Problem solving without geometry, which is how the GMAT Focus Edition and the
+// arithmetic and algebra heavy tests ask it.
+const NO_GEOMETRY = MATH_KEYS.filter((k) => !["circle", "rectangle", "pythagoras", "trig", "slope", "perpendicular", "midpoint", "vertex"].includes(k));
+
 export const BUILDERS = {
   satRW: (n) => shuffled([...contextSet("Reading and Writing", Math.ceil(n * 0.55)), ...grammarSet("Reading and Writing", Math.floor(n * 0.45))]).slice(0, n),
   satMath: (n) => mathSet("Math", n),
@@ -602,4 +606,11 @@ export const BUILDERS = {
   actMath: (n) => mathSet("Mathematics", n),
   ssatVerbal: (n) => shuffled([...synonymSet("Verbal", Math.ceil(n / 2)), ...analogySet("Verbal", Math.floor(n / 2))]),
   ssatQuant: (n) => mathSet("Quantitative", n),
+  psatRW: (n) => shuffled([...contextSet("Reading and Writing", Math.ceil(n * 0.5)), ...grammarSet("Reading and Writing", Math.floor(n * 0.5))]).slice(0, n),
+  iseeVerbal: (n) => shuffled([...synonymSet("Verbal Reasoning", Math.ceil(n * 0.62)), ...contextSet("Verbal Reasoning", Math.floor(n * 0.38))]).slice(0, n),
+  iseeQuant: (n) => mathSet("Quantitative Reasoning", n, NO_GEOMETRY),
+  iseeMath: (n) => mathSet("Mathematics Achievement", n),
+  greVerbal: (n) => shuffled([...contextSet("Verbal Reasoning", Math.ceil(n * 0.6)), ...synonymSet("Verbal Reasoning", Math.floor(n * 0.4))]).slice(0, n),
+  greQuant: (n) => mathSet("Quantitative Reasoning", n),
+  gmatQuant: (n) => mathSet("Quantitative Reasoning", n, NO_GEOMETRY),
 };

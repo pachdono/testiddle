@@ -215,3 +215,126 @@ export const TASKS = {
     },
   },
 };
+
+/* ---------- the newer tests ---------- */
+
+Object.assign(RUBRICS, {
+  greIssue: {
+    name: "GRE Analytical Writing scoring guide",
+    scale: [1, 2, 3, 4, 5, 6],
+    unit: "out of 6",
+    criteria: [
+      { n: "Position and insight", hint: "Do you take a clear position and examine the complexity of the issue, not just one side?" },
+      { n: "Support", hint: "Is each point backed by specific reasons or examples, not general claims?" },
+      { n: "Organisation", hint: "Does the essay move in a clear order, with each paragraph doing one job?" },
+      { n: "Language", hint: "Is the vocabulary precise and the grammar controlled, with few errors that distract?" },
+    ],
+    // Real essays get one holistic score from 0 to 6 in half points.
+    combine: (scores) => Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 2) / 2,
+    format: (v) => `${v.toFixed(1)} of 6`,
+  },
+  iseeEssay: {
+    name: "ISEE essay",
+    scale: [1, 2, 3, 4, 5],
+    unit: "guide only",
+    criteria: [
+      { n: "Focus", hint: "Does every paragraph stay on the prompt?" },
+      { n: "Development", hint: "Do you give examples and explain them, not only claim things?" },
+      { n: "Organisation", hint: "Is there an opening, a middle and a conclusion?" },
+      { n: "Mechanics", hint: "Are spelling, punctuation and sentences clean?" },
+    ],
+    combine: (scores) => Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10,
+    format: (v) => `${v} of 5, for your own guidance`,
+  },
+  detWriting: {
+    name: "Duolingo writing criteria",
+    scale: [1, 2, 3, 4, 5],
+    unit: "out of 5",
+    criteria: [
+      { n: "Content", hint: "Did you answer the whole prompt with relevant detail?" },
+      { n: "Organisation", hint: "Do your sentences follow on from one another, with linking words that fit?" },
+      { n: "Grammar and vocabulary", hint: "Is the range of words and sentence forms wide, and mostly accurate?" },
+    ],
+    combine: (scores) => Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10,
+    format: (v) => `${v} of 5, for your own guidance`,
+  },
+  detSpeaking: {
+    name: "Duolingo speaking criteria",
+    scale: [1, 2, 3, 4, 5],
+    unit: "out of 5",
+    criteria: [
+      { n: "Content", hint: "Did you keep to the topic and say enough to fill the time?" },
+      { n: "Fluency", hint: "Could you keep going without long pauses or starting again?" },
+      { n: "Language", hint: "Were the grammar and vocabulary varied and mostly right?" },
+      { n: "Pronunciation", hint: "Were you easy to understand throughout?" },
+    ],
+    combine: (scores) => Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10,
+    format: (v) => `${v} of 5, for your own guidance`,
+  },
+});
+
+Object.assign(TASKS, {
+  gre: {
+    writing: {
+      rubric: "greIssue",
+      tasks: [
+        {
+          id: "gw1", name: "Analyze an Issue", minutes: 30, minWords: 400,
+          prompt: "As people rely more and more on information from the internet, the ability to recall facts has become much less important than it was in the past.\n\nWrite a response in which you discuss the extent to which you agree or disagree with the statement and explain your reasoning for the position you take. In developing and supporting your position, you should consider ways in which the statement might or might not hold true.",
+          tip: "Thirty minutes. Spend about five on a plan: a position, two or three reasons, and the strongest objection to your own view. Essays that admit when the claim would not hold, and then explain why you still hold your position, score higher than one sided ones.",
+        },
+        {
+          id: "gw2", name: "Analyze an Issue, second prompt", minutes: 30, minWords: 400,
+          prompt: "Governments should focus more of their spending on projects that will benefit future generations, even if this means spending less on the needs of people alive today.\n\nWrite a response in which you discuss the extent to which you agree or disagree with the recommendation and explain your reasoning for the position you take. In developing and supporting your position, you should consider the most compelling reasons and examples that could be used to challenge your position.",
+          tip: "The final sentence of the prompt tells you what the marker is looking for. Here it is the most compelling challenge to your position, so write it out and answer it directly.",
+        },
+      ],
+    },
+  },
+
+  isee: {
+    writing: {
+      rubric: "iseeEssay",
+      tasks: [
+        {
+          id: "iew1", name: "Essay", minutes: 30, minWords: 250,
+          prompt: "Choose ONE of the following and write an essay or a story.\n\nA. What is the most useful thing you have learned outside school?\n\nB. Write a story that begins: 'When the lights went out, nobody moved.'",
+          tip: "The essay is not scored, but it is sent to every school you apply to and read by the admissions staff. Plan for two minutes, write for twenty five, then leave three to read it back.",
+        },
+      ],
+    },
+  },
+
+  det: {
+    writing: {
+      rubric: "detWriting",
+      tasks: [
+        {
+          id: "dw1", name: "Writing sample", minutes: 5, minWords: 60,
+          prompt: "Some people prefer to study alone. Others prefer to study in a group. Which do you prefer, and why?\n\nWrite for about five minutes. Give your opinion and at least one example.",
+          tip: "Universities read this sample, so the goal is clear, correct sentences, not clever ones. Say which you prefer in the first sentence, give two reasons, and end with a short closing sentence.",
+        },
+        {
+          id: "dw2", name: "Describe a picture, in writing", minutes: 3, minWords: 40,
+          prompt: "Imagine a photograph of a busy outdoor market on a sunny day. There are stalls selling fruit and vegetables, a few shoppers carrying bags, and a child holding a balloon.\n\nWrite about what you can see in the picture.",
+          tip: "Name what is in the foreground, then what is behind it, then what the people are doing. A short, accurate description beats a long one with mistakes. Use present tense verbs throughout.",
+        },
+      ],
+    },
+    speaking: {
+      rubric: "detSpeaking",
+      tasks: [
+        {
+          id: "ds1", name: "Speaking sample", prep: 20, respond: 90,
+          prompt: "Talk about a place you like to spend time. Say what it looks like, what you do there, and why it is special to you.",
+          tip: "You have about 90 seconds, which is longer than it feels. Use the three prompts as your three parts. If you run out of things to say, describe a small detail, such as a sound or a smell.",
+        },
+        {
+          id: "ds2", name: "Speak about a picture", prep: 15, respond: 60,
+          prompt: "Imagine a picture of two friends on a bicycle ride, stopped beside a river with their bikes on the grass.\n\nDescribe what is happening and say what you think they might do next.",
+          tip: "Describe, then guess. Phrases like they might, perhaps, or it looks as if let you speak about what you cannot know. Keep going until the time runs out.",
+        },
+      ],
+    },
+  },
+});

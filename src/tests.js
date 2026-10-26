@@ -1,3 +1,5 @@
+import { MORE_TESTS, MORE_SECTIONS } from "./tests-more.js";
+
 // Common standardised tests.
 //
 // The FORMAT of each test (sections, question counts, timings, score scales)
@@ -925,6 +927,11 @@ export const IELTS_READING = [
   mk("ir40", P3, "Matching headings", "Which heading best fits the passage as a whole?", ["The life of Michael Ventris", "What decipherment actually requires", "The history of ancient Crete", "How to read hieroglyphs"], 1, "Each case is used to illustrate the three conditions set out at the start."),
 ];
 
+// The newer tests join the list, with the ones students ask for most up front.
+TESTS.push(...MORE_TESTS);
+const ORDER = ["sat", "act", "psat", "ssat", "isee", "ielts", "toefl", "det", "gre", "gmat"];
+TESTS.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
+
 // Fold the passage sets into their tests.
 TESTS.forEach((t) => {
   if (EXTRA[t.id]) t.questions = [...t.questions, ...EXTRA[t.id]];
@@ -985,3 +992,5 @@ export const SECTIONS = {
     { id: "writing", name: "Writing", real: 2, minutes: 29, kind: "writing" },
   ],
 };
+
+Object.assign(SECTIONS, MORE_SECTIONS);
