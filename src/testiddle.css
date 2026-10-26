@@ -250,3 +250,51 @@ body { background: var(--bg); }
 .ti-chip { min-width: 40px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .ti-chip.on { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
 .ti-papernote { margin: 0; }
+
+/* real papers, laid out like a revision site: a library of exam cards, and a page for each */
+.rp-hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin: 0 0 16px; }
+.rp-hero h2 { margin: 0 0 4px; font-size: 26px; }
+.rp-hero p { margin: 0; max-width: 520px; }
+.rp-search { flex: 1 1 260px; max-width: 380px; min-height: 44px; padding: 10px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
+.rp-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.rp-filter { padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.rp-filter.on { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
+.rp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; margin: 0 0 28px; }
+button.rp-card { display: flex; align-items: center; gap: 14px; padding: 16px; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
+button.rp-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.rp-tile { display: grid; place-items: center; flex: none; width: 58px; height: 58px; border-radius: 14px; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; text-align: center; line-height: 1.05; }
+.rp-cardbody { display: grid; gap: 3px; min-width: 0; }
+.rp-cardname { font-size: 16px; line-height: 1.25; }
+.rp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.rp-tag { padding: 2px 9px; border-radius: 999px; background: var(--sunken); border: 1px solid var(--line); font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.rp-tag.free { background: var(--good-soft); border-color: var(--good-line); color: var(--good); }
+.rp-tag.key { background: color-mix(in srgb, #fbe7a6 70%, var(--surface)); border-color: transparent; color: #3b3210; }
+
+.rp-crumbs { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; color: var(--ink-3); }
+.rp-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 18px; align-items: start; }
+.rp-side { position: sticky; top: 84px; display: grid; gap: 4px; padding: 14px; }
+.rp-sidehead { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; margin-bottom: 6px; border-bottom: 1px solid var(--line); }
+.rp-sidehead > div { display: grid; min-width: 0; }
+.rp-sidehead .rp-tile { width: 44px; height: 44px; border-radius: 11px; font-size: 11px; }
+.rp-sidelink { padding: 9px 12px; border-radius: 9px; color: var(--ink-2); font-size: 14px; font-weight: 600; text-decoration: none; }
+.rp-sidelink:hover, .rp-sidelink.on { background: var(--accent-soft); color: var(--accent); }
+.rp-sidebtn { margin-top: 10px; justify-content: center; }
+.rp-sideback { margin-top: 6px; justify-self: center; }
+.rp-main h1 { margin: 0 0 6px; font-size: 32px; }
+.rp-lead { margin: 0 0 14px; font-size: 16px; line-height: 1.55; color: var(--ink-2); }
+.rp-steps { margin: 0 0 16px; padding-left: 20px; display: grid; gap: 8px; line-height: 1.5; }
+.rp-secrow { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; }
+.rp-secrow + .rp-secrow { border-top: 1px solid var(--line); }
+
+.rp-split { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.rp-pdf { position: sticky; top: 150px; display: grid; gap: 6px; padding: 8px; }
+.rp-pdf iframe { width: 100%; height: calc(100vh - 220px); min-height: 420px; border: 0; border-radius: 8px; background: var(--sunken); }
+.rp-split .rp-sheet { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+
+@media (max-width: 860px) {
+  .rp-layout { grid-template-columns: 1fr; }
+  .rp-side { position: static; grid-auto-flow: row; }
+  .rp-split { grid-template-columns: 1fr; }
+  .rp-pdf { position: static; }
+  .rp-pdf iframe { height: 60vh; }
+}

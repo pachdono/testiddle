@@ -24,6 +24,8 @@ export default function RealPapers({ head }) {
   const [sheet, setSheet] = useState(() => read(SHEET, null)); // the paper being sat
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState(() => read(HISTORY, []));
+  const [detail, setDetail] = useState(null); // the paper whose page is open
+  const [pdf, setPdf] = useState(null); // a paper the student downloaded, shown beside the sheet; it stays in this browser
 
   const paperOf = (s) => REAL_PAPERS.find((p) => p.id === s?.paperId);
   const paper = paperOf(sheet);
@@ -37,6 +39,10 @@ export default function RealPapers({ head }) {
     setSheet((cur) => { const next = { ...cur, ...patch }; write(SHEET, next); return next; });
   }
   function leave() { write(SHEET, null); setSheet(null); setResult(null); }
+  function takePdf(file) {
+    if (!file) return;
+    setPdf((cur) => { if (cur?.url) URL.revokeObjectURL(cur.url); return { name: file.name, url: URL.createObjectURL(file) }; });
+  }
 
   function saveResult(r) {
     const row = { id: Date.now(), paper: paper.name, section: section.name, right: r.right, total: r.total, minutes: r.minutes, on: new Date().toISOString().slice(0, 10) };
@@ -47,50 +53,65 @@ export default function RealPapers({ head }) {
   if (result && paper && section) return <Result paper={paper} section={section} result={result} onSave={saveResult} onDone={leave} onAgain={() => start(paper, section)} />;
   if (sheet && paper && section) {
     if (sheet.step === "key") return <KeyStep paper={paper} section={section} sheet={sheet} onBack={() => update({ step: "sit" })} onMarked={setResult} onDiscard={leave} />;
-    return <Sit paper={paper} section={section} sheet={sheet} onAnswer={(answers) => update({ answers })} onSubmit={() => update({ step: "key", usedSeconds: Math.min(section.minutes * 60, Math.round((Date.now() - sheet.startedAt) / 1000)) })} onLeave={leave} />;
+    return <Sit paper={paper} section={section} sheet={sheet} pdf={pdf} onAnswer={(answers) => update({ answers })} onSubmit={() => update({ step: "key", usedSeconds: Math.min(section.minutes * 60, Math.round((Date.now() - sheet.startedAt) / 1000)) })} onLeave={leave} />;
   }
-  return <List head={head} onStart={start} history={history} onClear={() => { write(HISTORY, []); setHistory([]); }} />;
+  const open = REAL_PAPERS.find((p) => p.id === detail);
+  if (open) return <Detail paper={open} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} onBack={() => setDetail(null)} history={history.filter((h) => h.paper === open.name)} />;
+  return <List head={head} onOpen={setDetail} history={history} onClear={() => { write(HISTORY, []); setHistory([]); }} />;
 }
 
-/* ---------- the list ---------- */
+/* ---------- the library ---------- */
 
-function List({ head, onStart, history, onClear }) {
+// Each exam gets a colour and initials, the way a subject does on a revision site.
+const TILE = { sat: "#2f6fb0", psat: "#2f6fb0", act: "#c0582f", ssat: "#2a8c76", isee: "#7a5cb0", gre: "#b0842f", gmat: "#2f8f9a", ielts: "#b03a5a", toefl: "#3a6fb0", det: "#5aa02f", "igcse-mcq": "#2a8c76", edexcel: "#6a4fb0", aqa: "#b0562f", ocr: "#2f7a9a" };
+const INITIALS = { sat: "SAT", psat: "PSAT", act: "ACT", ssat: "SSAT", isee: "ISEE", gre: "GRE", gmat: "GMAT", ielts: "IELTS", toefl: "TOEFL", det: "DET", "igcse-mcq": "IGCSE", edexcel: "EDX", aqa: "AQA", ocr: "OCR" };
+const FILTERS = [["all", "All exams"], ...REAL_GROUPS.map((g) => [g.id, g.name])];
+
+function Tile({ id }) {
+  return <span className="rp-tile" style={{ background: TILE[id] || "#2a8c76" }} aria-hidden="true">{INITIALS[id] || id.slice(0, 3).toUpperCase()}</span>;
+}
+
+function List({ head, onOpen, history, onClear }) {
+  const [q, setQ] = useState("");
+  const [group, setGroup] = useState("all");
+  const shown = REAL_PAPERS.filter((p) => (group === "all" || p.group === group) && (!q.trim() || `${p.name} ${p.org} ${p.test || ""} ${p.id}`.toLowerCase().includes(q.trim().toLowerCase())));
+
   return (
     <div className="rp">
       {head}
-      <p className="small muted rp-intro">
-        These are the real exams, from the people who write them. The papers belong to their publishers, so they open on the
-        official site. Where there is an answer key you can sit the paper here on a timed answer sheet, paste in the key from
-        the scoring guide, and get it marked, then go back through every question.
-      </p>
-      {REAL_GROUPS.map((g) => (
-        <section key={g.id} className="rp-group">
-          <div className="rp-grouphead"><h2>{g.name}</h2><p className="small muted">{g.sub}</p></div>
-          <div className="rp-grid">
-            {REAL_PAPERS.filter((p) => p.group === g.id).map((p) => (
-              <article key={p.id} className="card card-pad rp-card">
-                <div className="spread"><h3>{p.name}</h3><span className="pill">{p.org}</span></div>
-                <p className="small rp-blurb">{p.blurb}</p>
-                {p.sections.length > 0 && (
-                  <div className="rp-sects">
-                    <span className="small muted">Sit it here</span>
-                    {p.sections.map((s) => (
-                      <button key={s.id} className="btn ghost small" onClick={() => onStart(p, s)}>{s.name}, {s.questions} questions, {s.minutes} min</button>
-                    ))}
-                  </div>
-                )}
-                <div className="row">
-                  <a className="btn small" href={p.url} target="_blank" rel="noopener noreferrer">Open the official paper</a>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      ))}
+      <div className="rp-hero card card-pad">
+        <div>
+          <h2>Real exam papers</h2>
+          <p className="small muted">Official papers from the people who write the exams, with a timed answer sheet, marking against the official key, and every question explained.</p>
+        </div>
+        <input className="rp-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search exams, for example SAT or IGCSE" aria-label="Search exams" />
+      </div>
+
+      <div className="rp-filters" role="tablist" aria-label="Type of exam">
+        {FILTERS.map(([k, label]) => <button key={k} role="tab" aria-selected={group === k} className={"rp-filter" + (group === k ? " on" : "")} onClick={() => setGroup(k)}>{label}</button>)}
+      </div>
+
+      {shown.length === 0 && <div className="empty small">No exams match that.</div>}
+      <div className="rp-grid">
+        {shown.map((p) => (
+          <button key={p.id} className="card rp-card" onClick={() => onOpen(p.id)}>
+            <Tile id={p.id} />
+            <span className="rp-cardbody">
+              <b className="rp-cardname">{p.name}</b>
+              <span className="small muted">{p.org}</span>
+              <span className="rp-tags">
+                <span className="rp-tag free">Free</span>
+                {p.sections.length > 0 ? <span className="rp-tag key">Timed sheet</span> : <span className="rp-tag">Official site</span>}
+                {p.sections.length > 0 && <span className="rp-tag">{p.sections.length} section{p.sections.length === 1 ? "" : "s"}</span>}
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
 
       {history.length > 0 && (
         <section className="rp-group">
-          <div className="rp-grouphead spread"><h2>Your real paper results</h2><button className="ti-linkbtn" onClick={onClear}>Clear</button></div>
+          <div className="rp-grouphead spread"><h2>Your results</h2><button className="ti-linkbtn" onClick={onClear}>Clear</button></div>
           <div className="card">
             {history.map((h) => (
               <div key={h.id} className="rp-hist">
@@ -105,9 +126,95 @@ function List({ head, onStart, history, onClear }) {
   );
 }
 
+// One exam's page: what it is, the official source, how to sit it, and its sections.
+function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
+  const fileRef = useRef(null);
+  const hasSheet = paper.sections.length > 0;
+
+  return (
+    <div className="page wide fade rp-detail">
+      <nav className="rp-crumbs small" aria-label="Breadcrumb">
+        <button className="ti-linkbtn" onClick={onBack}>Real papers</button><span aria-hidden="true">/</span><b>{paper.name}</b>
+      </nav>
+
+      <div className="rp-layout">
+        <aside className="rp-side card" aria-label="On this page">
+          <div className="rp-sidehead"><Tile id={paper.id} /><div><b>{paper.name}</b><span className="small muted">{paper.org}</span></div></div>
+          <a className="rp-sidelink on" href="#rp-how">How it works</a>
+          {hasSheet && <a className="rp-sidelink" href="#rp-sections">Sit a section</a>}
+          {hasSheet && <a className="rp-sidelink" href="#rp-yours">Add your paper</a>}
+          {history.length > 0 && <a className="rp-sidelink" href="#rp-results">Your results</a>}
+          <a className="btn small rp-sidebtn" href={paper.url} target="_blank" rel="noopener noreferrer">Open the official paper</a>
+          <button className="ti-linkbtn rp-sideback" onClick={onBack}>Back to all exams</button>
+        </aside>
+
+        <div className="rp-main stack">
+          <section className="card card-pad" id="rp-how">
+            <h1>{paper.name}</h1>
+            <p className="rp-lead">{paper.blurb}</p>
+            <ol className="rp-steps">
+              <li><b>Get the paper.</b> Open the official page and download the paper and its answer key. They are free from the publisher.</li>
+              {hasSheet ? (
+                <>
+                  <li><b>Sit it here.</b> Pick a section below. The clock runs at the real length, and you fill in the answer sheet as you work through the paper.</li>
+                  <li><b>Get it marked.</b> Paste in the official key and it marks you straight away, then lets you go back through every question you missed and every one you got right.</li>
+                </>
+              ) : (
+                <li><b>Mark it yourself.</b> This is a written paper, so use the publisher's mark scheme to mark your answers, and note what you lost marks on.</li>
+              )}
+            </ol>
+            <div className="row">
+              <a className="btn cta" href={paper.url} target="_blank" rel="noopener noreferrer">Open the official paper</a>
+            </div>
+          </section>
+
+          {hasSheet && (
+            <section className="card" id="rp-sections">
+              <div className="card-head"><h3>Sit a section</h3><span className="small muted">Real length and real timing</span></div>
+              {paper.sections.map((s) => (
+                <div key={s.id} className="rp-secrow">
+                  <div>
+                    <b>{s.name}</b>
+                    <div className="small muted">{s.questions} questions, {s.minutes} minutes{s.note ? `. ${s.note}` : ""}</div>
+                  </div>
+                  <button className="btn cta small" onClick={() => onStart(paper, s)}>Start</button>
+                </div>
+              ))}
+            </section>
+          )}
+
+          {hasSheet && (
+            <section className="card card-pad" id="rp-yours">
+              <h3>Add the paper you downloaded</h3>
+              <p className="small muted">Optional. Open your PDF beside the answer sheet while you sit, so everything is on one screen. It stays in this browser and is not uploaded anywhere.</p>
+              <input ref={fileRef} type="file" accept="application/pdf,.pdf" hidden onChange={(e) => { onPdf(e.target.files?.[0]); e.target.value = ""; }} />
+              <div className="row">
+                <button className="btn ghost" onClick={() => fileRef.current?.click()}>{pdf ? "Choose a different PDF" : "Choose a PDF"}</button>
+                {pdf && <><span className="small">{pdf.name}</span><button className="ti-linkbtn" onClick={onClearPdf}>Remove</button></>}
+              </div>
+            </section>
+          )}
+
+          {history.length > 0 && (
+            <section className="card" id="rp-results">
+              <div className="card-head"><h3>Your results</h3></div>
+              {history.map((h) => (
+                <div key={h.id} className="rp-hist">
+                  <div><b>{h.section}</b><div className="small muted">{h.on}</div></div>
+                  <div className="rp-score"><b>{h.right} / {h.total}</b><span className="small muted">{Math.round((h.right / Math.max(1, h.total)) * 100)}%</span></div>
+                </div>
+              ))}
+            </section>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- sitting the paper ---------- */
 
-function Sit({ paper, section, sheet, onAnswer, onSubmit, onLeave }) {
+function Sit({ paper, section, sheet, pdf, onAnswer, onSubmit, onLeave }) {
   const total = section.minutes * 60;
   const [now, setNow] = useState(Date.now());
   const left = total - Math.floor((now - sheet.startedAt) / 1000);
@@ -138,6 +245,13 @@ function Sit({ paper, section, sheet, onAnswer, onSubmit, onLeave }) {
       </div>
       {section.note && <p className="small muted">{section.note}</p>}
 
+      <div className={pdf ? "rp-split" : ""}>
+      {pdf && (
+        <div className="card rp-pdf">
+          <iframe title="Your paper" src={pdf.url} />
+          <a className="small" href={pdf.url} target="_blank" rel="noopener noreferrer">Open the paper in its own tab</a>
+        </div>
+      )}
       <div className="card card-pad">
         <div className="rp-sheet" role="group" aria-label="Answer sheet">
           {Array.from({ length: section.questions }, (_, n) => (
@@ -156,6 +270,7 @@ function Sit({ paper, section, sheet, onAnswer, onSubmit, onLeave }) {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
