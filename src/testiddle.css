@@ -1,126 +1,182 @@
-/* Testiddle wears Dwiddle's start page: the Duck Lagoon. Pale aqua sky, sea glass
-   teal, soft green hills and clean white cards, with a highlighter yellow for the
-   small badges. Light is the lagoon by day, dark is the same lagoon at dusk. Only
-   these colours change; the components are Dwiddle's own. */
+/* Testiddle is a classroom, in Dwiddle's soft colours. Cream ruled paper with a red
+   margin, a light wood desk bar, a sage green chalkboard in a wooden frame for the
+   headings, and highlighter yellow for the badges. Light is the classroom by day,
+   dark is the same room with the lights low. Only these colours change; the
+   components are Dwiddle's own. */
+
+:root {
+  --chalk-font: "Patrick Hand", "Segoe Print", "Comic Sans MS", cursive;
+  --ti-wood: #dcbd8c;
+  --ti-wood-2: #c9a572;
+  --ti-wood-3: #b88f58;
+  --ti-board: #4f8f7b;
+  --ti-board-2: #427d6a;
+  --ti-chalk: #f7f5ea;
+  --ti-pencil: #f6d86b;
+}
 
 :root[data-theme="light"] {
-  --bg: #edf3e2;
-  --panel: #e6f0e3;
-  --surface: #ffffff;
-  --sunken: #f3f8f2;
-  --hover: #eaf4f0;
-  --active: #dcece6;
-  --line: #d6e6df;
-  --line-soft: #e5f0ea;
-  --ink: #0e2923;
-  --ink-2: #3c5f57;
-  --ink-3: #5f8077;
-  --accent: #168f79;
-  --accent-soft: #def1ec;
+  --bg: #f7f0e0;
+  --panel: #f1e8d2;
+  --surface: #fffcf4;
+  --sunken: #f8f1df;
+  --hover: #f2e9d1;
+  --active: #eadfc0;
+  --line: #e7dbbd;
+  --line-soft: #f0e6cd;
+  --ink: #26352d;
+  --ink-2: #4b5a50;
+  --ink-3: #6b786b;
+  --accent: #23896f;
+  --accent-soft: #e0efe4;
   --accent-ink: #ffffff;
-  --good: #168f79;
-  --good-soft: #def1ec;
-  --good-line: #b5dccf;
+  --good: #23896f;
+  --good-soft: #e0efe4;
+  --good-line: #b6d8c4;
   --warn: #b4531a;
-  --warn-soft: #fdf0e6;
-  --warn-line: #f0c8b0;
-  --btn: #168f79;
+  --warn-soft: #fbeadb;
+  --warn-line: #efc7a6;
+  --btn: #3f7d6a;
   --btn-ink: #ffffff;
-  --dash: #c4dcd3;
+  --dash: #d8c9a4;
   --hl-key: #fbe7a6;
-  --shadow: 0 1px 2px rgba(14, 41, 35, 0.05), 0 6px 18px rgba(14, 41, 35, 0.06);
-  --shadow-lift: 0 2px 6px rgba(14, 41, 35, 0.07), 0 16px 36px rgba(14, 41, 35, 0.1);
+  --shadow: 0 1px 2px rgba(90, 65, 25, 0.06), 0 6px 16px rgba(90, 65, 25, 0.07);
+  --shadow-lift: 0 2px 6px rgba(90, 65, 25, 0.08), 0 16px 34px rgba(90, 65, 25, 0.12);
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --bg: #0f1f1c;
-  --panel: #0c1916;
-  --surface: #162a26;
-  --sunken: #12231f;
-  --hover: #1c332e;
-  --active: #234038;
-  --line: #264139;
-  --line-soft: #1d3530;
-  --ink: #e9f3ee;
-  --ink-2: #b7cfc6;
-  --ink-3: #8fb0a5;
-  --accent: #5ed0b6;
-  --accent-soft: #17382f;
-  --accent-ink: #0a1d18;
-  --good: #6fd9b8;
-  --good-soft: #17382f;
-  --good-line: #2b6554;
+  --bg: #1b2621;
+  --panel: #16201c;
+  --surface: #243430;
+  --sunken: #1f2d28;
+  --hover: #2b3d37;
+  --active: #33473f;
+  --line: #34483f;
+  --line-soft: #2a3c35;
+  --ink: #f0efe3;
+  --ink-2: #c7cfc0;
+  --ink-3: #a1ada0;
+  --accent: #7fd9bd;
+  --accent-soft: #1f4036;
+  --accent-ink: #10241c;
+  --good: #86dcc0;
+  --good-soft: #1f4036;
+  --good-line: #2f6a56;
   --warn: #f0a878;
   --warn-soft: #3a261a;
   --warn-line: #6a4528;
-  --btn: #5ed0b6;
-  --btn-ink: #0a1d18;
-  --dash: #2f4d44;
+  --btn: #7fd9bd;
+  --btn-ink: #10241c;
+  --dash: #3f554a;
   --hl-key: #6b5a1c;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 18px rgba(0, 0, 0, 0.25);
-  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.35), 0 16px 36px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.35), 0 16px 34px rgba(0, 0, 0, 0.4);
+  --ti-wood: #5b4430;
+  --ti-wood-2: #4a3626;
+  --ti-wood-3: #3b2a1c;
+  --ti-board: #2f5f50;
+  --ti-board-2: #264f43;
   color-scheme: dark;
 }
 
 body { background: var(--bg); }
 
-/* the lagoon: sky above, soft hills along the bottom */
+/* ruled paper, with the red margin line down the left */
 .ti-shell {
   position: relative; min-height: 100vh; display: flex; flex-direction: column; color: var(--ink);
-  background: linear-gradient(180deg, #cfe7e9 0%, #e3efe2 38%, #edf3e2 70%, #e1edd6 100%) fixed;
+  background-color: var(--bg);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 35px, rgba(80, 120, 165, 0.14) 35px 36px);
+  background-attachment: local;
 }
-:root[data-theme="dark"] .ti-shell { background: linear-gradient(180deg, #123029 0%, #0f1f1c 45%, #0c1916 100%) fixed; }
-.ti-shell::before {
-  content: ""; position: fixed; left: -5vw; right: -5vw; bottom: -6vh; height: 26vh; pointer-events: none; z-index: 0; opacity: 0.55;
-  background:
-    radial-gradient(60% 100% at 18% 100%, #a9cba0 0 62%, transparent 63%),
-    radial-gradient(70% 100% at 82% 100%, #86b77d 0 62%, transparent 63%);
-}
-:root[data-theme="dark"] .ti-shell::before { opacity: 0.22; filter: saturate(0.7) brightness(0.6); }
+:root[data-theme="dark"] .ti-shell { background-image: repeating-linear-gradient(to bottom, transparent 0 35px, rgba(255, 255, 255, 0.05) 35px 36px); }
+.ti-shell::after { content: ""; position: fixed; top: 0; bottom: 0; left: 58px; width: 2px; background: rgba(214, 105, 105, 0.32); pointer-events: none; z-index: 0; }
+:root[data-theme="dark"] .ti-shell::after { background: rgba(240, 140, 140, 0.18); }
 .ti-shell > * { position: relative; z-index: 1; }
 
+/* the desk bar: light wood with a little grain */
 .ti-top {
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 10px max(18px, env(safe-area-inset-right)) 10px max(18px, env(safe-area-inset-left));
-  background: rgba(255, 255, 255, 0.62); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-  color: var(--ink);
+  padding: 9px max(18px, env(safe-area-inset-right)) 9px max(18px, env(safe-area-inset-left));
+  background:
+    repeating-linear-gradient(90deg, rgba(120, 80, 30, 0.05) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, color-mix(in srgb, var(--ti-wood) 100%, #fff 12%), var(--ti-wood));
+  border-bottom: 5px solid var(--ti-wood-2);
+  box-shadow: 0 2px 0 var(--ti-wood-3), 0 8px 16px rgba(60, 40, 15, 0.14);
+  color: #3a2a18;
 }
-:root[data-theme="dark"] .ti-top { background: rgba(15, 31, 28, 0.7); }
-.ti-brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
-.ti-brand b { font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1; }
-.ti-theme { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; box-shadow: var(--shadow); transition: transform 0.15s, color 0.15s; }
-.ti-theme:hover { color: var(--accent); transform: translateY(-1px); }
+:root[data-theme="dark"] .ti-top { color: #f0e2c9; }
+.ti-brand { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+.ti-brand b { font-family: var(--chalk-font); font-weight: 400; font-size: 29px; letter-spacing: 0.02em; line-height: 1; }
+.ti-theme { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ti-wood-3); background: var(--surface); color: var(--ink-2); cursor: pointer; box-shadow: 0 2px 0 var(--ti-wood-3); transition: transform 0.12s, box-shadow 0.12s; }
+.ti-theme:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--ti-wood-3); }
+.ti-theme:active { transform: translateY(2px); box-shadow: 0 0 0 var(--ti-wood-3); }
 .ti-theme:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-.ti-main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 14px 16px 56px; }
-.ti-main .page { padding-top: 12px; }
-.ti-main .card { border-radius: 14px; border-color: var(--line); }
+.ti-main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 22px 16px 56px; }
+.ti-main .page { padding-top: 0; }
+
+/* every page opens with a chalkboard in a wooden frame */
+.ti-main .page-head {
+  position: relative; margin: 6px 0 38px; padding: 20px 26px 22px; border-radius: 12px; color: var(--ti-chalk);
+  background:
+    radial-gradient(120% 160% at 12% 0%, rgba(255, 255, 255, 0.1), transparent 55%),
+    linear-gradient(160deg, var(--ti-board), var(--ti-board-2));
+  border: 9px solid var(--ti-wood); outline: 2px solid var(--ti-wood-3); outline-offset: -1px;
+  box-shadow: var(--shadow-lift);
+}
+.ti-main .page-head h1 { margin: 0 0 4px; font-family: var(--chalk-font); font-weight: 400; font-size: 42px; line-height: 1.05; letter-spacing: 0.01em; color: var(--ti-chalk); text-shadow: 0 0 1px rgba(255, 255, 255, 0.5); }
+.ti-main .page-head p { margin: 0; font-size: 15px; color: rgba(247, 245, 234, 0.85); }
+/* the chalk tray under it, with a stick of chalk and an eraser */
+.ti-main .page-head::after {
+  content: ""; position: absolute; left: 26px; right: 26px; bottom: -22px; height: 11px; border-radius: 0 0 6px 6px;
+  background: linear-gradient(180deg, var(--ti-wood-2), var(--ti-wood-3)); box-shadow: 0 4px 8px rgba(60, 40, 15, 0.18);
+}
+.ti-main .page-head::before {
+  content: ""; position: absolute; right: 78px; bottom: -17px; width: 36px; height: 7px; border-radius: 3px; z-index: 1;
+  background: linear-gradient(180deg, #fffdf2, #e8e4d2);
+  box-shadow: -56px 0 0 -1px #f6d86b, 60px -2px 0 3px #7a8a82;
+}
+
+.ti-main .card { border-radius: 12px; border-color: var(--line); }
 
 /* a highlighter stroke behind the small badges */
-.ti-main .pill { background: color-mix(in srgb, #fbe7a6 70%, var(--surface)); color: #3b3210; border-color: transparent; }
-:root[data-theme="dark"] .ti-main .pill { background: color-mix(in srgb, #fbe7a6 24%, var(--surface)); color: #fdf0c4; }
+.ti-main .pill { background: color-mix(in srgb, #fbe7a6 78%, var(--surface)); color: #3b3210; border-color: transparent; }
+:root[data-theme="dark"] .ti-main .pill { background: color-mix(in srgb, #fbe7a6 26%, var(--surface)); color: #fdf0c4; }
 
-.ti-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 18px; padding: 16px 16px 26px; font-size: 13px; color: var(--ink-3); }
+.ti-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 18px; padding: 14px 16px 24px; margin-top: 8px; border-top: 6px solid var(--ti-wood); font-size: 13px; color: var(--ink-3); background: color-mix(in srgb, var(--ti-wood) 22%, var(--bg)); }
 .ti-foot a, .ti-linkbtn { color: var(--ink-2); font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; cursor: pointer; }
 
-/* the front door */
+/* the front door: the same board, with the sign in form pinned to it */
 .ti-door { flex: 1; display: grid; place-items: start center; padding: 44px 16px 64px; }
 .ti-board {
-  width: min(480px, 100%); padding: 32px 28px 26px; border-radius: 22px; text-align: center;
-  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-lift); color: var(--ink);
+  position: relative; width: min(500px, 100%); padding: 30px 26px 26px; border-radius: 14px; text-align: center; color: var(--ti-chalk);
+  background:
+    radial-gradient(120% 140% at 15% 0%, rgba(255, 255, 255, 0.1), transparent 55%),
+    linear-gradient(160deg, var(--ti-board), var(--ti-board-2));
+  border: 11px solid var(--ti-wood); outline: 2px solid var(--ti-wood-3); outline-offset: -1px;
+  box-shadow: var(--shadow-lift);
 }
-.ti-kicker { display: inline-block; margin: 0 0 12px; padding: 5px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
-.ti-board h1 { margin: 0 0 10px; font-weight: 800; font-size: 32px; line-height: 1.1; letter-spacing: -0.03em; }
-.ti-sub { margin: 0 auto 22px; max-width: 400px; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
-.ti-signin { text-align: left; }
-.ti-board .warn-text { color: var(--warn); }
+.ti-kicker { display: inline-block; margin: 0 0 12px; padding: 5px 14px; border-radius: 4px; background: var(--ti-pencil); color: #3b3210; font-family: var(--chalk-font); font-size: 18px; transform: rotate(-2deg); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }
+.ti-board h1 { margin: 0 0 8px; font-family: var(--chalk-font); font-weight: 400; font-size: 40px; line-height: 1.05; }
+.ti-sub { margin: 0 auto 20px; max-width: 400px; font-size: 15px; line-height: 1.55; color: rgba(247, 245, 234, 0.86); }
+.ti-signin { text-align: left; padding: 20px 18px 14px; border-radius: 10px; background: var(--surface); color: var(--ink); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); }
+.ti-signin a { color: var(--accent); }
+.ti-board .warn-text { color: #ffe0c0; }
 
-@media (max-width: 520px) {
-  .ti-brand b { font-size: 19px; }
-  .ti-board { padding: 26px 18px 20px; }
-  .ti-board h1 { font-size: 27px; }
+@media (max-width: 700px) {
+  .ti-shell::after { left: 22px; }
 }
-.ti-board a { color: var(--accent); }
+@media (max-width: 520px) {
+  .ti-brand b { font-size: 25px; }
+  .ti-board { padding: 24px 16px 20px; border-width: 8px; }
+  .ti-board h1 { font-size: 33px; }
+  .ti-main .page-head { padding: 16px 18px 18px; border-width: 7px; }
+  .ti-main .page-head h1 { font-size: 34px; }
+  .ti-main .page-head::before { display: none; }
+}
+
+/* buttons on the board are chalk too */
+.ti-main .page-head .btn.quiet { color: var(--ti-chalk); background: rgba(255, 255, 255, 0.12); border: 1px dashed rgba(247, 245, 234, 0.5); }
+.ti-main .page-head .btn.quiet:hover { background: rgba(255, 255, 255, 0.2); }

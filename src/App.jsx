@@ -27,7 +27,7 @@ function ThemeButton({ theme, setTheme }) {
 function Top({ theme, setTheme }) {
   return (
     <header className="ti-top">
-      <a className="ti-brand" href="/"><Duck size={34} shadow={false} /><b>Testiddle</b></a>
+      <a className="ti-brand" href="/"><Duck size={36} shadow={false} /><b>Testiddle</b></a>
       <ThemeButton theme={theme} setTheme={setTheme} />
     </header>
   );

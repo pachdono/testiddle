@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
+import "@fontsource/patrick-hand/400.css";
 import "./styles.css";
 import "./testiddle.css";
 import { savedTheme, applyTheme } from "./theme.js";

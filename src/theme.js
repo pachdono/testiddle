@@ -12,6 +12,6 @@ export function savedTheme() {
 export function applyTheme(t) {
   document.documentElement.dataset.theme = t;
   const meta = document.querySelectorAll('meta[name="theme-color"]');
-  meta.forEach((m) => m.setAttribute("content", t === "dark" ? "#0f1f1c" : "#cfe7e9"));
+  meta.forEach((m) => m.setAttribute("content", t === "dark" ? "#3d2c1c" : "#e1c799"));
   try { localStorage.setItem(KEY, t); } catch { /* storage blocked */ }
 }
