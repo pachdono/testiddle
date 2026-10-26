@@ -16,8 +16,9 @@ const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; 
 const write = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } };
 
 const clock = (s) => {
-  const m = Math.floor(Math.max(0, s) / 60), r = Math.max(0, s) % 60;
-  return `${m}:${String(r).padStart(2, "0")}`;
+  const t = Math.max(0, s), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), r = t % 60;
+  const two = (n) => String(n).padStart(2, "0");
+  return h > 0 ? `${h}:${two(m)}:${two(r)}` : `${m}:${two(r)}`;
 };
 const lettersOf = (n) => Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
 
@@ -130,7 +131,10 @@ function List({ head, onOpen, history, onClear }) {
 // One exam's page: what it is, the official source, how to sit it, and its sections.
 function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
   const fileRef = useRef(null);
+  const [entry, setEntry] = useState(null); // the past paper whose page is open
   const hasSheet = paper.sections.length > 0;
+
+  if (entry) return <PaperPage entry={entry} paper={paper} pdf={pdf} onPdf={onPdf} onClearPdf={onClearPdf} onStart={onStart} onBack={() => setEntry(null)} />;
 
   return (
     <div className="page wide fade rp-detail">
@@ -170,7 +174,7 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
             </div>
           </section>
 
-          <Ppq paper={paper} onStart={onStart} />
+          <Ppq paper={paper} onOpenPaper={setEntry} />
 
           {hasSheet && (
             <section className="card" id="rp-sections">
@@ -217,12 +221,13 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
 }
 
 
-/* ---------- past papers by year ---------- */
+/* ---------- past papers: a card for each paper ---------- */
 
-function Ppq({ paper, onStart }) {
+// Each paper is listed like the exams are on the front page, and opens on its own page.
+function Ppq({ paper, onOpenPaper }) {
   const cfg = PPQ[paper.id];
   if (!cfg) return null;
-  return cfg.numbered ? <Numbered cfg={cfg} /> : <ByYear paper={paper} cfg={cfg} onStart={onStart} />;
+  return cfg.numbered ? <Numbered paper={paper} cfg={cfg} onOpenPaper={onOpenPaper} /> : <ByYear paper={paper} cfg={cfg} onOpenPaper={onOpenPaper} />;
 }
 
 const Hubs = ({ hubs }) => (
@@ -231,88 +236,193 @@ const Hubs = ({ hubs }) => (
   </div>
 );
 
-function ByYear({ paper, cfg, onStart }) {
+function PaperCard({ entry, onOpen }) {
+  return (
+    <button className="card rp-card" onClick={() => onOpen(entry)}>
+      <Tile id={entry.tile} />
+      <span className="rp-cardbody">
+        <b className="rp-cardname">{entry.title}</b>
+        <span className="small muted">{entry.subtitle}</span>
+        <span className="rp-tags">
+          <span className="rp-tag free">Free</span>
+          {entry.minutes > 0 && <span className="rp-tag">{entry.minutes} min</span>}
+          {entry.sections?.length > 0 && <span className="rp-tag key">Answer sheet</span>}
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function ByYear({ paper, cfg, onOpenPaper }) {
   const [li, setLi] = useState(0);
   const lvl = cfg.levels[li];
   const [si, setSi] = useState(0);
   const subject = lvl.subjects[Math.min(si, lvl.subjects.length - 1)];
   const [sess, setSess] = useState("all");
   const [more, setMore] = useState(false);
-  const years = more ? cfg.years : cfg.years.slice(0, 4);
   const levelSessions = lvl.sessions || cfg.sessions;
   const sessions = levelSessions.filter(([k]) => sess === "all" || k === sess);
+  const years = more ? cfg.years : cfg.years.slice(0, 4);
+
+  const entries = years.flatMap((y) => sessions.map(([k, name]) => ({
+    key: `${lvl.id}-${subject.code}-${y}-${k}`,
+    tile: paper.id,
+    title: `${cfg.board} ${lvl.name} ${subject.name} ${subject.code}`,
+    subtitle: `${name} ${y}`,
+    org: cfg.board, code: subject.code, year: y, session: name,
+    minutes: subject.mcq ? 45 : 90, minutesEditable: !subject.mcq,
+    sections: subject.mcq ? paper.sections : [],
+    links: { paper: search(cfg.paperQuery(lvl, subject, y, [k, name])), mark: search(cfg.markQuery(lvl, subject, y, [k, name])), report: search(`${cfg.board} ${lvl.name} ${subject.name} ${subject.code} ${name} ${y} examiner report`) },
+    hubs: cfg.hubs,
+    note: subject.mcq ? "Multiple choice, so you can sit it here on the answer sheet." : "A written paper: sit it on paper, then mark yourself against the mark scheme.",
+  })));
 
   return (
-    <section className="card" id="rp-ppq">
-      <div className="card-head"><h3>Past papers by year</h3><span className="small muted">{cfg.board}</span></div>
-      <div className="ppq-body">
-        <p className="small muted">{cfg.note}</p>
-
-        <div className="ppq-pickers">
-          {cfg.levels.length > 1 && (
-            <div className="rp-filters" role="tablist" aria-label="Level">
-              {cfg.levels.map((l, i) => <button key={l.id} role="tab" aria-selected={li === i} className={"rp-filter" + (li === i ? " on" : "")} onClick={() => { setLi(i); setSi(0); }}>{l.name}</button>)}
-            </div>
-          )}
-          <label className="ppq-field"><span className="small muted">Subject</span>
-            <select value={Math.min(si, lvl.subjects.length - 1)} onChange={(e) => setSi(Number(e.target.value))}>
-              {lvl.subjects.map((s, i) => <option key={s.code} value={i}>{s.name} ({s.code})</option>)}
-            </select>
-          </label>
-          <label className="ppq-field"><span className="small muted">Session</span>
-            <select value={sess} onChange={(e) => setSess(e.target.value)}>
-              <option value="all">All sessions</option>
-              {levelSessions.map(([k, name]) => <option key={k} value={k}>{name}</option>)}
-            </select>
-          </label>
-        </div>
-
-        <div className="ppq-table" role="table" aria-label={`${subject.name} past papers`}>
-          {years.map((y) => sessions.map(([k, name]) => (
-            <div key={`${y}-${k}`} className="ppq-row" role="row">
-              <div className="ppq-when"><b>{y}</b><span className="small muted">{name}</span></div>
-              <div className="ppq-actions">
-                <a className="btn ghost small" href={search(cfg.paperQuery(lvl, subject, y, [k, name]))} target="_blank" rel="noopener noreferrer">Question papers</a>
-                <a className="btn ghost small" href={search(cfg.markQuery(lvl, subject, y, [k, name]))} target="_blank" rel="noopener noreferrer">Mark schemes</a>
-                {subject.mcq && paper.sections[0] && <button className="btn small" onClick={() => onStart(paper, paper.sections[0])}>Sit multiple choice here</button>}
-              </div>
-            </div>
-          )))}
-        </div>
-        {!more && cfg.years.length > 4 && <button className="btn ghost small ppq-more" onClick={() => setMore(true)}>Show earlier years, back to {cfg.years[cfg.years.length - 1]}</button>}
-
-        <p className="small muted">Each button opens a search for that exact paper, so you land on the current copy of the file. Download it, then use the answer sheet below with your PDF beside it.</p>
-        <div><span className="small muted">All {subject.name} papers also at</span><Hubs hubs={cfg.hubs} /></div>
+    <section className="ppq" id="rp-ppq">
+      <div className="rp-grouphead"><h2>Past papers by year</h2><p className="small muted">{cfg.board}. {cfg.note}</p></div>
+      <div className="ppq-pickers">
+        {cfg.levels.length > 1 && (
+          <div className="rp-filters" role="tablist" aria-label="Level">
+            {cfg.levels.map((l, i) => <button key={l.id} role="tab" aria-selected={li === i} className={"rp-filter" + (li === i ? " on" : "")} onClick={() => { setLi(i); setSi(0); }}>{l.name}</button>)}
+          </div>
+        )}
+        <label className="ppq-field"><span className="small muted">Subject</span>
+          <select value={Math.min(si, lvl.subjects.length - 1)} onChange={(e) => setSi(Number(e.target.value))}>
+            {lvl.subjects.map((s, i) => <option key={s.code} value={i}>{s.name} ({s.code})</option>)}
+          </select>
+        </label>
+        <label className="ppq-field"><span className="small muted">Session</span>
+          <select value={sess} onChange={(e) => setSess(e.target.value)}>
+            <option value="all">All sessions</option>
+            {levelSessions.map(([k, name]) => <option key={k} value={k}>{name}</option>)}
+          </select>
+        </label>
       </div>
+      <div className="rp-grid">{entries.map((e) => <PaperCard key={e.key} entry={e} onOpen={onOpenPaper} />)}</div>
+      {!more && cfg.years.length > 4 && <button className="btn ghost small" onClick={() => setMore(true)}>Show earlier years, back to {cfg.years[cfg.years.length - 1]}</button>}
     </section>
   );
 }
 
-function Numbered({ cfg }) {
+function Numbered({ paper, cfg, onOpenPaper }) {
   return (
-    <section className="card" id="rp-ppq">
-      <div className="card-head"><h3>Practice tests</h3><span className="small muted">{cfg.board}</span></div>
-      <div className="ppq-body">
-        <p className="small muted">{cfg.note}</p>
-        {cfg.groups.map((g) => (
-          <div key={g.name} className="ppq-group">
-            <b>{g.name}</b>
-            <div className="ppq-table">
-              {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => (
-                <div key={n} className="ppq-row">
-                  <div className="ppq-when"><b>Test {n}</b></div>
-                  <div className="ppq-actions">
-                    <a className="btn ghost small" href={search(g.query(n))} target="_blank" rel="noopener noreferrer">Find the test</a>
-                    <a className="btn ghost small" href={search(`${g.query(n)} answers scoring`)} target="_blank" rel="noopener noreferrer">Answers</a>
-                  </div>
-                </div>
-              ))}
+    <section className="ppq" id="rp-ppq">
+      <div className="rp-grouphead"><h2>Practice tests</h2><p className="small muted">{cfg.board}. {cfg.note}</p></div>
+      {cfg.groups.map((g) => (
+        <div key={g.name} className="ppq-group">
+          {cfg.groups.length > 1 && <b>{g.name}</b>}
+          <div className="rp-grid">
+            {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => (
+              <PaperCard key={n} onOpen={onOpenPaper} entry={{
+                key: `${g.name}-${n}`, tile: paper.id, title: g.title(n), subtitle: cfg.board,
+                org: cfg.board, minutes: g.minutes, questions: g.questions,
+                sections: g.sheet ? paper.sections : [],
+                links: { paper: search(g.query(n)), mark: search(`${g.query(n)} answers scoring`) },
+                hubs: cfg.hubs,
+                note: g.sheet ? "A full length official test. Take it in the Bluebook app or from the PDF, then use the answer sheet here." : "A full length official test, from the PDF.",
+              }} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/* ---------- one paper's page ---------- */
+
+// The paper on the left, and on the right the clock, the mark scheme and the answer sheet.
+function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
+  const fileRef = useRef(null);
+  const [mins, setMins] = useState(entry.minutes || 60);
+  const [left, setLeft] = useState((entry.minutes || 60) * 60);
+  const [running, setRunning] = useState(false);
+  const [over, setOver] = useState(false);
+
+  useEffect(() => {
+    if (!running) return undefined;
+    const t = setInterval(() => setLeft((n) => { if (n <= 1) { setRunning(false); setOver(true); return 0; } return n - 1; }), 1000);
+    return () => clearInterval(t);
+  }, [running]);
+
+  const changeMins = (v) => { const m = Math.max(1, Math.min(300, Number(v) || 1)); setMins(m); if (!running) { setLeft(m * 60); setOver(false); } };
+  const reset = () => { setRunning(false); setOver(false); setLeft(mins * 60); };
+
+  return (
+    <div className="page wide fade pp">
+      <nav className="rp-crumbs small" aria-label="Breadcrumb">
+        <button className="ti-linkbtn" onClick={onBack}>{paper.name}</button><span aria-hidden="true">/</span><b>{entry.title}</b>
+      </nav>
+
+      <div className="pp-layout">
+        <section className="card pp-doc" aria-label="The paper">
+          {pdf ? (
+            <>
+              <div className="pp-docbar small"><b>{pdf.name}</b><button className="ti-linkbtn" onClick={onClearPdf}>Remove</button></div>
+              <iframe title={entry.title} src={pdf.url} />
+            </>
+          ) : (
+            <div className="pp-drop">
+              <Tile id={entry.tile} />
+              <h2>{entry.title}</h2>
+              <p className="muted">{entry.subtitle}</p>
+              <p className="small">Find the paper, download it, then add the PDF here. It opens in this window next to the clock and stays in your browser.</p>
+              <div className="row">
+                <a className="btn cta" href={entry.links.paper} target="_blank" rel="noopener noreferrer">Find the question paper</a>
+                <button className="btn ghost" onClick={() => fileRef.current?.click()}>Add your PDF</button>
+              </div>
+              <input ref={fileRef} type="file" accept="application/pdf,.pdf" hidden onChange={(e) => { onPdf(e.target.files?.[0]); e.target.value = ""; }} />
+            </div>
+          )}
+        </section>
+
+        <aside className="pp-side" aria-label="Paper tools">
+          <div className="card card-pad pp-head">
+            <Tile id={entry.tile} />
+            <div>
+              <h1>{entry.title}</h1>
+              <p className="muted">{entry.subtitle}</p>
+              <div className="rp-tags">
+                {entry.code && <span className="rp-tag">Exam code {entry.code}</span>}
+                {entry.minutes > 0 && <span className="rp-tag">{entry.minutes} mins</span>}
+                {entry.questions > 0 && <span className="rp-tag">{entry.questions} questions</span>}
+              </div>
             </div>
           </div>
-        ))}
-        <div><span className="small muted">The official page</span><Hubs hubs={cfg.hubs} /></div>
+
+          <div className="card card-pad pp-timer">
+            <div className="pp-clock" aria-live="off">{clock(left)}</div>
+            {over && <div className="small pp-over">Time is up. Stop writing.</div>}
+            <div className="row pp-timerbtns">
+              {!running
+                ? <button className="btn cta pp-start" onClick={() => { if (left <= 0) reset(); setRunning(true); setOver(false); }}>{left === mins * 60 || left <= 0 ? "Start timer" : "Resume"}</button>
+                : <button className="btn pp-start" onClick={() => setRunning(false)}>Pause</button>}
+              <button className="btn ghost" onClick={reset}>Reset</button>
+            </div>
+            {entry.minutesEditable !== false && (
+              <label className="pp-mins small muted">Minutes <input type="number" min="1" max="300" value={mins} onChange={(e) => changeMins(e.target.value)} aria-label="Minutes for the timer" /></label>
+            )}
+          </div>
+
+          <div className="card pp-links">
+            <a className="pp-link" href={entry.links.paper} target="_blank" rel="noopener noreferrer"><span>Question paper</span><i aria-hidden="true">&rsaquo;</i></a>
+            <a className="pp-link" href={entry.links.mark} target="_blank" rel="noopener noreferrer"><span>{entry.links.report ? "Mark scheme" : "Answers and scoring"}</span><i aria-hidden="true">&rsaquo;</i></a>
+            {entry.links.report && <a className="pp-link" href={entry.links.report} target="_blank" rel="noopener noreferrer"><span>Examiner's report</span><i aria-hidden="true">&rsaquo;</i></a>}
+          </div>
+
+          {entry.sections?.length > 0 && (
+            <div className="card card-pad pp-sheet">
+              <b>Answer sheet</b>
+              <p className="small muted">Fill in your answers as you go, then paste the key to be marked and go through every question.</p>
+              {entry.sections.map((s) => <button key={s.id} className="btn ghost small" onClick={() => onStart(paper, s)}>{s.name}, {s.questions} questions</button>)}
+            </div>
+          )}
+
+          <p className="small muted pp-note">{entry.note}</p>
+          {entry.hubs && <Hubs hubs={entry.hubs} />}
+        </aside>
       </div>
-    </section>
+    </div>
   );
 }
 

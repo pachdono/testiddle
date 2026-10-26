@@ -92,8 +92,8 @@ export const PPQ = {
     note: "Each one is a full length official test. Sit it in the Bluebook app, or download the PDF and sit it here against the clock.",
     hubs: [["College Board practice tests", "https://satsuite.collegeboard.org/sat/practice-preparation/practice-tests"]],
     groups: [
-      { name: "Digital SAT practice tests", count: 6, query: (n) => `Digital SAT Practice Test ${n} College Board bluebook` },
-      { name: "Paper SAT practice tests", count: 10, query: (n) => `SAT Practice Test ${n} College Board pdf answers` },
+      { name: "Digital SAT", count: 6, title: (n) => `SAT Digital Test ${n}`, minutes: 134, questions: 98, sheet: true, query: (n) => `Digital SAT Practice Test ${n} College Board bluebook` },
+      { name: "Paper SAT", count: 10, title: (n) => `SAT Paper Test ${n}`, minutes: 180, questions: 154, query: (n) => `SAT Practice Test ${n} College Board pdf answers` },
     ],
   },
   psat: {
@@ -101,14 +101,14 @@ export const PPQ = {
     numbered: true,
     note: "The PSAT/NMSQT practice tests, in the same digital format as the SAT.",
     hubs: [["College Board PSAT practice", "https://satsuite.collegeboard.org/psat-nmsqt"]],
-    groups: [{ name: "PSAT/NMSQT practice tests", count: 4, query: (n) => `PSAT NMSQT Practice Test ${n} College Board pdf` }],
+    groups: [{ name: "PSAT/NMSQT", count: 4, title: (n) => `PSAT/NMSQT Practice Test ${n}`, minutes: 134, questions: 98, sheet: true, query: (n) => `PSAT NMSQT Practice Test ${n} College Board pdf` }],
   },
   act: {
     board: "ACT",
     numbered: true,
     note: "Released ACT tests, with the answer key and the score conversion table, free from act.org.",
     hubs: [["ACT test preparation", "https://www.act.org/content/act/en/products-and-services/the-act/test-preparation.html"]],
-    groups: [{ name: "Official ACT practice tests", count: 6, query: (n) => `official ACT practice test ${n} pdf answer key act.org` }],
+    groups: [{ name: "ACT", count: 6, title: (n) => `ACT Practice Test ${n}`, minutes: 165, questions: 215, sheet: true, query: (n) => `official ACT practice test ${n} pdf answer key act.org` }],
   },
 };
 
