@@ -8,6 +8,7 @@ import { H } from "./heavy.js";
 import { REAL_GROUPS, REAL_PAPERS, OWN_SECTIONS, ownPaper, parseKey, markSheet, markOwn } from "./realpapers.js";
 import { PPQ, search } from "./ppq.js";
 import Review from "./Review.jsx";
+import PdfStudio from "./PdfStudio.jsx";
 
 const SHEET = "testiddle-sheet";
 const HISTORY = "testiddle-real-history";
@@ -71,7 +72,7 @@ export default function RealPapers({ head }) {
   if (result && paper && section) return <Result paper={paper} section={section} result={result} onSave={saveResult} onDone={leave} onAgain={() => start(paper, section)} />;
   if (sheet && paper && section) {
     if (sheet.step === "key") return <KeyStep paper={paper} section={section} sheet={sheet} onBack={() => update({ step: "sit" })} onMarked={setResult} onDiscard={leave} />;
-    return <Sit paper={paper} section={section} sheet={sheet} pdf={paper.own ? { name: paper.name, url: `${import.meta.env.BASE_URL}papers/${paper.own.kind}-${paper.own.n}.pdf` } : pdf} onAnswer={(answers) => update({ answers })} onSubmit={submit} onLeave={leave} />;
+    return <Sit paper={paper} section={section} sheet={sheet} pdf={paper.own ? { name: paper.name, own: `${paper.own.kind}-${paper.own.n}-paper`, url: `${import.meta.env.BASE_URL}papers/${paper.own.kind}-${paper.own.n}.pdf` } : pdf} onAnswer={(answers) => update({ answers })} onSubmit={submit} onLeave={leave} />;
   }
   const open = REAL_PAPERS.find((p) => p.id === detail);
   if (open) return <Detail paper={open} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} onBack={() => setDetail(null)} history={history.filter((h) => h.paper === open.name)} />;
@@ -336,7 +337,7 @@ function Numbered({ paper, cfg, onOpenPaper }) {
               <PaperCard key={n} onOpen={onOpenPaper} entry={{
                 key: `${g.name}-${n}`, tile: paper.id, title: g.title(n), subtitle: "Testiddle practice test",
                 org: "Testiddle", minutes: g.minutes, questions: g.questions, minutesEditable: true,
-                sections: OWN_SECTIONS, ownId: `${g.own}-${n}`, pdfUrl: `${import.meta.env.BASE_URL}papers/${g.own}-${n}.pdf`, links: {},
+                sections: OWN_SECTIONS, ownId: `${g.own}-${n}`, pdfUrl: `${import.meta.env.BASE_URL}papers/${g.own}-${n}.pdf`, markUrl: `${import.meta.env.BASE_URL}papers/${g.own}-${n}-markscheme.pdf`, links: {},
                 note: g.note,
               }} />
             ) : (
@@ -365,6 +366,7 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
   const [left, setLeft] = useState((entry.minutes || 60) * 60);
   const [running, setRunning] = useState(false);
   const [over, setOver] = useState(false);
+  const [tab, setTab] = useState("paper"); // the question paper or its mark scheme
 
   useEffect(() => {
     if (!running) return undefined;
@@ -385,8 +387,14 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
         <section className="card pp-doc" aria-label="The paper">
           {entry.pdfUrl ? (
             <>
-              <div className="pp-docbar small"><b>{entry.title}</b><span><a href={entry.pdfUrl} target="_blank" rel="noopener noreferrer">Open in a new tab</a> <a href={entry.pdfUrl} download={`${entry.ownId}.pdf`}>Download</a></span></div>
-              <iframe title={entry.title} src={entry.pdfUrl} />
+              <div className="pp-docbar small">
+                <div className="seg tight" role="tablist" aria-label="Paper or mark scheme">
+                  <button role="tab" aria-selected={tab === "paper"} className={tab === "paper" ? "on" : ""} onClick={() => setTab("paper")}>Question paper</button>
+                  <button role="tab" aria-selected={tab === "mark"} className={tab === "mark" ? "on" : ""} onClick={() => setTab("mark")}>Mark scheme</button>
+                </div>
+                <span className="muted">{tab === "mark" ? "Check your work after you finish" : "Write on it with the pen"}</span>
+              </div>
+              <PdfStudio key={tab} url={tab === "mark" ? entry.markUrl : entry.pdfUrl} paperKey={`${entry.ownId}-${tab}`} title={`${entry.title}${tab === "mark" ? " mark scheme" : ""}`} />
             </>
           ) : pdf ? (
             <>
@@ -436,6 +444,13 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
             )}
           </div>
 
+          {entry.pdfUrl && (
+            <div className="card pp-links">
+              <button className="pp-link" onClick={() => setTab("mark")}><span>Mark scheme</span><i aria-hidden="true">&rsaquo;</i></button>
+              <a className="pp-link" href={entry.pdfUrl} target="_blank" rel="noopener noreferrer"><span>View PDF in browser</span><i aria-hidden="true">&rsaquo;</i></a>
+              <a className="pp-link" href={entry.markUrl} target="_blank" rel="noopener noreferrer"><span>Mark scheme PDF</span><i aria-hidden="true">&rsaquo;</i></a>
+            </div>
+          )}
           {entry.links.paper && <div className="card pp-links">
             <a className="pp-link" href={entry.links.paper} target="_blank" rel="noopener noreferrer"><span>Question paper</span><i aria-hidden="true">&rsaquo;</i></a>
             <a className="pp-link" href={entry.links.mark} target="_blank" rel="noopener noreferrer"><span>{entry.links.report ? "Mark scheme" : "Answers and scoring"}</span><i aria-hidden="true">&rsaquo;</i></a>
@@ -495,7 +510,7 @@ function Sit({ paper, section, sheet, pdf, onAnswer, onSubmit, onLeave }) {
       <div className={pdf ? "rp-split" : ""}>
       {pdf && (
         <div className="card rp-pdf">
-          <iframe title="Your paper" src={pdf.url} />
+          {pdf.own ? <PdfStudio url={pdf.url} paperKey={pdf.own} title={pdf.name} /> : <iframe title="Your paper" src={pdf.url} />}
           <a className="small" href={pdf.url} target="_blank" rel="noopener noreferrer">Open the paper in its own tab</a>
         </div>
       )}
