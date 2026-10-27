@@ -213,10 +213,10 @@ export function markSheet(answers, key, { letters = "mc" } = {}) {
 // Four modules, the same shape as the digital SAT: two of Reading and Writing, two of
 // Math. In Math the last seven questions of each module are typed, not picked.
 export const OWN_SECTIONS = [
-  { id: "rw1", name: "Reading and Writing, Module 1", questions: 33, minutes: 39, choices: 4 },
-  { id: "rw2", name: "Reading and Writing, Module 2", questions: 33, minutes: 39, choices: 4 },
-  { id: "math1", name: "Math, Module 1", questions: 27, minutes: 43, choices: 4, textFrom: 20, note: "Questions 21 to 27 are student-produced responses: type the number." },
-  { id: "math2", name: "Math, Module 2", questions: 27, minutes: 43, choices: 4, textFrom: 20, note: "Questions 21 to 27 are student-produced responses: type the number." },
+  { id: "rw1", name: "Reading and Writing, Module 1", questions: 27, minutes: 32, choices: 4 },
+  { id: "rw2", name: "Reading and Writing, Module 2", questions: 27, minutes: 32, choices: 4 },
+  { id: "math1", name: "Math, Module 1", questions: 22, minutes: 35, choices: 4, textFrom: 16, note: "Questions 17 to 22 are student-produced responses: type the number." },
+  { id: "math2", name: "Math, Module 2", questions: 22, minutes: 35, choices: 4, textFrom: 16, note: "Questions 17 to 22 are student-produced responses: type the number." },
 ];
 
 /** The paper behind an id like "sat-paper-3", or null when the id is not one of ours. */

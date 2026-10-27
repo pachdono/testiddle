@@ -381,7 +381,7 @@ function Numbered({ paper, cfg, onOpenPaper }) {
 // The paper on the left, and on the right the clock, the mark scheme and the answer sheet.
 function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
   const fileRef = useRef(null);
-  const startMins = entry.ownId ? 39 : entry.minutes || 60; // our tests are sat a module at a time
+  const startMins = entry.ownId ? 32 : entry.minutes || 60; // our tests are sat a module at a time
   const [mins, setMins] = useState(startMins);
   const [left, setLeft] = useState(startMins * 60);
   const [running, setRunning] = useState(false);
@@ -459,7 +459,7 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
             </div>
             {entry.ownId && (
               <div className="pp-chips" role="group" aria-label="Timer length">
-                {[["Reading and Writing", 39], ["Math", 43], ["Whole test", entry.minutes]].map(([label, m]) => <button key={label} className={"rp-filter small" + (mins === m ? " on" : "")} onClick={() => changeMins(m)}>{label} {m}</button>)}
+                {[["Reading and Writing", 32], ["Math", 35], ["Whole test", entry.minutes]].map(([label, m]) => <button key={label} className={"rp-filter small" + (mins === m ? " on" : "")} onClick={() => changeMins(m)}>{label} {m}</button>)}
               </div>
             )}
             {entry.minutesEditable !== false && (
