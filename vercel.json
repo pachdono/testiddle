@@ -10,6 +10,10 @@
   },
   "rewrites": [
     {
+      "source": "/real/:rest*",
+      "destination": "/api/share?p=/real/:rest*"
+    },
+    {
       "source": "/((?!api/|assets/).*)",
       "destination": "/index.html"
     }
