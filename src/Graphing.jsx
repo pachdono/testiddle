@@ -19,11 +19,12 @@ export default function Graphing() {
   const [params, setParams] = useState(saved?.params || {});
   const [view, setView] = useState(saved?.view || { cx: 0, cy: 0, scale: 40 });
   const [pick, setPick] = useState(null);
+  const [deg, setDeg] = useState(saved?.deg || false);
   const [size, setSize] = useState({ w: 400, h: 400 });
   const cv = useRef(null), wrap = useRef(null), focus = useRef(null), next = useRef(Math.max(100, ...(saved?.rows || []).map((r) => r.id + 1)));
   const drag = useRef(null), pointers = useRef(new Map());
 
-  useEffect(() => { try { localStorage.setItem(STORE, JSON.stringify({ rows, params, view })); } catch { /* private mode */ } }, [rows, params, view]);
+  useEffect(() => { try { localStorage.setItem(STORE, JSON.stringify({ rows, params, view, deg })); } catch { /* private mode */ } }, [rows, params, view, deg]);
   useEffect(() => {
     const el = wrap.current; if (!el) return undefined;
     const set = () => setSize({ w: Math.max(200, el.clientWidth), h: Math.max(200, el.clientHeight) });
@@ -32,7 +33,7 @@ export default function Graphing() {
 
   // functions the student defined, so f(g(2)) and f(x)+1 work on any line
   const funcNames = useMemo(() => { const s = new Set(); rows.forEach((r) => { const m = r.type === "expr" && /^\s*([a-z])\s*\(\s*[a-z]\s*\)\s*=/i.exec(r.text || ""); if (m && !["x", "y", "e"].includes(m[1].toLowerCase())) s.add(m[1].toLowerCase()); }); return s; }, [rows]);
-  const parsed = useMemo(() => rows.map((r) => (r.type === "table" ? { ...r, p: null } : { ...r, p: parseLine(r.text, { funcs: funcNames }) })), [rows, funcNames]);
+  const parsed = useMemo(() => rows.map((r) => (r.type === "table" ? { ...r, p: null } : { ...r, p: parseLine(r.text, { funcs: funcNames, deg }) })), [rows, funcNames, deg]);
 
   // tables give lists x1, y1, x2, y2 ...
   const tables = useMemo(() => {
@@ -41,13 +42,21 @@ export default function Graphing() {
     return t;
   }, [rows]);
 
+  // lists the student wrote, and each table's columns, for mean(y1), stdev(L) and so on
+  const lists = useMemo(() => {
+    const out = {};
+    parsed.forEach((r) => { if (r.p?.kind === "list") out[r.p.name] = r.p.values; });
+    Object.entries(tables).forEach(([k, t]) => { out["x" + k] = t.pts.map((p) => p[0]); out["y" + k] = t.pts.map((p) => p[1]); });
+    return out;
+  }, [parsed, tables]);
+
   // letters other than x, y and a table's columns become sliders
   const letters = useMemo(() => {
     const skip = new Set(["x", "y"]); const s = new Set();
     parsed.forEach((r) => {
       if (!r.p) return;
       const fitted = r.p.kind === "fit" ? r.p.mvars : null;
-      if (r.p.kind === "fit") return;
+      if (r.p.kind === "fit" || r.p.kind === "list") return;
       r.p.vars?.forEach((v) => { if (!skip.has(v) && !/^[xy]\d+$/.test(v)) s.add(v); });
       void fitted;
     });
@@ -73,7 +82,7 @@ export default function Graphing() {
     parsed.forEach((r) => { if (r.p?.kind === "def") m[r.p.name] = (v) => r.p.body({ ...base, [r.p.arg]: v }); });
     return m;
   }, [parsed, letters, params]);
-  const env = useMemo(() => ({ ...Object.fromEntries(letters.map((l) => [l, params[l] ?? 1])), __fn: fnMap }), [letters, params, fnMap]);
+  const env = useMemo(() => ({ ...Object.fromEntries(letters.map((l) => [l, params[l] ?? 1])), __fn: fnMap, __list: lists }), [letters, params, fnMap, lists]);
 
   // every curve as something to draw: y = f(x), or F(x, y) = 0
   const curves = useMemo(() => {
@@ -81,11 +90,12 @@ export default function Graphing() {
     parsed.forEach((r, n) => {
       const p = r.p; if (!p || p.kind === "error") return;
       const color = COLORS[n % COLORS.length];
-      if (p.kind === "fn" && !p.number) out.push({ id: r.id, n, color, fx: (x) => p.f({ ...env, x }) });
-      else if (p.kind === "def" && p.arg) out.push({ id: r.id, n, color, fx: (x) => p.body({ ...env, [p.arg]: x }), draw: p.arg === "x" || true });
+      const cond = p.cond ? (x, y) => p.cond({ ...env, x, y }) : null;
+      if (p.kind === "fn" && !p.number) out.push({ id: r.id, n, color, cond, fx: (x) => p.f({ ...env, x }) });
+      else if (p.kind === "def" && p.arg) out.push({ id: r.id, n, color, cond, fx: (x) => p.body({ ...env, [p.arg]: x }) });
       else if (p.kind === "fit") { const f = fits[r.id]; if (f && !f.error) out.push({ id: r.id, n, color, fx: (x) => p.model({ ...f.params, [f.xname]: x }) }); }
-      else if (p.kind === "implicit") out.push({ id: r.id, n, color, F: (x, y) => p.F({ ...env, x, y }) });
-      else if (p.kind === "ineq") out.push({ id: r.id, n, color, F: (x, y) => p.F({ ...env, x, y }), ineq: p });
+      else if (p.kind === "implicit") out.push({ id: r.id, n, color, cond, F: (x, y) => p.F({ ...env, x, y }) });
+      else if (p.kind === "ineq") out.push({ id: r.id, n, color, cond, F: (x, y) => p.F({ ...env, x, y }), ineq: p });
     });
     return out;
   }, [parsed, env, fits]);
@@ -96,8 +106,8 @@ export default function Graphing() {
   // the places worth tapping
   const specials = useMemo(() => {
     const [xmin, ymax] = toXY(0, 0), [xmax, ymin] = toXY(size.w, size.h);
-    const out = []; const add = (x, y) => { if (Number.isFinite(x) && Number.isFinite(y) && x >= xmin - 1 && x <= xmax + 1 && y >= ymin - 1 && y <= ymax + 1 && !out.some(([a, b]) => Math.abs(a - x) < 1e-5 && Math.abs(b - y) < 1e-5)) out.push([x, y]); };
-    const Fs = curves.filter((c) => !c.ineq || true).map((c) => (c.fx ? (x, y) => y - c.fx(x) : c.F));
+    const out = []; const add = (x, y, ...owners) => { if (owners.some((c) => c.cond && !c.cond(x, y))) return;  if (Number.isFinite(x) && Number.isFinite(y) && x >= xmin - 1 && x <= xmax + 1 && y >= ymin - 1 && y <= ymax + 1 && !out.some(([a, b]) => Math.abs(a - x) < 1e-5 && Math.abs(b - y) < 1e-5)) out.push([x, y]); };
+    const Fs = curves.map((c) => (c.fx ? (x, y) => y - c.fx(x) : c.F));
     const all = [...Fs, (x, y) => y, (x, y) => x]; // the axes, so intercepts count
     // tops and bottoms of curves
     curves.forEach((c) => {
@@ -106,7 +116,7 @@ export default function Graphing() {
         const x = xmin + ((xmax - xmin) * k) / 800, d = (c.fx(x + h) - c.fx(x - h)) / (2 * h);
         if (prev && Number.isFinite(d) && Number.isFinite(prev.d) && prev.d * d < 0 && Math.abs(d - prev.d) < 1e4) {
           let lo = prev.x, hi = x; for (let j = 0; j < 45; j++) { const mid = (lo + hi) / 2, dm = (c.fx(mid + h) - c.fx(mid - h)) / (2 * h); if (((c.fx(lo + h) - c.fx(lo - h)) / (2 * h)) * dm <= 0) hi = mid; else lo = mid; }
-          add(lo, c.fx(lo));
+          add(lo, c.fx(lo), c);
         }
         prev = { x, d };
       }
@@ -128,7 +138,7 @@ export default function Graphing() {
           if (Math.abs(dx) + Math.abs(dy) < 1e-11) { ok = Math.abs(Fa(x, y)) < 1e-6 && Math.abs(Fb(x, y)) < 1e-6; break; }
         }
         const [cx0, cy0] = toXY((i + 0.5) * cell, (j + 0.5) * cell);
-        if (ok && Math.abs(x - cx0) < (cell * 2) / view.scale && Math.abs(y - cy0) < (cell * 2) / view.scale) add(Math.abs(x) < 1e-9 ? 0 : x, Math.abs(y) < 1e-9 ? 0 : y);
+        if (ok && Math.abs(x - cx0) < (cell * 2) / view.scale && Math.abs(y - cy0) < (cell * 2) / view.scale) add(Math.abs(x) < 1e-9 ? 0 : x, Math.abs(y) < 1e-9 ? 0 : y, ...[curves[a], curves[b]].filter(Boolean));
       }
     }
     return out;
@@ -155,7 +165,7 @@ export default function Graphing() {
         g.beginPath(); let pen = false, prevY = null;
         for (let px = 0; px <= size.w; px += 1) {
           const [x] = toXY(px, 0); const y = cu.fx(x);
-          if (!Number.isFinite(y)) { pen = false; continue; }
+          if (!Number.isFinite(y) || (cu.cond && !cu.cond(x, y))) { pen = false; continue; }
           const [, py] = toPx(x, y);
           if (py < -4000 || py > size.h + 4000) { pen = false; continue; }
           if (pen && Math.abs(py - prevY) > size.h * 1.5) pen = false;
@@ -166,7 +176,7 @@ export default function Graphing() {
       }
       if (cu.ineq) {
         g.globalAlpha = 0.22; const b = 5; const p = cu.ineq;
-        for (let px = 0; px < size.w; px += b) for (let py = 0; py < size.h; py += b) { const [x, y] = toXY(px + b / 2, py + b / 2); const v = cu.F(x, y); if (Number.isFinite(v) && (p.lt ? v < 0 : v > 0)) g.fillRect(px, py, b, b); }
+        for (let px = 0; px < size.w; px += b) for (let py = 0; py < size.h; py += b) { const [x, y] = toXY(px + b / 2, py + b / 2); const v = cu.F(x, y); if (Number.isFinite(v) && (p.lt ? v < 0 : v > 0) && (!cu.cond || cu.cond(x, y))) g.fillRect(px, py, b, b); }
         g.globalAlpha = 1; if (p.strict) g.setLineDash([7, 6]);
       }
       const cell = 6, cols = Math.ceil(size.w / cell) + 1, rowsN = Math.ceil(size.h / cell) + 1;
@@ -179,7 +189,8 @@ export default function Graphing() {
         const cross = []; const edge = (v1, v2, x1, y1, x2, y2) => { if ((v1 < 0) !== (v2 < 0)) { const t = v1 / (v1 - v2); cross.push([x1 + (x2 - x1) * t, y1 + (y2 - y1) * t]); } };
         const X = i * cell, Y = j * cell;
         edge(a, b2, X, Y, X + cell, Y); edge(b2, c2, X + cell, Y, X + cell, Y + cell); edge(d, c2, X, Y + cell, X + cell, Y + cell); edge(a, d, X, Y, X, Y + cell);
-        if (cross.length === 2) { g.moveTo(...cross[0]); g.lineTo(...cross[1]); } else if (cross.length === 4) { g.moveTo(...cross[0]); g.lineTo(...cross[1]); g.moveTo(...cross[2]); g.lineTo(...cross[3]); }
+        const okAt = (pt) => { if (!cu.cond) return true; const [x, y] = toXY(pt[0], pt[1]); return cu.cond(x, y); };
+        if (cross.length === 2 && okAt(cross[0])) { g.moveTo(...cross[0]); g.lineTo(...cross[1]); } else if (cross.length === 4) { if (okAt(cross[0])) { g.moveTo(...cross[0]); g.lineTo(...cross[1]); } if (okAt(cross[2])) { g.moveTo(...cross[2]); g.lineTo(...cross[3]); } }
       }
       g.stroke(); g.setLineDash([]);
     });
@@ -239,6 +250,7 @@ export default function Graphing() {
             const p = parsed[n]?.p; const bad = r.text.trim() && p?.kind === "error";
             const fit = p?.kind === "fit" ? fits[r.id] : null;
             let result = null;
+            if (p?.kind === "list") result = "[" + p.values.map((v) => fmt(v, 6)).join(", ") + "]";
             if (p?.kind === "fn" && p.number) { try { const v = p.f(env); if (Number.isFinite(v)) result = "= " + fmt(v, 9); } catch { /* shows nothing */ } }
             return (
               <div key={r.id} className={"gr-row" + (bad ? " bad" : "")}>
@@ -261,8 +273,9 @@ export default function Graphing() {
           <div key={l} className="gr-slider"><b>{l}</b> = <span>{fmt(params[l] ?? 1)}</span>
             <input type="range" min="-10" max="10" step="0.1" value={params[l] ?? 1} onChange={(e) => setParams({ ...params, [l]: Number(e.target.value) })} aria-label={`Value of ${l}`} /></div>
         ))}
-        <div className="gr-keys">{["x", "y", "^2", "^", "√(", "π", "(", ")", "<", ">", "≤", "≥", "|", ",", "~", "f(x)="].map((k) => <button key={k} onMouseDown={(e) => e.preventDefault()} onClick={() => insert(k)}>{k}</button>)}</div>
-        <p className="gr-tips small muted">Tap a dot to read it. Try: <code>y1 ~ a x1^2 + b x1 + c</code> with a table to fit a curve, or <code>f(x) = x^2</code> then <code>f(3)</code>.</p>
+        <div className="gr-mode small"><button className={!deg ? "on" : ""} onClick={() => setDeg(false)}>Radians</button><button className={deg ? "on" : ""} onClick={() => setDeg(true)}>Degrees</button></div>
+        <div className="gr-keys">{["x", "y", "^2", "^", "√(", "π", "(", ")", "<", ">", "≤", "≥", "|", ",", "~", "f(x)=", "{", "}", "mean(", "["].map((k) => <button key={k} onMouseDown={(e) => e.preventDefault()} onClick={() => insert(k)}>{k}</button>)}</div>
+        <p className="gr-tips small muted">Tap a dot to read it. Try <code>y1 ~ a x1^2 + b x1 + c</code> with a table, <code>f(x) = x^2</code> then <code>f(3)</code>, <code>y = x^2 {"{"}0 &lt; x &lt; 3{"}"}</code>, or <code>L = [2, 4, 9]</code> then <code>mean(L)</code>.</p>
       </div>
       <div className="gr-stage" ref={wrap}>
         <canvas ref={cv} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onWheel={wheel} aria-label="Graph" />

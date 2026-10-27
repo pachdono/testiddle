@@ -601,3 +601,8 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 .gr-addrow { display: flex; }
 .gr-addrow .gr-add { flex: 1; }
 .gr-tips { padding: 8px 12px 12px; margin: 0; }
+
+.gr-mode { display: flex; gap: 6px; padding: 8px 8px 0; }
+.gr-mode button { flex: 1; padding: 6px; border: 1px solid #ccd; background: #fff; border-radius: 6px; font-size: 13px; }
+.gr-mode button.on { background: #2b3a8c; color: #fff; border-color: #2b3a8c; }
+.ds-calc.inline .gr-mode, .ds-calc .gr-mode { padding: 0; }

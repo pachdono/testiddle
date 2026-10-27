@@ -397,11 +397,12 @@ function Reference({ onClose }) {
 function Calculator({ onClose, embedded }) {
   const [expr, setExpr] = useState("");
   const [out, setOut] = useState("");
+  const [deg, setDeg] = useState(false);
   const [ans, setAns] = useState(0);
   const add = (t) => setExpr((e) => e + t);
   function run() {
     if (!expr.trim()) return;
-    try { const v = calc(expr, ans); const shown = String(Math.round(v * 1e9) / 1e9); setOut(shown); setAns(v); } catch { setOut("Error"); }
+    try { const v = calc(expr, ans, deg); const shown = String(Math.round(v * 1e9) / 1e9); setOut(shown); setAns(v); } catch { setOut("Error"); }
   }
   const keys = [["sin(", "cos(", "tan(", "ln("], ["√(", "^", "π", "ans"], ["7", "8", "9", "÷"], ["4", "5", "6", "×"], ["1", "2", "3", "−"], ["0", ".", "(", ")"]];
   return (
@@ -409,6 +410,7 @@ function Calculator({ onClose, embedded }) {
       {!embedded && <div className="ds-maphead"><b>Calculator</b><button className="ds-x" onClick={onClose}>Close</button></div>}
       <input className="ds-calcin" value={expr} onChange={(e) => setExpr(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder="Type or press keys" aria-label="Expression" autoComplete="off" />
       <div className="ds-calcout" aria-live="polite">{out}</div>
+      <div className="gr-mode small"><button className={!deg ? "on" : ""} onClick={() => setDeg(false)}>Rad</button><button className={deg ? "on" : ""} onClick={() => setDeg(true)}>Deg</button></div>
       <div className="ds-keys">
         {keys.flat().map((k) => <button key={k} onClick={() => add(k === "ans" ? "ans" : k)}>{k}</button>)}
         <button onClick={() => { setExpr(""); setOut(""); }}>C</button>

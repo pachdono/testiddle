@@ -43,11 +43,27 @@ export function sectionScore(path, c1, n1, c2, n2) {
 // A small expression engine that does not need eval, which the site's security policy blocks.
 // compileExpr turns text like "2x^2 - 3(x+1)" into a function of its variables, so the
 // calculator and the graphing calculator share one parser.
-const FN = { sqrt: Math.sqrt, sin: Math.sin, cos: Math.cos, tan: Math.tan, ln: Math.log, log: Math.log10, abs: Math.abs, floor: Math.floor, ceil: Math.ceil };
+const D = Math.PI / 180;
+const FN_RAD = { sqrt: Math.sqrt, sin: Math.sin, cos: Math.cos, tan: Math.tan, asin: Math.asin, acos: Math.acos, atan: Math.atan, ln: Math.log, log: Math.log10, abs: Math.abs, floor: Math.floor, ceil: Math.ceil };
+const FN_DEG = { ...FN_RAD, sin: (x) => Math.sin(x * D), cos: (x) => Math.cos(x * D), tan: (x) => Math.tan(x * D), asin: (x) => Math.asin(x) / D, acos: (x) => Math.acos(x) / D, atan: (x) => Math.atan(x) / D };
+// statistics over a list: mean(L), median([1,2,3]), stdev(y1) ...
+const sorted = (a) => [...a].sort((x, y) => x - y);
+const LISTFN = {
+  mean: (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN),
+  median: (a) => { if (!a.length) return NaN; const t = sorted(a), m = t.length >> 1; return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2; },
+  stdevp: (a) => { if (!a.length) return NaN; const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length); },
+  stdev: (a) => { if (a.length < 2) return NaN; const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); },
+  total: (a) => a.reduce((x, y) => x + y, 0),
+  sum: (a) => a.reduce((x, y) => x + y, 0),
+  min: (a) => (a.length ? Math.min(...a) : NaN),
+  max: (a) => (a.length ? Math.max(...a) : NaN),
+  count: (a) => a.length,
+  length: (a) => a.length,
+};
 const tidy = (src) => String(src).toLowerCase().replace(/\s+/g, "").replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-").replace(/π/g, "pi").replace(/√/g, "sqrt").replace(/²/g, "^2").replace(/³/g, "^3");
 
 export function compileExpr(src, ctx = {}) {
-  const s = tidy(src); let i = 0; const vars = new Set(); const funcs = ctx.funcs || new Set(); let bars = 0;
+  const s = tidy(src); let i = 0; const vars = new Set(); const funcs = ctx.funcs || new Set(); let bars = 0; const FN = ctx.deg ? FN_DEG : FN_RAD;
   const fail = () => { throw new Error("syntax"); };
   const expr = () => { let f = term(); while (s[i] === "+" || s[i] === "-") { const o = s[i++]; const a = f, b = term(); f = o === "+" ? (e) => a(e) + b(e) : (e) => a(e) - b(e); } return f; };
   const startsFactor = () => i < s.length && (s[i] === "(" || /[a-z\d.]/.test(s[i]) || (s[i] === "|" && bars % 2 === 0));
@@ -72,6 +88,12 @@ export function compileExpr(src, ctx = {}) {
     if (funcs.has(w[0]) && s[i + 1] === "(" && !(w.length > 1 && FN[Object.keys(FN).find((k) => w.startsWith(k))])) {
       const name = w[0]; i += 2; const f = expr(); if (s[i] !== ")") fail(); i++; return (e) => (e.__fn && e.__fn[name] ? e.__fn[name](f(e)) : NaN);
     }
+    for (const k of Object.keys(LISTFN)) if (w.startsWith(k) && s[i + k.length] === "(") {
+      i += k.length + 1; let getL;
+      if (s[i] === "[") { i++; const items = []; for (;;) { items.push(expr()); if (s[i] === ",") { i++; continue; } break; } if (s[i] !== "]") fail(); i++; getL = (e) => items.map((f) => f(e)); }
+      else { const nm = /^[a-z][a-z0-9]*/.exec(s.slice(i)); if (!nm) fail(); i += nm[0].length; const key = nm[0]; getL = (e) => (e.__list && e.__list[key]) || []; }
+      if (s[i] !== ")") fail(); i++; const g = LISTFN[k]; return (e) => g(getL(e));
+    }
     for (const k of ["ans", "pi", ...Object.keys(FN)]) if (w.startsWith(k)) { w = k; break; }
     if (FN[w] && s[i + w.length] === "(") { i += w.length + 1; const f = expr(); if (s[i] !== ")") fail(); i++; const g = FN[w]; return (e) => g(f(e)); }
     if (w === "pi") { i += 2; return () => Math.PI; }
@@ -86,8 +108,8 @@ export function compileExpr(src, ctx = {}) {
   return { fn, vars };
 }
 
-export function calc(src, ans = 0) {
-  const { fn, vars } = compileExpr(src);
+export function calc(src, ans = 0, deg = false) {
+  const { fn, vars } = compileExpr(src, { deg });
   if (vars.size) throw new Error("variables");
   const v = fn({ ans });
   if (!Number.isFinite(v)) throw new Error("not finite");
@@ -99,6 +121,22 @@ export function parseLine(raw, ctx = {}) {
   const text = String(raw || "").trim(); if (!text) return null;
   const norm = text.replace(/≤/g, "<=").replace(/≥/g, ">=");
   try {
+    // a restriction in braces, like y = x^2 {0 < x < 3}
+    const rm = /^(.*?)\s*\{([^{}]*)\}\s*$/.exec(norm);
+    if (rm && rm[1].trim()) {
+      const base = parseLine(rm[1], ctx); if (!base || base.kind === "error") return base;
+      const parts = rm[2].split(",").map((t) => t.trim()).filter(Boolean).map((t) => {
+        const pieces = t.split(/(<=|>=|<|>|=)/); if (pieces.length < 3) throw new Error("cond");
+        const operands = pieces.filter((_, k) => k % 2 === 0).map((o) => compileExpr(o, ctx)); const ops = pieces.filter((_, k) => k % 2 === 1);
+        return { operands, ops };
+      });
+      const cmp = (op, a, b) => (op === "<" ? a < b : op === ">" ? a > b : op === "<=" ? a <= b : op === ">=" ? a >= b : Math.abs(a - b) < 1e-9);
+      base.cond = (e) => parts.every(({ operands, ops }) => ops.every((op, k) => cmp(op, operands[k].fn(e), operands[k + 1].fn(e))));
+      base.vars = new Set([...(base.vars || []), ...parts.flatMap((p) => p.operands.flatMap((o) => [...o.vars]))]);
+      return base;
+    }
+    const lst = /^([a-z][a-z0-9]*)\s*=\s*\[(.*)\]$/i.exec(norm);
+    if (lst && !/^[xy]$/i.test(lst[1])) { const items = lst[2].split(",").map((t) => compileExpr(t, ctx).fn({})); return { kind: "list", name: lst[1].toLowerCase(), values: items.filter((v) => Number.isFinite(v)), vars: new Set() }; }
     const def = /^([a-z])\(([a-z])\)\s*=(.*)$/i.exec(norm);
     if (def) { const c = compileExpr(def[3], ctx); const arg = def[2].toLowerCase(); const vars = new Set([...c.vars].filter((v) => v !== arg)); return { kind: "def", name: def[1].toLowerCase(), arg, body: c.fn, vars, argVars: c.vars }; }
     const reg = /^([xy]\d+)\s*~(.*)$/i.exec(norm);

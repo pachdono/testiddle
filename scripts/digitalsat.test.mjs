@@ -60,3 +60,17 @@ test("Dwimos: defined functions, absolute value and curve fitting", () => {
   const fe = fitModel(e.model, ["a", "b"], "x1", [0, 1, 2, 3], [2, 6, 18, 54]);
   assert.ok(Math.abs(fe.params.a - 2) < 1e-6 && Math.abs(fe.params.b - 3) < 1e-6);
 });
+
+test("Dwimos: restrictions, lists with statistics, and degree mode", () => {
+  const r = parseLine("y=x^2 {0<x<3}");
+  assert.equal(r.kind, "fn"); assert.ok(r.cond({ x: 1 }) && !r.cond({ x: 4 }) && !r.cond({ x: -1 }));
+  assert.deepEqual(parseLine("L=[2,4,9]").values, [2, 4, 9]);
+  const e = (t, env = {}, ctx = {}) => compileExpr(t, ctx).fn(env);
+  assert.equal(e("mean([1,2,3,4])"), 2.5);
+  assert.equal(e("median([5,1,3])"), 3);
+  assert.equal(e("stdevp([2,4,4,4,5,5,7,9])"), 2);
+  assert.equal(e("total(l)+max(y1)", { __list: { l: [1, 2, 3], y1: [4, 9] } }), 15);
+  assert.ok(Math.abs(e("sin(30)", {}, { deg: true }) - 0.5) < 1e-12);
+  assert.ok(Math.abs(calc("sin(30)", 0, true) - 0.5) < 1e-12);
+  assert.ok(Math.abs(e("sin(pi/2)") - 1) < 1e-12);
+});
