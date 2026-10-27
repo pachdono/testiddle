@@ -37,3 +37,13 @@ test("a full sitting runs both sections", () => {
   assert.equal(moduleName("m2h"), "Math, Module 2");
   assert.equal(moduleName("rw1"), "Reading and Writing, Module 1");
 });
+
+import { parseLine } from "../src/digitalsat.js";
+test("the graphing calculator reads curves, circles, inequalities, points and sliders", () => {
+  const f = parseLine("y=2x^2-3"); assert.equal(f.kind, "fn"); assert.equal(f.f({ x: 2 }), 5);
+  const c = parseLine("(x-1)^2+(y+2)^2=9"); assert.equal(c.kind, "implicit"); assert.equal(c.F({ x: 1, y: 1 }), 0);
+  const i = parseLine("y>=x/2+1"); assert.equal(i.kind, "ineq"); assert.ok(!i.lt && !i.strict);
+  assert.equal(parseLine("(2,3)").kind, "point");
+  assert.deepEqual([...parseLine("y=a(x-1)+b").vars].sort(), ["a", "b", "x"]);
+  assert.equal(parseLine("2+").kind, "error");
+});

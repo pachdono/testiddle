@@ -4,6 +4,7 @@
 // calculator, and a break. Progress is kept in this browser so a sitting can be resumed.
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import Graphing from "./Graphing.jsx";
 import { SECTIONS, planFor, sectionOf, moduleName, secondModule, isRight, sectionScore, calc } from "./digitalsat.js";
 
 const KEY = (n) => `testiddle-dsat-${n}`;
@@ -208,56 +209,22 @@ function Notable({ html, marks, onMarks, on, className = "" }) {
   );
 }
 
-/* ---------- the graphing calculator, Desmos ---------- */
-
-// Desmos's own calculator, loaded on first use. Set VITE_DESMOS_KEY to your own free key from
-// desmos.com/api; the shared demo key below is only for trying it out.
-const DESMOS_KEY = import.meta.env?.VITE_DESMOS_KEY || "dcb31709b452b1cf9dc26972add0fda6";
-let desmosP;
-function loadDesmos() {
-  desmosP ||= new Promise((res, rej) => {
-    if (window.Desmos) return res(window.Desmos);
-    const s = document.createElement("script");
-    s.src = `https://www.desmos.com/api/v1.12/calculator.js?apiKey=${DESMOS_KEY}`;
-    s.onload = () => (window.Desmos ? res(window.Desmos) : rej(new Error("none")));
-    s.onerror = () => { desmosP = null; rej(new Error("blocked")); };
-    document.head.appendChild(s);
-  });
-  return desmosP;
-}
+/* ---------- the calculators ---------- */
 
 function CalcPanel({ open, onClose }) {
   const [tab, setTab] = useState("graph");
-  const [failed, setFailed] = useState(false);
-  const box = useRef(null), calc = useRef(null), seen = useRef(false);
   const [pos, setPos] = useState({ left: null, top: 70 });
   const drag = useRef(null);
-
-  useEffect(() => {
-    if (!open || tab !== "graph" || calc.current || !box.current) return undefined;
-    let dead = false;
-    loadDesmos().then((D) => { if (dead || !box.current) return; calc.current = D.GraphingCalculator(box.current, { keypad: true, expressions: true, settingsMenu: false, zoomButtons: true, expressionsTopbar: true, border: false }); setFailed(false); })
-      .catch(() => { if (!dead) { setFailed(true); setTab("sci"); } });
-    return () => { dead = true; };
-  }, [open, tab]);
-  useEffect(() => {
-    const el = box.current; if (!el || !("ResizeObserver" in window)) return undefined;
-    const ro = new ResizeObserver(() => calc.current?.resize()); ro.observe(el); return () => ro.disconnect();
-  }, []);
-  useEffect(() => { if (open) { seen.current = true; calc.current?.resize(); } }, [open, tab]);
-
   const down = (e) => { const r = e.currentTarget.parentElement.getBoundingClientRect(); drag.current = { dx: e.clientX - r.left, dy: e.clientY - r.top }; e.currentTarget.setPointerCapture(e.pointerId); };
   const move = (e) => { if (drag.current) setPos({ left: Math.max(0, e.clientX - drag.current.dx), top: Math.max(0, e.clientY - drag.current.dy) }); };
   const up = () => { drag.current = null; };
-
   return (
     <div className="ds-pop ds-desmos" style={{ display: open ? "grid" : "none", left: pos.left ?? undefined, right: pos.left == null ? 16 : undefined, top: pos.top }} role="dialog" aria-label="Calculator">
       <div className="ds-maphead ds-drag" onPointerDown={down} onPointerMove={move} onPointerUp={up}><b>Calculator</b>
-        <span className="seg tight"><button className={tab === "graph" ? "on" : ""} onClick={() => setTab("graph")}>Graphing</button><button className={tab === "sci" ? "on" : ""} onClick={() => setTab("sci")}>Scientific</button></span>
+        <span className="seg tight"><button onPointerDown={(e) => e.stopPropagation()} className={tab === "graph" ? "on" : ""} onClick={() => setTab("graph")}>Graphing</button><button onPointerDown={(e) => e.stopPropagation()} className={tab === "sci" ? "on" : ""} onClick={() => setTab("sci")}>Scientific</button></span>
         <button className="ds-x" onPointerDown={(e) => e.stopPropagation()} onClick={onClose}>Close</button></div>
-      <div ref={box} className="ds-desmosbox" style={{ display: tab === "graph" && !failed ? "block" : "none" }} />
-      {tab === "graph" && failed && <p className="small">The graphing calculator could not load. Check your connection, or use the scientific one.</p>}
-      {tab === "sci" && <>{failed && <p className="small">The graphing calculator could not load here, so this is the scientific one. You can also open <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer">Desmos</a> in another tab.</p>}<Calculator embedded /></>}
+      <div className="ds-desmosbox" style={{ display: tab === "graph" ? "block" : "none" }}><Graphing /></div>
+      {tab === "sci" && <Calculator embedded />}
     </div>
   );
 }

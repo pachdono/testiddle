@@ -568,3 +568,24 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 .ds-desmosbox { width: 100%; height: 100%; min-height: 0; }
 .ds-desmos .ds-calc.inline { padding: 12px; width: auto; overflow: auto; }
 .ds-calc.inline { position: static; width: auto; display: grid; gap: 8px; }
+
+/* our own graphing calculator */
+.gr { display: grid; grid-template-columns: 230px minmax(0, 1fr); height: 100%; min-height: 0; }
+.gr-list { border-right: 1px solid #d6dbe6; overflow: auto; display: flex; flex-direction: column; background: #fafbfd; }
+.gr-rows { flex: 1; }
+.gr-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-bottom: 1px solid #e3e6ee; background: #fff; }
+.gr-row.bad input { color: #b3261e; }
+.gr-dot { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #fff; font: 700 12px system-ui; }
+.gr-row input { flex: 1; min-width: 0; border: 0; outline: 0; font: 16px "Source Serif 4", Georgia, serif; padding: 8px 2px; background: transparent; }
+.gr-del { border: 0; background: transparent; font-size: 20px; color: #888; padding: 0 6px; }
+.gr-add { width: 100%; border: 0; background: transparent; text-align: left; padding: 10px 12px; color: #2b3a8c; font-weight: 700; }
+.gr-slider { padding: 8px 12px; display: grid; gap: 4px; background: #fff; border-bottom: 1px solid #e3e6ee; font-size: 14px; }
+.gr-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 8px; border-top: 1px solid #d6dbe6; background: #f1f3f8; }
+.gr-keys button { padding: 8px 0; border: 1px solid #ccd; background: #fff; border-radius: 6px; font-size: 15px; }
+.gr-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #fff; }
+.gr-stage canvas { display: block; touch-action: none; cursor: grab; }
+.gr-zoom { position: absolute; right: 10px; top: 10px; display: grid; gap: 6px; }
+.gr-zoom button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid #aab; background: #fff; font-size: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+@media (max-width: 700px) { .gr { grid-template-columns: 1fr; grid-template-rows: 180px 1fr; } .gr-list { border-right: 0; border-bottom: 1px solid #d6dbe6; } }
+.gr-slider { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.gr-slider input { flex: 1 1 100%; }

@@ -40,38 +40,71 @@ export function sectionScore(path, c1, n1, c2, n2) {
   return Math.max(200, Math.min(800, Math.round(raw / 10) * 10));
 }
 
-// A small calculator that does not need eval, which the site's security policy blocks.
-export function calc(src, ans = 0) {
-  const s = String(src).toLowerCase().replace(/\s+/g, "").replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-").replace(/π/g, "pi").replace(/√/g, "sqrt");
-  let i = 0;
-  const FN = { sqrt: Math.sqrt, sin: (x) => Math.sin(x), cos: (x) => Math.cos(x), tan: (x) => Math.tan(x), ln: Math.log, log: Math.log10, abs: Math.abs };
+// A small expression engine that does not need eval, which the site's security policy blocks.
+// compileExpr turns text like "2x^2 - 3(x+1)" into a function of its variables, so the
+// calculator and the graphing calculator share one parser.
+const FN = { sqrt: Math.sqrt, sin: Math.sin, cos: Math.cos, tan: Math.tan, ln: Math.log, log: Math.log10, abs: Math.abs, floor: Math.floor, ceil: Math.ceil };
+const tidy = (src) => String(src).toLowerCase().replace(/\s+/g, "").replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-").replace(/π/g, "pi").replace(/√/g, "sqrt").replace(/²/g, "^2").replace(/³/g, "^3");
+
+export function compileExpr(src) {
+  const s = tidy(src); let i = 0; const vars = new Set();
   const fail = () => { throw new Error("syntax"); };
-  function expr() { let v = term(); while (s[i] === "+" || s[i] === "-") { const o = s[i++]; const r = term(); v = o === "+" ? v + r : v - r; } return v; }
-  function term() {
-    let v = unary();
-    while (i < s.length && (s[i] === "*" || s[i] === "/" || s[i] === "(" || /[a-z\d.]/.test(s[i]))) {
-      if (s[i] === "*") { i++; v *= unary(); } else if (s[i] === "/") { i++; v /= unary(); } else v *= unary(); // 2(3) and 2pi
+  const expr = () => { let f = term(); while (s[i] === "+" || s[i] === "-") { const o = s[i++]; const a = f, b = term(); f = o === "+" ? (e) => a(e) + b(e) : (e) => a(e) - b(e); } return f; };
+  const startsFactor = () => i < s.length && (s[i] === "(" || /[a-z\d.]/.test(s[i]));
+  const term = () => {
+    let f = unary();
+    while (s[i] === "*" || s[i] === "/" || startsFactor()) {
+      const a = f;
+      if (s[i] === "*") { i++; const b = unary(); f = (e) => a(e) * b(e); } else if (s[i] === "/") { i++; const b = unary(); f = (e) => a(e) / b(e); } else { const b = unary(); f = (e) => a(e) * b(e); }
     }
-    return v;
-  }
-  function power() { const b = atom(); if (s[i] === "^") { i++; return Math.pow(b, unary()); } return b; }
-  function unary() { if (s[i] === "-") { i++; return -unary(); } if (s[i] === "+") { i++; return unary(); } return power(); }
-  function atom() {
-    if (s[i] === "(") { i++; const v = expr(); if (s[i] !== ")") fail(); i++; return v; }
+    return f;
+  };
+  const unary = () => { if (s[i] === "-") { i++; const a = unary(); return (e) => -a(e); } if (s[i] === "+") { i++; return unary(); } return power(); };
+  const power = () => { const b = atom(); if (s[i] === "^") { i++; const x = unary(); return (e) => Math.pow(b(e), x(e)); } return b; };
+  const atom = () => {
+    if (s[i] === "(") { i++; const f = expr(); if (s[i] !== ")") fail(); i++; return f; }
     const num = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i));
-    if (num) { i += num[0].length; return Number(num[0]); }
-    const word = /^[a-z]+/.exec(s.slice(i));
-    if (!word) fail();
-    i += word[0].length;
-    if (word[0] === "pi") return Math.PI;
-    if (word[0] === "e") return Math.E;
-    if (word[0] === "ans") return ans;
-    if (!FN[word[0]]) fail();
-    if (s[i] !== "(") fail();
-    i++; const v = expr(); if (s[i] !== ")") fail(); i++;
-    return FN[word[0]](v);
-  }
-  const v = expr();
-  if (i < s.length || !Number.isFinite(v)) fail();
+    if (num) { i += num[0].length; const v = Number(num[0]); return () => v; }
+    const word = /^[a-z]+/.exec(s.slice(i)); if (!word) fail();
+    let w = word[0];
+    for (const k of ["ans", "pi", ...Object.keys(FN)]) if (w.startsWith(k)) { w = k; break; }
+    if (FN[w] && s[i + w.length] === "(") { i += w.length + 1; const f = expr(); if (s[i] !== ")") fail(); i++; const g = FN[w]; return (e) => g(f(e)); }
+    if (w === "pi") { i += 2; return () => Math.PI; }
+    if (w === "ans") { i += 3; return (e) => e.ans ?? 0; }
+    // anything else is a letter, a variable; letters side by side multiply, as in xy
+    const ch = s[i]; i++;
+    if (ch === "e") return () => Math.E;
+    vars.add(ch); return (e) => e[ch];
+  };
+  const fn = expr(); if (i < s.length) fail();
+  return { fn, vars };
+}
+
+export function calc(src, ans = 0) {
+  const { fn, vars } = compileExpr(src);
+  if (vars.size) throw new Error("variables");
+  const v = fn({ ans });
+  if (!Number.isFinite(v)) throw new Error("not finite");
   return v;
+}
+
+/** Reads one line of the graphing calculator: a curve, an inequality, a point or just an expression. */
+export function parseLine(raw) {
+  const text = String(raw || "").trim(); if (!text) return null;
+  const norm = text.replace(/≤/g, "<=").replace(/≥/g, ">=");
+  const pt = /^\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)$/.exec(norm);
+  try {
+    if (pt) { const a = compileExpr(pt[1]), b = compileExpr(pt[2]); return { kind: "point", fx: a.fn, fy: b.fn, vars: new Set([...a.vars, ...b.vars]) }; }
+    const m = /^(.*?)(<=|>=|<|>|=)(.*)$/.exec(norm);
+    if (!m) { const c = compileExpr(norm); return { kind: "fn", f: c.fn, vars: c.vars }; }
+    const [, l, op, r] = m;
+    const L = compileExpr(l), R = compileExpr(r);
+    const vars = new Set([...L.vars, ...R.vars]);
+    if (op === "=") {
+      if (l.trim() === "y" && !R.vars.has("y")) return { kind: "fn", f: R.fn, vars: R.vars };
+      return { kind: "implicit", F: (e) => L.fn(e) - R.fn(e), vars };
+    }
+    const lt = op[0] === "<";
+    return { kind: "ineq", F: (e) => L.fn(e) - R.fn(e), lt, strict: op.length === 1, vars };
+  } catch { return { kind: "error" }; }
 }
