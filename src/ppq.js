@@ -94,6 +94,7 @@ export const PPQ = {
     groups: [
       { name: "Digital SAT", count: 6, title: (n) => `SAT Digital Test ${n}`, minutes: 134, questions: 98, sheet: true, blurb: "Official College Board tests. Take them in the Bluebook app, or download the PDF and use the answer sheet here.", query: (n) => `Digital SAT Practice Test ${n} College Board bluebook` },
       { name: "Paper SAT", count: 5, title: (n) => `SAT Paper Test ${n}`, minutes: 134, questions: 98, own: "sat-paper", query: (n) => `Testiddle SAT Paper Test ${n}`, blurb: "Original Testiddle tests in the digital format, printed. Write on the paper here, then submit each module to be marked with an explanation for every question.", note: "Write on the paper, then submit each module to be marked." },
+      { name: "Computer SAT", count: 5, title: (n) => `SAT Computer Test ${n}`, minutes: 134, questions: 98, digital: "sat-digital", blurb: "Original tests that work like the Bluebook app: one question at a time, with a second module that is harder or easier depending on how the first went. Includes a calculator, flags and a score estimate.", query: (n) => `Testiddle SAT Computer Test ${n}` },
     ],
   },
   psat: {

@@ -9,6 +9,7 @@ import { REAL_GROUPS, REAL_PAPERS, OWN_SECTIONS, ownPaper, parseKey, markSheet, 
 import { PPQ, search } from "./ppq.js";
 import Review from "./Review.jsx";
 import PdfStudio from "./PdfStudio.jsx";
+import DigitalSat from "./DigitalSat.jsx";
 
 const SHEET = "testiddle-sheet";
 const HISTORY = "testiddle-real-history";
@@ -163,6 +164,7 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, slug, onSlug, onBack, 
   const [here, setHere] = useState("rp-how");
   const go = (id) => (e) => { e.preventDefault(); setHere(id); document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); };
 
+  if (entry?.digitalId) return <DigitalSat n={entry.digitalId} title={entry.title} onBack={() => setEntry(null)} />;
   if (entry) return <PaperPage entry={entry} paper={paper} pdf={pdf} onPdf={onPdf} onClearPdf={onClearPdf} onStart={onStart} onBack={() => setEntry(null)} />;
 
   return (
@@ -267,11 +269,12 @@ const Hubs = ({ hubs }) => (
 
 function PaperCard({ entry, onOpen }) {
   const own = Boolean(entry.ownId);
+  const dig = Boolean(entry.digitalId);
   return (
     <button className="test-card pc" onClick={() => onOpen(entry)}>
       <div className="spread">
         <b className="test-name">{entry.title}</b>
-        {entry.sections?.length > 0 && <span className="pill accent">{own ? "Auto-marked" : "Answer sheet"}</span>}
+        {(entry.sections?.length > 0 || dig) && <span className="pill accent">{dig ? "Adaptive" : own ? "Auto-marked" : "Answer sheet"}</span>}
       </div>
       <span className="small muted">{entry.subtitle}{entry.code ? `  ·  ${entry.code}` : ""}</span>
       <div className="test-meta">
@@ -279,8 +282,8 @@ function PaperCard({ entry, onOpen }) {
         {entry.questions > 0 && <span className="muted">{entry.questions} questions</span>}
       </div>
       <span className="pc-actions">
-        <span className="pc-btn main">{own ? "Practice paper" : entry.sections?.length > 0 ? "Practice on the answer sheet" : "Practice paper"}</span>
-        <span className="pc-btn">{own ? "Mark scheme included" : "Mark scheme"}</span>
+        <span className="pc-btn main">{dig ? "Start test" : own ? "Practice paper" : entry.sections?.length > 0 ? "Practice on the answer sheet" : "Practice paper"}</span>
+        <span className="pc-btn">{dig ? "Calculator and score estimate" : own ? "Mark scheme included" : "Mark scheme"}</span>
       </span>
     </button>
   );
@@ -342,6 +345,9 @@ const slugify = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").repla
 // One numbered test as a card or a page needs it. Its slug is what goes in the address.
 function numberedEntry(paper, cfg, g, n) {
   const slug = `${slugify(g.name)}-test-${n}`;
+  if (g.digital) {
+    return { key: `${g.name}-${n}`, slug, tile: paper.id, title: g.title(n), subtitle: "Testiddle computer test", org: "Testiddle", minutes: g.minutes, questions: g.questions, sections: [], digitalId: n, links: {}, note: g.blurb };
+  }
   if (g.own) {
     const base = `${import.meta.env.BASE_URL}papers/${g.own}-${n}`;
     return { key: `${g.name}-${n}`, slug, tile: paper.id, title: g.title(n), subtitle: "Testiddle practice test", org: "Testiddle", minutes: g.minutes, questions: g.questions, minutesEditable: true,
