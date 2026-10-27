@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PageHead } from "./ui.jsx";
 import { H } from "./heavy.js";
-import { REAL_GROUPS, REAL_PAPERS, parseKey, markSheet } from "./realpapers.js";
+import { REAL_GROUPS, REAL_PAPERS, OWN_SECTIONS, ownPaper, parseKey, markSheet, markOwn } from "./realpapers.js";
 import { PPQ, search } from "./ppq.js";
 import Review from "./Review.jsx";
 
@@ -29,7 +29,7 @@ export default function RealPapers({ head }) {
   const [detail, setDetail] = useState(null); // the paper whose page is open
   const [pdf, setPdf] = useState(null); // a paper the student downloaded, shown beside the sheet; it stays in this browser
 
-  const paperOf = (s) => REAL_PAPERS.find((p) => p.id === s?.paperId);
+  const paperOf = (s) => REAL_PAPERS.find((p) => p.id === s?.paperId) || ownPaper(s?.paperId);
   const paper = paperOf(sheet);
   const section = paper?.sections.find((x) => x.id === sheet?.sectionId);
 
@@ -52,10 +52,26 @@ export default function RealPapers({ head }) {
     write(HISTORY, next); setHistory(next);
   }
 
+  // Our own tests carry their key, so they are marked the moment the sheet goes in.
+  async function submit() {
+    const used = Math.min(section.minutes * 60, Math.round((Date.now() - sheet.startedAt) / 1000));
+    if (!paper.own) { update({ step: "key", usedSeconds: used }); return; }
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}papers/${paper.own.kind}-${paper.own.n}.json`);
+      if (!res.ok) throw new Error("missing");
+      const data = await res.json();
+      const mod = data.modules.find((m) => m.id.toLowerCase() === section.id);
+      const rows = markOwn(sheet.answers || {}, mod);
+      setResult({ rows, right: rows.filter((r) => r.status === "right").length, total: rows.length, minutes: Math.round(used / 60) });
+    } catch {
+      window.alert("The answer key could not be loaded. Check your connection and press Submit again. Your answers are saved.");
+    }
+  }
+
   if (result && paper && section) return <Result paper={paper} section={section} result={result} onSave={saveResult} onDone={leave} onAgain={() => start(paper, section)} />;
   if (sheet && paper && section) {
     if (sheet.step === "key") return <KeyStep paper={paper} section={section} sheet={sheet} onBack={() => update({ step: "sit" })} onMarked={setResult} onDiscard={leave} />;
-    return <Sit paper={paper} section={section} sheet={sheet} pdf={pdf} onAnswer={(answers) => update({ answers })} onSubmit={() => update({ step: "key", usedSeconds: Math.min(section.minutes * 60, Math.round((Date.now() - sheet.startedAt) / 1000)) })} onLeave={leave} />;
+    return <Sit paper={paper} section={section} sheet={sheet} pdf={paper.own ? { name: paper.name, url: `${import.meta.env.BASE_URL}papers/${paper.own.kind}-${paper.own.n}.pdf` } : pdf} onAnswer={(answers) => update({ answers })} onSubmit={submit} onLeave={leave} />;
   }
   const open = REAL_PAPERS.find((p) => p.id === detail);
   if (open) return <Detail paper={open} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} onBack={() => setDetail(null)} history={history.filter((h) => h.paper === open.name)} />;
@@ -316,7 +332,14 @@ function Numbered({ paper, cfg, onOpenPaper }) {
         <div key={g.name} className="ppq-group">
           {cfg.groups.length > 1 && <b>{g.name}</b>}
           <div className="test-grid">
-            {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => (
+            {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => g.own ? (
+              <PaperCard key={n} onOpen={onOpenPaper} entry={{
+                key: `${g.name}-${n}`, tile: paper.id, title: g.title(n), subtitle: "Testiddle practice test",
+                org: "Testiddle", minutes: g.minutes, questions: g.questions, minutesEditable: true,
+                sections: OWN_SECTIONS, ownId: `${g.own}-${n}`, pdfUrl: `${import.meta.env.BASE_URL}papers/${g.own}-${n}.pdf`, links: {},
+                note: g.note,
+              }} />
+            ) : (
               <PaperCard key={n} onOpen={onOpenPaper} entry={{
                 key: `${g.name}-${n}`, tile: paper.id, title: g.title(n), subtitle: cfg.board,
                 org: cfg.board, minutes: g.minutes, questions: g.questions,
@@ -360,7 +383,12 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
 
       <div className="pp-layout">
         <section className="card pp-doc" aria-label="The paper">
-          {pdf ? (
+          {entry.pdfUrl ? (
+            <>
+              <div className="pp-docbar small"><b>{entry.title}</b><span><a href={entry.pdfUrl} target="_blank" rel="noopener noreferrer">Open in a new tab</a> <a href={entry.pdfUrl} download={`${entry.ownId}.pdf`}>Download</a></span></div>
+              <iframe title={entry.title} src={entry.pdfUrl} />
+            </>
+          ) : pdf ? (
             <>
               <div className="pp-docbar small"><b>{pdf.name}</b><button className="ti-linkbtn" onClick={onClearPdf}>Remove</button></div>
               <iframe title={entry.title} src={pdf.url} />
@@ -408,17 +436,17 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
             )}
           </div>
 
-          <div className="card pp-links">
+          {entry.links.paper && <div className="card pp-links">
             <a className="pp-link" href={entry.links.paper} target="_blank" rel="noopener noreferrer"><span>Question paper</span><i aria-hidden="true">&rsaquo;</i></a>
             <a className="pp-link" href={entry.links.mark} target="_blank" rel="noopener noreferrer"><span>{entry.links.report ? "Mark scheme" : "Answers and scoring"}</span><i aria-hidden="true">&rsaquo;</i></a>
             {entry.links.report && <a className="pp-link" href={entry.links.report} target="_blank" rel="noopener noreferrer"><span>Examiner's report</span><i aria-hidden="true">&rsaquo;</i></a>}
-          </div>
+          </div>}
 
           {entry.sections?.length > 0 && (
             <div className="card card-pad pp-sheet">
               <b>Answer sheet</b>
-              <p className="small muted">Fill in your answers as you go, then paste the key to be marked and go through every question.</p>
-              {entry.sections.map((s) => <button key={s.id} className="btn ghost small" onClick={() => onStart(paper, s)}>{s.name}, {s.questions} questions</button>)}
+              <p className="small muted">{entry.ownId ? "Sit one module at a time on the answer sheet. It is marked the moment you submit, and you can go through every question with its explanation." : "Fill in your answers as you go, then paste the key to be marked and go through every question."}</p>
+              {entry.sections.map((s) => <button key={s.id} className="btn ghost small" onClick={() => onStart(entry.ownId ? ownPaper(entry.ownId) : paper, s)}>{s.name}, {s.questions} questions</button>)}
             </div>
           )}
 
@@ -437,6 +465,7 @@ function Sit({ paper, section, sheet, pdf, onAnswer, onSubmit, onLeave }) {
   const [now, setNow] = useState(Date.now());
   const left = total - Math.floor((now - sheet.startedAt) / 1000);
   const text = paper.letters === "text";
+  const typed = (n) => text || (section.textFrom != null && n >= section.textFrom);
   const options = useMemo(() => lettersOf(section.choices), [section.choices]);
   const answers = sheet.answers || {};
   const answered = Object.values(answers).filter((v) => String(v ?? "").trim() !== "").length;
@@ -475,8 +504,8 @@ function Sit({ paper, section, sheet, pdf, onAnswer, onSubmit, onLeave }) {
           {Array.from({ length: section.questions }, (_, n) => (
             <div key={n} className={"rp-row" + (String(answers[n] ?? "").trim() !== "" ? " done" : "")}>
               <span className="rp-num">{n + 1}</span>
-              {text ? (
-                <input type="text" value={answers[n] || ""} onChange={(e) => set(n, e.target.value)} aria-label={`Answer ${n + 1}`} autoComplete="off" autoCapitalize="none" spellCheck={false} />
+              {typed(n) ? (
+                <input type="text" inputMode={section.textFrom != null ? "decimal" : undefined} value={answers[n] || ""} onChange={(e) => set(n, e.target.value)} aria-label={`Answer ${n + 1}`} autoComplete="off" autoCapitalize="none" spellCheck={false} />
               ) : (
                 <div className="rp-bubbles">
                   {options.map((o, k) => (
@@ -541,7 +570,7 @@ function Result({ paper, section, result, onSave, onDone, onAgain }) {
   const pct = total ? Math.round((right / total) * 100) : 0;
   // a scaled estimate only means something when the whole section was keyed
   const est = paper.test && H()?.estimate && total === section.questions ? H().estimate(paper.test, right, total) : null;
-  const items = rows.map((r) => ({ n: r.n, status: r.status, yours: r.yours, correct: r.correct, skill: section.name }));
+  const items = rows.map((r) => r.item || { n: r.n, status: r.status, yours: r.yours, correct: r.correct, skill: section.name });
 
   useEffect(() => { if (!saved) { onSave({ right, total, minutes: result.minutes }); setSaved(true); } }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -564,7 +593,7 @@ function Result({ paper, section, result, onSave, onDone, onAgain }) {
 
         {total < section.questions && <p className="small muted">The key you pasted covered {total} of {section.questions} questions, so only those were marked and there is no scaled estimate.</p>}
 
-        <Review items={items} test={paper.name} section={section.name} explainable />
+        <Review items={items} test={paper.name} section={section.name} explainable={!paper.own} />
 
         <div className="row">
           <button className="btn ghost" onClick={onAgain}>Sit it again</button>

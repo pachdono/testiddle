@@ -207,3 +207,50 @@ export function markSheet(answers, key, { letters = "mc" } = {}) {
     return { n, status: ok ? "right" : "wrong", yours: given, correct: Array.isArray(k) ? k[0] || "" : k };
   });
 }
+
+/* ---------- Testiddle's own printed tests ---------- */
+
+// Four modules, the same shape as the digital SAT: two of Reading and Writing, two of
+// Math. In Math the last seven questions of each module are typed, not picked.
+export const OWN_SECTIONS = [
+  { id: "rw1", name: "Reading and Writing, Module 1", questions: 33, minutes: 39, choices: 4 },
+  { id: "rw2", name: "Reading and Writing, Module 2", questions: 33, minutes: 39, choices: 4 },
+  { id: "math1", name: "Math, Module 1", questions: 27, minutes: 43, choices: 4, textFrom: 20, note: "Questions 21 to 27 are student-produced responses: type the number." },
+  { id: "math2", name: "Math, Module 2", questions: 27, minutes: 43, choices: 4, textFrom: 20, note: "Questions 21 to 27 are student-produced responses: type the number." },
+];
+
+/** The paper behind an id like "sat-paper-3", or null when the id is not one of ours. */
+export function ownPaper(id) {
+  const m = /^(sat-paper)-(\d+)$/.exec(String(id || ""));
+  if (!m) return null;
+  return { id, own: { kind: m[1], n: Number(m[2]) }, group: "admissions", name: `SAT Paper Test ${m[2]}`, org: "Testiddle", card: {}, sections: OWN_SECTIONS };
+}
+
+// A typed answer is a number, written as a decimal or a fraction, with a minus sign if it needs one.
+const toNumber = (s) => {
+  const t = String(s ?? "").trim().replace(/[\u2212\u2013]/g, "-").replace(/\s+/g, "");
+  const f = /^(-?\d+)\/(\d+)$/.exec(t);
+  if (f) return Number(f[2]) ? Number(f[1]) / Number(f[2]) : NaN;
+  return /^-?(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
+};
+
+/** Marks one module of an own test from its stored key, and builds the review items. */
+export function markOwn(answers, mod) {
+  return mod.questions.map((q, n) => {
+    const given = answers[n];
+    const blank = given === undefined || given === null || String(given).trim() === "";
+    const spr = q.kind === "spr";
+    const L = "ABCD";
+    const correct = spr ? q.answer : L.indexOf(q.answer);
+    const yours = blank ? "" : spr ? String(given).trim() : L.indexOf(String(given).toUpperCase());
+    let ok = false;
+    if (!blank) ok = spr ? Math.abs(toNumber(given) - toNumber(q.answer)) < 0.0011 : yours === correct;
+    const status = blank ? "blank" : ok ? "right" : "wrong";
+    const see = q.fig ? " Look at the figure or table in the paper." : "";
+    return {
+      n, status, yours, correct, item: {
+        n, status, skill: q.skill, passage: q.passage, q: q.q + see, choices: q.choices, yours, correct, why: q.why,
+      },
+    };
+  });
+}

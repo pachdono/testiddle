@@ -74,3 +74,26 @@ test("past paper browsers have unique codes, years in order and working searches
     }
   }
 });
+
+import { ownPaper, markOwn, OWN_SECTIONS } from "../src/realpapers.js";
+
+test("our own tests are found by id, and nothing else is", () => {
+  const p = ownPaper("sat-paper-3");
+  assert.equal(p.name, "SAT Paper Test 3");
+  assert.equal(p.sections, OWN_SECTIONS);
+  assert.equal(ownPaper("sat"), null);
+});
+
+test("an own test marks picked answers by letter and typed answers by value", () => {
+  const mod = { questions: [
+    { kind: "mc", answer: "C", skill: "A", q: "q1", choices: ["a", "b", "c", "d"], why: "w" },
+    { kind: "mc", answer: "B", skill: "A", q: "q2", choices: ["a", "b", "c", "d"], why: "w" },
+    { kind: "spr", answer: "1.5", skill: "B", q: "q3", why: "w" },
+    { kind: "spr", answer: "-6", skill: "B", q: "q4", why: "w" },
+    { kind: "spr", answer: "7", skill: "B", q: "q5", why: "w" },
+  ] };
+  const rows = markOwn({ 0: "C", 1: "D", 2: "3/2", 3: "−6", 4: "" }, mod);
+  assert.deepEqual(rows.map((r) => r.status), ["right", "wrong", "right", "right", "blank"]);
+  assert.equal(rows[1].item.correct, 1);
+  assert.equal(rows[1].item.yours, 3);
+});

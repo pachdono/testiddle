@@ -93,7 +93,7 @@ export const PPQ = {
     hubs: [["College Board practice tests", "https://satsuite.collegeboard.org/sat/practice-preparation/practice-tests"]],
     groups: [
       { name: "Digital SAT", count: 6, title: (n) => `SAT Digital Test ${n}`, minutes: 134, questions: 98, sheet: true, query: (n) => `Digital SAT Practice Test ${n} College Board bluebook` },
-      { name: "Paper SAT", count: 10, title: (n) => `SAT Paper Test ${n}`, minutes: 180, questions: 154, query: (n) => `SAT Practice Test ${n} College Board pdf answers` },
+      { name: "Paper SAT", count: 5, title: (n) => `SAT Paper Test ${n}`, minutes: 164, questions: 120, own: "sat-paper", query: (n) => `Testiddle SAT Paper Test ${n}`, note: "A full length practice test in the digital format, printed. Original questions written for Testiddle, marked automatically." },
     ],
   },
   psat: {
