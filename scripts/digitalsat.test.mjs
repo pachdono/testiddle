@@ -47,3 +47,16 @@ test("the graphing calculator reads curves, circles, inequalities, points and sl
   assert.deepEqual([...parseLine("y=a(x-1)+b").vars].sort(), ["a", "b", "x"]);
   assert.equal(parseLine("2+").kind, "error");
 });
+
+import { compileExpr, fitModel } from "../src/digitalsat.js";
+test("Dwimos: defined functions, absolute value and curve fitting", () => {
+  const c = compileExpr("f(g(2))+|x-3|*2", { funcs: new Set(["f", "g"]) });
+  assert.equal(c.fn({ x: 1, __fn: { f: (v) => v * 10, g: (v) => v + 1 } }), 34);
+  const m = parseLine("y1 ~ a x1^2 + b x1 + c");
+  assert.equal(m.kind, "fit");
+  const fit = fitModel(m.model, ["a", "b", "c"], "x1", [1, 2, 3, 4], [3, 5, 9, 15]);
+  assert.ok(Math.abs(fit.params.a - 1) < 1e-6 && Math.abs(fit.params.b + 1) < 1e-6 && Math.abs(fit.params.c - 3) < 1e-6 && fit.r2 > 0.999999);
+  const e = parseLine("y1 ~ a*b^x1");
+  const fe = fitModel(e.model, ["a", "b"], "x1", [0, 1, 2, 3], [2, 6, 18, 54]);
+  assert.ok(Math.abs(fe.params.a - 2) < 1e-6 && Math.abs(fe.params.b - 3) < 1e-6);
+});

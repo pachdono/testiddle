@@ -589,3 +589,15 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 @media (max-width: 700px) { .gr { grid-template-columns: 1fr; grid-template-rows: 180px 1fr; } .gr-list { border-right: 0; border-bottom: 1px solid #d6dbe6; } }
 .gr-slider { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .gr-slider input { flex: 1 1 100%; }
+
+.gr-row { display: block; padding: 0; }
+.gr-trow { display: flex; align-items: center; gap: 6px; padding: 6px 8px; }
+.gr-result { padding: 0 12px 8px 40px; font: 14px "Source Serif 4", Georgia, serif; color: #333; }
+.gr-result.muted { color: #888; }
+.gr-table { padding-bottom: 8px; }
+.gr-cells { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 10px; }
+.gr-cells input { min-width: 0; border: 1px solid #d6dbe6; border-radius: 4px; padding: 5px 6px; font: 14px system-ui; }
+.gr-cells b { font: 700 12px system-ui; text-align: center; color: #555; }
+.gr-addrow { display: flex; }
+.gr-addrow .gr-add { flex: 1; }
+.gr-tips { padding: 8px 12px 12px; margin: 0; }

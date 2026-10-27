@@ -221,7 +221,7 @@ function CalcPanel({ open, onClose }) {
   return (
     <div className="ds-pop ds-desmos" style={{ display: open ? "grid" : "none", left: pos.left ?? undefined, right: pos.left == null ? 16 : undefined, top: pos.top }} role="dialog" aria-label="Calculator">
       <div className="ds-maphead ds-drag" onPointerDown={down} onPointerMove={move} onPointerUp={up}><b>Calculator</b>
-        <span className="seg tight"><button onPointerDown={(e) => e.stopPropagation()} className={tab === "graph" ? "on" : ""} onClick={() => setTab("graph")}>Graphing</button><button onPointerDown={(e) => e.stopPropagation()} className={tab === "sci" ? "on" : ""} onClick={() => setTab("sci")}>Scientific</button></span>
+        <span className="seg tight"><button onPointerDown={(e) => e.stopPropagation()} className={tab === "graph" ? "on" : ""} onClick={() => setTab("graph")}>Dwimos</button><button onPointerDown={(e) => e.stopPropagation()} className={tab === "sci" ? "on" : ""} onClick={() => setTab("sci")}>Scientific</button></span>
         <button className="ds-x" onPointerDown={(e) => e.stopPropagation()} onClick={onClose}>Close</button></div>
       <div className="ds-desmosbox" style={{ display: tab === "graph" ? "block" : "none" }}><Graphing /></div>
       {tab === "sci" && <Calculator embedded />}
