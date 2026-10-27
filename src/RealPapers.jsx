@@ -160,6 +160,8 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, slug, onSlug, onBack, 
   const entry = slug ? (picked && (picked.slug || slugify(picked.key)) === slug ? picked : findNumbered(paper, slug)) : null;
   const setEntry = (e) => { setPicked(e); onSlug(e ? e.slug || slugify(e.key) : null); };
   const hasSheet = paper.sections.length > 0;
+  const [here, setHere] = useState("rp-how");
+  const go = (id) => (e) => { e.preventDefault(); setHere(id); document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); };
 
   if (entry) return <PaperPage entry={entry} paper={paper} pdf={pdf} onPdf={onPdf} onClearPdf={onClearPdf} onStart={onStart} onBack={() => setEntry(null)} />;
 
@@ -172,11 +174,11 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, slug, onSlug, onBack, 
       <div className="rp-layout">
         <aside className="rp-side card" aria-label="On this page">
           <div className="rp-sidehead"><Tile id={paper.id} /><div><b>{paper.name}</b><span className="small muted">{paper.org}</span></div></div>
-          <a className="rp-sidelink on" href="#rp-how">How it works</a>
-          {PPQ[paper.id] && <a className="rp-sidelink" href="#rp-ppq">{PPQ[paper.id].numbered ? "Practice tests" : "Past papers by year"}</a>}
-          {hasSheet && <a className="rp-sidelink" href="#rp-sections">Sit a section</a>}
-          {hasSheet && <a className="rp-sidelink" href="#rp-yours">Add your paper</a>}
-          {history.length > 0 && <a className="rp-sidelink" href="#rp-results">Your results</a>}
+          <a className={"rp-sidelink" + (here === "rp-how" ? " on" : "")} href="#rp-how" onClick={go("rp-how")}>How it works</a>
+          {PPQ[paper.id] && <a className={"rp-sidelink" + (here === "rp-ppq" ? " on" : "")} href="#rp-ppq" onClick={go("rp-ppq")}>{PPQ[paper.id].numbered ? "Practice tests" : "Past papers by year"}</a>}
+          {hasSheet && <a className={"rp-sidelink" + (here === "rp-sections" ? " on" : "")} href="#rp-sections" onClick={go("rp-sections")}>Sit a section</a>}
+          {hasSheet && <a className={"rp-sidelink" + (here === "rp-yours" ? " on" : "")} href="#rp-yours" onClick={go("rp-yours")}>Add your paper</a>}
+          {history.length > 0 && <a className={"rp-sidelink" + (here === "rp-results" ? " on" : "")} href="#rp-results" onClick={go("rp-results")}>Your results</a>}
           <a className="btn small rp-sidebtn" href={paper.url} target="_blank" rel="noopener noreferrer">Open the official paper</a>
           <button className="ti-linkbtn rp-sideback" onClick={onBack}>Back to all exams</button>
         </aside>
@@ -264,18 +266,22 @@ const Hubs = ({ hubs }) => (
 );
 
 function PaperCard({ entry, onOpen }) {
+  const own = Boolean(entry.ownId);
   return (
-    <button className="test-card" onClick={() => onOpen(entry)}>
+    <button className="test-card pc" onClick={() => onOpen(entry)}>
       <div className="spread">
         <b className="test-name">{entry.title}</b>
-        {entry.sections?.length > 0 && <span className="pill accent">Answer sheet</span>}
+        {entry.sections?.length > 0 && <span className="pill accent">{own ? "Auto-marked" : "Answer sheet"}</span>}
       </div>
-      <span className="small muted">{entry.subtitle}</span>
+      <span className="small muted">{entry.subtitle}{entry.code ? `  ·  ${entry.code}` : ""}</span>
       <div className="test-meta">
         <span><b>{entry.minutes > 0 ? `${entry.minutes} min` : "Official paper"}</b></span>
         {entry.questions > 0 && <span className="muted">{entry.questions} questions</span>}
       </div>
-      <span className="small muted">{entry.sections?.length > 0 ? "Sit it here on the answer sheet" : "Open it next to a timer"}</span>
+      <span className="pc-actions">
+        <span className="pc-btn main">{own ? "Open and write" : entry.sections?.length > 0 ? "Sit on the answer sheet" : "Open the paper"}</span>
+        <span className="pc-btn">{own ? "Mark scheme included" : "Mark scheme"}</span>
+      </span>
     </button>
   );
 }
