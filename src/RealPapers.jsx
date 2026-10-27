@@ -393,6 +393,14 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
   const [running, setRunning] = useState(false);
   const [over, setOver] = useState(false);
   const [tab, setTab] = useState("paper"); // the question paper or its mark scheme
+  const [where, setWhere] = useState(null); // which page each part starts on, for the jump buttons
+  useEffect(() => {
+    if (!entry.ownId) return undefined;
+    let dead = false;
+    fetch(`${import.meta.env.BASE_URL}papers/${entry.ownId}.json`).then((r) => r.json()).then((d) => { if (!dead) setWhere(d.pages || null); }).catch(() => {});
+    return () => { dead = true; };
+  }, [entry.ownId]);
+  const jumps = where && tab === "paper" ? [["Cover", where.cover], ["Reading and Writing 1", where.rw1], ["Reading and Writing 2", where.rw2], ["Math 1", where.m1], ["Math 2", where.m2], ["Answer sheet", where.sheet]].filter(([, pg]) => pg).map(([label, page]) => ({ label, page })) : [];
 
   useEffect(() => {
     if (!running) return undefined;
@@ -410,7 +418,7 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
         <section className="card pp-doc" aria-label="The paper">
           {entry.pdfUrl ? (
             <>
-              <PdfStudio key={tab} lead={(
+              <PdfStudio key={tab} jumps={jumps} lead={(
                 <>
                 <button className="btn ghost small pp-back" onClick={onBack}>&lsaquo; Back</button>
                 <div className="seg tight" role="tablist" aria-label="Paper or mark scheme">

@@ -111,7 +111,7 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
   }
 
   return (
-    <div ref={box} className={"ps-sheet" + (scratch ? " scratch" : "")} style={{ aspectRatio: `1 / ${ratio}`, width: `${zoom * 100}%` }}>
+    <div ref={box} data-page={index + 1} className={"ps-sheet" + (scratch ? " scratch" : "")} style={{ aspectRatio: `1 / ${ratio}`, width: `${zoom * 100}%` }}>
       {scratch ? <span className="ps-tag">Scratch paper</span> : <canvas ref={cv} className="ps-page" />}
       {near && <canvas ref={ink} className={"ps-ink " + tool} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} />}
       <span className="ps-num">{scratch ? "" : index + 1}</span>
@@ -119,7 +119,7 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
   );
 }
 
-export default function PdfStudio({ url, paperKey, title, lead }) {
+export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
   const [zoom, setZoom] = useState(1);
   const wrap = useRef(null);
   const [doc, setDoc] = useState(null);
@@ -228,6 +228,13 @@ export default function PdfStudio({ url, paperKey, title, lead }) {
         <button className="btn small" onClick={exportPdf} disabled={state !== "ready"}>Export PDF</button>
         <button className="ti-linkbtn small" onClick={clearAll}>Clear</button>
       </div>
+      {jumps.length > 0 && state === "ready" && (
+        <div className="ps-jump" role="group" aria-label="Jump to a part of the paper">
+          <span className="small muted">Jump to</span>
+          {jumps.map((j) => <button key={j.label} className="ps-chip" onClick={() => wrap.current?.querySelector(`[data-page="${j.page}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>{j.label}</button>)}
+          {scratch > 0 && <button className="ps-chip" onClick={() => wrap.current?.querySelector(`[data-page="${pages + 1}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>Scratch paper</button>}
+        </div>
+      )}
       <div ref={wrap} className="ps-scroll">
         {state === "loading" && <p className="small muted ps-msg">Opening the paper</p>}
         {state === "error" && <p className="small ps-msg">The paper could not be opened here. <a href={url} target="_blank" rel="noopener noreferrer">Open the PDF in a new tab</a>.</p>}

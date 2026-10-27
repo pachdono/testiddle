@@ -606,3 +606,9 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 .gr-mode button { flex: 1; padding: 6px; border: 1px solid #ccd; background: #fff; border-radius: 6px; font-size: 13px; }
 .gr-mode button.on { background: #2b3a8c; color: #fff; border-color: #2b3a8c; }
 .ds-calc.inline .gr-mode, .ds-calc .gr-mode { padding: 0; }
+
+.ps { display: flex; flex-direction: column; }
+.ps-scroll { flex: 1; min-height: 0; }
+.ps-jump { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.ps-chip { padding: 4px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.ps-chip:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
