@@ -179,7 +179,7 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, slug, onSlug, onBack, 
           {hasSheet && <a className={"rp-sidelink" + (here === "rp-sections" ? " on" : "")} href="#rp-sections" onClick={go("rp-sections")}>Sit a section</a>}
           {hasSheet && <a className={"rp-sidelink" + (here === "rp-yours" ? " on" : "")} href="#rp-yours" onClick={go("rp-yours")}>Add your paper</a>}
           {history.length > 0 && <a className={"rp-sidelink" + (here === "rp-results" ? " on" : "")} href="#rp-results" onClick={go("rp-results")}>Your results</a>}
-          <a className="btn small rp-sidebtn" href={paper.url} target="_blank" rel="noopener noreferrer">Open the official paper</a>
+          <a className="btn small rp-sidebtn" href={paper.url} target="_blank" rel="noopener noreferrer">Practice paper</a>
           <button className="ti-linkbtn rp-sideback" onClick={onBack}>Back to all exams</button>
         </aside>
 
@@ -199,7 +199,7 @@ function Detail({ paper, pdf, onPdf, onClearPdf, onStart, slug, onSlug, onBack, 
               )}
             </ol>
             <div className="row">
-              <a className="btn cta" href={paper.url} target="_blank" rel="noopener noreferrer">Open the official paper</a>
+              <a className="btn cta" href={paper.url} target="_blank" rel="noopener noreferrer">Practice paper</a>
             </div>
           </section>
 
@@ -279,7 +279,7 @@ function PaperCard({ entry, onOpen }) {
         {entry.questions > 0 && <span className="muted">{entry.questions} questions</span>}
       </div>
       <span className="pc-actions">
-        <span className="pc-btn main">{own ? "Open and write" : entry.sections?.length > 0 ? "Sit on the answer sheet" : "Open the paper"}</span>
+        <span className="pc-btn main">{own ? "Practice paper" : entry.sections?.length > 0 ? "Practice on the answer sheet" : "Practice paper"}</span>
         <span className="pc-btn">{own ? "Mark scheme included" : "Mark scheme"}</span>
       </span>
     </button>
@@ -366,7 +366,7 @@ function Numbered({ paper, cfg, onOpenPaper }) {
       <div className="rp-grouphead"><h2>Practice tests</h2><p className="small muted">{cfg.board}. {cfg.note}</p></div>
       {cfg.groups.map((g) => (
         <div key={g.name} className="ppq-group">
-          {cfg.groups.length > 1 && <b>{g.name}</b>}
+          {cfg.groups.length > 1 && <><b>{g.name}</b>{g.blurb && <p className="small muted ppq-blurb">{g.blurb}</p>}</>}
           <div className="test-grid">
             {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => <PaperCard key={n} onOpen={onOpenPaper} entry={numberedEntry(paper, cfg, g, n)} />)}
           </div>
@@ -381,8 +381,9 @@ function Numbered({ paper, cfg, onOpenPaper }) {
 // The paper on the left, and on the right the clock, the mark scheme and the answer sheet.
 function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
   const fileRef = useRef(null);
-  const [mins, setMins] = useState(entry.minutes || 60);
-  const [left, setLeft] = useState((entry.minutes || 60) * 60);
+  const startMins = entry.ownId ? 39 : entry.minutes || 60; // our tests are sat a module at a time
+  const [mins, setMins] = useState(startMins);
+  const [left, setLeft] = useState(startMins * 60);
   const [running, setRunning] = useState(false);
   const [over, setOver] = useState(false);
   const [tab, setTab] = useState("paper"); // the question paper or its mark scheme
@@ -459,6 +460,11 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
                 : <button className="btn pp-start" onClick={() => setRunning(false)}>Pause</button>}
               <button className="btn ghost" onClick={reset}>Reset</button>
             </div>
+            {entry.ownId && (
+              <div className="pp-chips" role="group" aria-label="Timer length">
+                {[["Reading and Writing", 39], ["Math", 43], ["Whole test", entry.minutes]].map(([label, m]) => <button key={label} className={"rp-filter small" + (mins === m ? " on" : "")} onClick={() => changeMins(m)}>{label} {m}</button>)}
+              </div>
+            )}
             {entry.minutesEditable !== false && (
               <label className="pp-mins small muted">Minutes <input type="number" min="1" max="300" value={mins} onChange={(e) => changeMins(e.target.value)} aria-label="Minutes for the timer" /></label>
             )}

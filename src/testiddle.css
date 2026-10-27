@@ -413,3 +413,7 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .ti-main .page.wide:has(.rp-detail), .ti-main .page.wide:has(.rp) { max-width: none; }
 .ti-main .page.wide > .rp-detail, .ti-main .page.wide > .rp { max-width: none; }
 .ti-main .page.wide.rp-detail { max-width: none; }
+
+.pp-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.pp-chips .rp-filter { padding: 6px 12px; font-size: 12.5px; }
+.ppq-blurb { margin: -8px 0 0; }
