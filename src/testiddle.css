@@ -375,8 +375,14 @@ button.rp-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lif
 
 .pp-doc .ps { height: calc(100vh - 160px); }
 button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-align: left; cursor: pointer; }
-.ti-main:has(.pp) { max-width: 1640px; }
-.ti-main .page.pp { max-width: none; }
-.pp-side { position: sticky; top: 84px; }
-@media (max-width: 900px) { .pp-side { position: static; } }
+.ti-main:has(.paper-page) { max-width: 1640px; }
+.ti-main .page.paper-page { max-width: none; }
 .ps-size { font-size: 12px; }
+
+.pp-crumbs { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.pp-back { font-weight: 700; }
+.ti-main:has(.paper-page) { max-width: none; padding: 12px 14px 40px; }
+.pp-layout { grid-template-columns: minmax(0, 1fr) 300px; }
+.pp-doc { position: static; min-height: 0; }
+.pp-doc .ps { height: calc(100vh - 150px); min-height: 600px; }
+@media (max-width: 900px) { .pp-layout { grid-template-columns: 1fr; } .pp-doc .ps { height: 80vh; } }

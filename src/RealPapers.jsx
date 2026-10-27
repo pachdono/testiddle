@@ -27,7 +27,11 @@ export default function RealPapers({ head }) {
   const [sheet, setSheet] = useState(() => read(SHEET, null)); // the paper being sat
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState(() => read(HISTORY, []));
-  const [detail, setDetail] = useState(null); // the paper whose page is open
+  // The address says where you are, so Back works and a page can be shared: /real/sat/paper-sat-test-2
+  const [path, setPath] = useState(() => window.location.pathname);
+  useEffect(() => { const f = () => setPath(window.location.pathname); window.addEventListener("popstate", f); return () => window.removeEventListener("popstate", f); }, []);
+  const nav = (to) => { if (to !== window.location.pathname) window.history.pushState({}, "", to); setPath(to); window.scrollTo(0, 0); };
+  const [, detail, slug] = /^\/real(?:\/([^/]+))?(?:\/([^/]+))?\/?$/.exec(path) || [];
   const [pdf, setPdf] = useState(null); // a paper the student downloaded, shown beside the sheet; it stays in this browser
 
   const paperOf = (s) => REAL_PAPERS.find((p) => p.id === s?.paperId) || ownPaper(s?.paperId);
@@ -75,8 +79,8 @@ export default function RealPapers({ head }) {
     return <Sit paper={paper} section={section} sheet={sheet} pdf={paper.own ? { name: paper.name, own: `${paper.own.kind}-${paper.own.n}-paper`, url: `${import.meta.env.BASE_URL}papers/${paper.own.kind}-${paper.own.n}.pdf` } : pdf} onAnswer={(answers) => update({ answers })} onSubmit={submit} onLeave={leave} />;
   }
   const open = REAL_PAPERS.find((p) => p.id === detail);
-  if (open) return <Detail paper={open} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} onBack={() => setDetail(null)} history={history.filter((h) => h.paper === open.name)} />;
-  return <List head={head} onOpen={setDetail} history={history} onClear={() => { write(HISTORY, []); setHistory([]); }} />;
+  if (open) return <Detail paper={open} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} slug={slug} onSlug={(sl) => nav(sl ? `/real/${open.id}/${sl}` : `/real/${open.id}`)} onBack={() => nav("/real")} history={history.filter((h) => h.paper === open.name)} />;
+  return <List head={head} onOpen={(id) => nav(`/real/${id}`)} history={history} onClear={() => { write(HISTORY, []); setHistory([]); }} />;
 }
 
 /* ---------- the library ---------- */
@@ -150,9 +154,11 @@ function List({ head, onOpen, history, onClear }) {
 }
 
 // One exam's page: what it is, the official source, how to sit it, and its sections.
-function Detail({ paper, pdf, onPdf, onClearPdf, onStart, onBack, history }) {
+function Detail({ paper, pdf, onPdf, onClearPdf, onStart, slug, onSlug, onBack, history }) {
   const fileRef = useRef(null);
-  const [entry, setEntry] = useState(null); // the past paper whose page is open
+  const [picked, setPicked] = useState(null); // a past paper opened from a card
+  const entry = slug ? (picked && (picked.slug || slugify(picked.key)) === slug ? picked : findNumbered(paper, slug)) : null;
+  const setEntry = (e) => { setPicked(e); onSlug(e ? e.slug || slugify(e.key) : null); };
   const hasSheet = paper.sections.length > 0;
 
   if (entry) return <PaperPage entry={entry} paper={paper} pdf={pdf} onPdf={onPdf} onClearPdf={onClearPdf} onStart={onStart} onBack={() => setEntry(null)} />;
@@ -325,6 +331,29 @@ function ByYear({ paper, cfg, onOpenPaper }) {
   );
 }
 
+const slugify = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+// One numbered test as a card or a page needs it. Its slug is what goes in the address.
+function numberedEntry(paper, cfg, g, n) {
+  const slug = `${slugify(g.name)}-test-${n}`;
+  if (g.own) {
+    const base = `${import.meta.env.BASE_URL}papers/${g.own}-${n}`;
+    return { key: `${g.name}-${n}`, slug, tile: paper.id, title: g.title(n), subtitle: "Testiddle practice test", org: "Testiddle", minutes: g.minutes, questions: g.questions, minutesEditable: true,
+      sections: OWN_SECTIONS, ownId: `${g.own}-${n}`, pdfUrl: `${base}.pdf`, markUrl: `${base}-markscheme.pdf`, links: {}, note: g.note };
+  }
+  return { key: `${g.name}-${n}`, slug, tile: paper.id, title: g.title(n), subtitle: cfg.board, org: cfg.board, minutes: g.minutes, questions: g.questions,
+    sections: g.sheet ? paper.sections : [],
+    links: { paper: search(g.query(n)), mark: search(`${g.query(n)} answers scoring`) },
+    hubs: cfg.hubs,
+    note: g.sheet ? "A full length official test. Take it in the Bluebook app or from the PDF, then use the answer sheet here." : "A full length official test, from the PDF." };
+}
+function findNumbered(paper, slug) {
+  const cfg = PPQ[paper.id];
+  if (!cfg?.numbered) return null;
+  for (const g of cfg.groups) for (let n = 1; n <= g.count; n++) { const e = numberedEntry(paper, cfg, g, n); if (e.slug === slug) return e; }
+  return null;
+}
+
 function Numbered({ paper, cfg, onOpenPaper }) {
   return (
     <section className="ppq" id="rp-ppq">
@@ -333,23 +362,7 @@ function Numbered({ paper, cfg, onOpenPaper }) {
         <div key={g.name} className="ppq-group">
           {cfg.groups.length > 1 && <b>{g.name}</b>}
           <div className="test-grid">
-            {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => g.own ? (
-              <PaperCard key={n} onOpen={onOpenPaper} entry={{
-                key: `${g.name}-${n}`, tile: paper.id, title: g.title(n), subtitle: "Testiddle practice test",
-                org: "Testiddle", minutes: g.minutes, questions: g.questions, minutesEditable: true,
-                sections: OWN_SECTIONS, ownId: `${g.own}-${n}`, pdfUrl: `${import.meta.env.BASE_URL}papers/${g.own}-${n}.pdf`, markUrl: `${import.meta.env.BASE_URL}papers/${g.own}-${n}-markscheme.pdf`, links: {},
-                note: g.note,
-              }} />
-            ) : (
-              <PaperCard key={n} onOpen={onOpenPaper} entry={{
-                key: `${g.name}-${n}`, tile: paper.id, title: g.title(n), subtitle: cfg.board,
-                org: cfg.board, minutes: g.minutes, questions: g.questions,
-                sections: g.sheet ? paper.sections : [],
-                links: { paper: search(g.query(n)), mark: search(`${g.query(n)} answers scoring`) },
-                hubs: cfg.hubs,
-                note: g.sheet ? "A full length official test. Take it in the Bluebook app or from the PDF, then use the answer sheet here." : "A full length official test, from the PDF.",
-              }} />
-            ))}
+            {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => <PaperCard key={n} onOpen={onOpenPaper} entry={numberedEntry(paper, cfg, g, n)} />)}
           </div>
         </div>
       ))}
@@ -378,9 +391,10 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
   const reset = () => { setRunning(false); setOver(false); setLeft(mins * 60); };
 
   return (
-    <div className="page wide fade pp">
-      <nav className="rp-crumbs small" aria-label="Breadcrumb">
-        <button className="ti-linkbtn" onClick={onBack}>{paper.name}</button><span aria-hidden="true">/</span><b>{entry.title}</b>
+    <div className="page wide fade paper-page">
+      <nav className="rp-crumbs small pp-crumbs" aria-label="Breadcrumb">
+        <button className="btn ghost small pp-back" onClick={onBack}>&lsaquo; Back to {paper.name}</button>
+        <span className="rp-trail"><button className="ti-linkbtn" onClick={onBack}>{paper.name}</button><span aria-hidden="true">/</span><b>{entry.title}</b></span>
       </nav>
 
       <div className="pp-layout">
