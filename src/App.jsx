@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TestPrep from "./TestPrep.jsx";
 import { useAuth, SignInPanel, ProfileGate } from "./Account.jsx";
-import { configured } from "./supabase.js";
+import { configured, myAccess } from "./supabase.js";
 import { logAnswer } from "./studylog.js";
 import { recordReview } from "./srs.js";
 import { Duck } from "./Duck.jsx";
@@ -49,6 +49,26 @@ function SignInGate() {
   );
 }
 
+// While Testiddle is being tried out it is for testers and staff only. Set VITE_OPEN_TO_ALL=1
+// when it is ready for everyone.
+const OPEN = import.meta.env?.VITE_OPEN_TO_ALL === "1";
+
+function TestersOnly({ email, onSignOut }) {
+  return (
+    <main className="ti-door">
+      <div className="ti-board">
+        <p className="ti-kicker">Testing in progress</p>
+        <h1>Testiddle is for testers right now</h1>
+        <p className="ti-sub">Only testers and staff can come in while it is being tried out. You are signed in as {email || "this account"}, which has not been added yet. Ask to be made a tester, then come back and refresh.</p>
+        <div className="row" style={{ justifyContent: "center", gap: 10 }}>
+          <a className="btn cta" href={DWIDDLE}>Back to Dwiddle</a>
+          <button className="btn ghost" onClick={onSignOut}>Sign out</button>
+        </div>
+      </div>
+    </main>
+  );
+}
+
 export default function App() {
   const auth = useAuth();
   const [theme, setThemeState] = useState(savedTheme);
@@ -60,6 +80,16 @@ export default function App() {
   const [kept, setKept] = useState(null);
   useEffect(() => { if (auth.user) setKept(auth.user); }, [auth.user]);
   const user = auth.user || kept;
+
+  // Testers and staff only, checked in the same database as Dwiddle's roles.
+  const [access, setAccess] = useState(null); // null while it is being checked
+  useEffect(() => {
+    if (!auth.user) { setAccess(null); return undefined; }
+    let live = true;
+    myAccess().then((v) => live && setAccess(v)).catch(() => live && setAccess({ role: null, tester: false, banned: false }));
+    return () => { live = false; };
+  }, [auth.user]);
+  const allowed = OPEN || (access && !access.banned && (access.tester === true || Boolean(access.role)));
   function signOut() { setKept(null); auth.signOut(); }
 
   // A question joins the missed list when it is wrong and leaves it when it is right.
@@ -75,6 +105,13 @@ export default function App() {
         <main className="ti-door"><Loading label="Opening the classroom" /></main>
       ) : !user ? (
         <SignInGate />
+      ) : access === null && !OPEN ? (
+        <main className="ti-door"><Loading label="Checking your access" /></main>
+      ) : !allowed ? (
+        <>
+          <TestersOnly email={user.email} onSignOut={signOut} />
+          <ProfileGate user={user} />
+        </>
       ) : (
         <>
           <main className="ti-main"><Boundary><TestPrep grade={grade} /></Boundary></main>
