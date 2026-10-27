@@ -417,3 +417,14 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .pp-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .pp-chips .rp-filter { padding: 6px 12px; font-size: 12.5px; }
 .ppq-blurb { margin: -8px 0 0; }
+
+/* the paper is the page: nearly the whole window, with the tools in one row above it */
+.ps-sheet { max-width: none; margin: 0; }
+.ps-scroll { padding: 10px; overflow: auto; justify-items: start; }
+.ps-zoom { display: inline-flex; gap: 4px; }
+.pp-doc .ps { height: calc(100vh - 118px); min-height: 640px; }
+.pp-layout { grid-template-columns: minmax(0, 1fr) 290px; gap: 14px; }
+.ti-main:has(.paper-page) { padding: 6px 10px 30px; }
+.paper-page .pp-crumbs { margin: 0 0 8px; }
+.ps-bar { gap: 6px; padding: 6px 10px; }
+@media (max-width: 900px) { .ps-scroll { justify-items: center; } }

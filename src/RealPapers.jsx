@@ -408,14 +408,12 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
         <section className="card pp-doc" aria-label="The paper">
           {entry.pdfUrl ? (
             <>
-              <div className="pp-docbar small">
+              <PdfStudio key={tab} lead={(
                 <div className="seg tight" role="tablist" aria-label="Paper or mark scheme">
                   <button role="tab" aria-selected={tab === "paper"} className={tab === "paper" ? "on" : ""} onClick={() => setTab("paper")}>Question paper</button>
                   <button role="tab" aria-selected={tab === "mark"} className={tab === "mark" ? "on" : ""} onClick={() => setTab("mark")}>Mark scheme</button>
                 </div>
-                <span className="muted">{tab === "mark" ? "Check your work after you finish" : "Write on it with the pen"}</span>
-              </div>
-              <PdfStudio key={tab} url={tab === "mark" ? entry.markUrl : entry.pdfUrl} paperKey={`${entry.ownId}-${tab}`} title={`${entry.title}${tab === "mark" ? " mark scheme" : ""}`} />
+              )} url={tab === "mark" ? entry.markUrl : entry.pdfUrl} paperKey={`${entry.ownId}-${tab}`} title={`${entry.title}${tab === "mark" ? " mark scheme" : ""}`} />
             </>
           ) : pdf ? (
             <>

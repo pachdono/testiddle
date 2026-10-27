@@ -36,7 +36,7 @@ function paint(ctx, strokes, w, h) {
   ctx.globalAlpha = 1;
 }
 
-function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onErase, wrapWidth }) {
+function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onErase, wrapWidth, zoom }) {
   const box = useRef(null), cv = useRef(null), ink = useRef(null), live = useRef(null);
   const [near, setNear] = useState(index < 2);
   const [ratio, setRatio] = useState(PAGE_RATIO);
@@ -55,7 +55,7 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
     (async () => {
       const pg = await doc.getPage(index + 1); if (dead) return;
       const v1 = pg.getViewport({ scale: 1 }); setRatio(v1.height / v1.width);
-      const scale = (Math.min(wrapWidth || 900, 1100) * Math.min(window.devicePixelRatio || 1, 2)) / v1.width;
+      const scale = (Math.min(wrapWidth || 900, 2400) * Math.min(window.devicePixelRatio || 1, 2)) / v1.width;
       const vp = pg.getViewport({ scale });
       c.width = vp.width; c.height = vp.height;
       task = pg.render({ canvasContext: c.getContext("2d"), viewport: vp });
@@ -68,7 +68,7 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
   // the writing over it
   const redraw = useCallback(() => {
     const c = ink.current; if (!c) return;
-    const w = Math.round(Math.min(wrapWidth || 900, 1100) * Math.min(window.devicePixelRatio || 1, 2));
+    const w = Math.round(Math.min(wrapWidth || 900, 2400) * Math.min(window.devicePixelRatio || 1, 2));
     if (c.width !== w) { c.width = w; c.height = Math.round(w * ratio); }
     paint(c.getContext("2d"), strokes, c.width, c.height);
   }, [strokes, ratio, wrapWidth]);
@@ -111,7 +111,7 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
   }
 
   return (
-    <div ref={box} className={"ps-sheet" + (scratch ? " scratch" : "")} style={{ aspectRatio: `1 / ${ratio}` }}>
+    <div ref={box} className={"ps-sheet" + (scratch ? " scratch" : "")} style={{ aspectRatio: `1 / ${ratio}`, width: `${zoom * 100}%` }}>
       {scratch ? <span className="ps-tag">Scratch paper</span> : <canvas ref={cv} className="ps-page" />}
       {near && <canvas ref={ink} className={"ps-ink " + tool} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} />}
       <span className="ps-num">{scratch ? "" : index + 1}</span>
@@ -119,7 +119,8 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
   );
 }
 
-export default function PdfStudio({ url, paperKey, title }) {
+export default function PdfStudio({ url, paperKey, title, lead }) {
+  const [zoom, setZoom] = useState(1);
   const wrap = useRef(null);
   const [doc, setDoc] = useState(null);
   const [state, setState] = useState("loading");
@@ -207,6 +208,7 @@ export default function PdfStudio({ url, paperKey, title }) {
   return (
     <div className="ps">
       <div className="ps-bar" role="toolbar" aria-label="Writing tools">
+        {lead}
         <div className="seg tight">{T.map(([k, label]) => <button key={k} className={tool === k ? "on" : ""} aria-pressed={tool === k} onClick={() => setTool(k)}>{label}</button>)}</div>
         {(tool === "pen" || tool === "hl") && (
           <>
@@ -215,6 +217,11 @@ export default function PdfStudio({ url, paperKey, title }) {
           </>
         )}
         <span className="ps-gap" />
+        <span className="ps-zoom" role="group" aria-label="Zoom">
+          <button className="btn ghost small" onClick={() => setZoom((z) => Math.max(0.6, Math.round((z - 0.2) * 10) / 10))} aria-label="Zoom out">&minus;</button>
+          <button className="btn ghost small" onClick={() => setZoom(1)} aria-label="Fit to width">{Math.round(zoom * 100)}%</button>
+          <button className="btn ghost small" onClick={() => setZoom((z) => Math.min(2.6, Math.round((z + 0.2) * 10) / 10))} aria-label="Zoom in">+</button>
+        </span>
         <button className="btn ghost small" onClick={undo} disabled={!hist.current.undo.length}>Undo</button>
         <button className="btn ghost small" onClick={redo} disabled={!hist.current.redo.length}>Redo</button>
         <button className="btn ghost small" onClick={() => setScratch((n) => n + 1)}>Scratch page</button>
@@ -225,7 +232,7 @@ export default function PdfStudio({ url, paperKey, title }) {
         {state === "loading" && <p className="small muted ps-msg">Opening the paper</p>}
         {state === "error" && <p className="small ps-msg">The paper could not be opened here. <a href={url} target="_blank" rel="noopener noreferrer">Open the PDF in a new tab</a>.</p>}
         {state === "ready" && Array.from({ length: total }, (_, i) => (
-          <Sheet key={i} index={i} doc={doc} scratch={i >= pages} strokes={strokesOf(i)} tool={tool} color={color} size={size} onStroke={addStroke} onErase={erase} wrapWidth={width} />
+          <Sheet key={i} index={i} doc={doc} scratch={i >= pages} strokes={strokesOf(i)} tool={tool} color={color} size={size} onStroke={addStroke} onErase={erase} wrapWidth={Math.round(width * zoom)} zoom={zoom} />
         ))}
       </div>
     </div>
