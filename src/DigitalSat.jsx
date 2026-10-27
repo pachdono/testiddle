@@ -218,7 +218,7 @@ function loadDesmos() {
   desmosP ||= new Promise((res, rej) => {
     if (window.Desmos) return res(window.Desmos);
     const s = document.createElement("script");
-    s.src = `https://www.desmos.com/api/v1.11/calculator.js?apiKey=${DESMOS_KEY}`;
+    s.src = `https://www.desmos.com/api/v1.12/calculator.js?apiKey=${DESMOS_KEY}`;
     s.onload = () => (window.Desmos ? res(window.Desmos) : rej(new Error("none")));
     s.onerror = () => { desmosP = null; rej(new Error("blocked")); };
     document.head.appendChild(s);
