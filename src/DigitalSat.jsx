@@ -3,7 +3,7 @@
 // depending on how the first went, a question map, flags, answer elimination, a
 // calculator, and a break. Progress is kept in this browser so a sitting can be resumed.
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SECTIONS, planFor, sectionOf, moduleName, secondModule, isRight, sectionScore, calc } from "./digitalsat.js";
 
 const KEY = (n) => `testiddle-dsat-${n}`;
@@ -11,6 +11,7 @@ const HISTORY = "testiddle-real-history";
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
 const write = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } };
 const clock = (s) => { const t = Math.max(0, s); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
+const EMPTY = [];
 const Html = ({ html, className = "", as: Tag = "div" }) => <Tag className={"dq-html " + className} dangerouslySetInnerHTML={{ __html: html }} />;
 
 export default function DigitalSat({ n, title, onBack }) {
@@ -117,6 +118,150 @@ function Break({ left, setLeft, onResume }) {
   );
 }
 
+
+/* ---------- highlights and notes ---------- */
+
+const HL = { y: "#fff3a3", b: "#bfe3ff", p: "#ffd0e6", u: "transparent" };
+
+function textNodes(el) {
+  const out = []; const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  let pos = 0, n;
+  while ((n = w.nextNode())) { out.push({ node: n, start: pos, end: pos + n.nodeValue.length }); pos += n.nodeValue.length; }
+  return out;
+}
+// Marks are kept as character positions in the text, so the page can be redrawn without losing them.
+function applyMarks(el, marks) {
+  if (!marks.length) return;
+  for (const t of textNodes(el)) {
+    const hits = marks.filter((m) => m.s < t.end && m.e > t.start);
+    if (!hits.length || !t.node.parentNode) continue;
+    const cuts = new Set([0, t.node.nodeValue.length]);
+    for (const m of hits) { cuts.add(Math.max(0, m.s - t.start)); cuts.add(Math.min(t.node.nodeValue.length, m.e - t.start)); }
+    const at = [...cuts].sort((a, b) => a - b);
+    const frag = document.createDocumentFragment();
+    for (let k = 0; k < at.length - 1; k++) {
+      const a = at[k], b = at[k + 1]; if (a === b) continue;
+      const piece = t.node.nodeValue.slice(a, b);
+      const m = [...hits].reverse().find((x) => x.s - t.start <= a && x.e - t.start >= b);
+      if (!m) { frag.appendChild(document.createTextNode(piece)); continue; }
+      const mk = document.createElement("mark");
+      mk.className = "ds-hl" + (m.c === "u" ? " u" : ""); mk.dataset.id = m.id; mk.style.background = HL[m.c] || HL.y;
+      if (m.note) mk.dataset.note = "1";
+      mk.textContent = piece; frag.appendChild(mk);
+    }
+    t.node.parentNode.replaceChild(frag, t.node);
+  }
+}
+const offsetIn = (el, node, off) => { const r = document.createRange(); r.selectNodeContents(el); r.setEnd(node, off); return r.toString().length; };
+
+function Notable({ html, marks, onMarks, on, className = "" }) {
+  const ref = useRef(null);
+  const [pop, setPop] = useState(null); // { x, y, sel } for new, { x, y, id } for existing
+  useLayoutEffect(() => { const el = ref.current; el.innerHTML = html; applyMarks(el, marks); }, [html, marks]);
+
+  function up() {
+    if (!on) return;
+    const sel = window.getSelection(); if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+    const r = sel.getRangeAt(0); const el = ref.current;
+    if (!el.contains(r.startContainer) || !el.contains(r.endContainer)) return;
+    const s = offsetIn(el, r.startContainer, r.startOffset), e = offsetIn(el, r.endContainer, r.endOffset);
+    if (e <= s) return;
+    const box = r.getBoundingClientRect();
+    setPop({ x: Math.min(box.left, window.innerWidth - 300), y: box.bottom + 8, sel: { s, e } });
+  }
+  function click(ev) {
+    const m = ev.target.closest?.("mark.ds-hl"); if (!m || !on) return;
+    const box = m.getBoundingClientRect(); setPop({ x: Math.min(box.left, window.innerWidth - 300), y: box.bottom + 8, id: m.dataset.id });
+  }
+  const add = (c, note = false) => {
+    const id = Math.random().toString(36).slice(2, 8);
+    onMarks([...marks, { id, s: pop.sel.s, e: pop.sel.e, c, note: "" }]); window.getSelection()?.removeAllRanges();
+    setPop(note ? { x: pop.x, y: pop.y, id } : null);
+  };
+  const cur = pop?.id ? marks.find((m) => m.id === pop.id) : null;
+
+  return (
+    <>
+      <div ref={ref} className={"dq-html " + className + (on ? " annotating" : "")} onMouseUp={up} onTouchEnd={() => setTimeout(up, 50)} onClick={click} />
+      {pop && (
+        <div className="ds-pop ds-notepop" style={{ position: "fixed", left: pop.x, top: pop.y }} role="dialog" aria-label="Highlight">
+          {pop.sel ? (
+            <div className="ds-swatches">
+              {[["y", "Yellow"], ["b", "Blue"], ["p", "Pink"]].map(([c, l]) => <button key={c} className="ds-sw" style={{ background: HL[c] }} aria-label={`Highlight ${l}`} onClick={() => add(c)} />)}
+              <button className="ds-sw u" aria-label="Underline" onClick={() => add("u")}>U</button>
+              <button className="ds-x" onClick={() => add("y", true)}>Add note</button>
+              <button className="ds-x" onClick={() => setPop(null)}>Cancel</button>
+            </div>
+          ) : cur ? (
+            <div className="ds-notebox">
+              <textarea autoFocus rows={3} value={cur.note || ""} placeholder="Write a note" onChange={(e) => onMarks(marks.map((m) => (m.id === cur.id ? { ...m, note: e.target.value } : m)))} />
+              <div className="ds-swatches">
+                {[["y"], ["b"], ["p"], ["u"]].map(([c]) => <button key={c} className={"ds-sw" + (c === "u" ? " u" : "")} style={{ background: HL[c] }} aria-label={c === "u" ? "Underline" : "Colour"} onClick={() => onMarks(marks.map((m) => (m.id === cur.id ? { ...m, c } : m)))}>{c === "u" ? "U" : ""}</button>)}
+                <button className="ds-x" onClick={() => { onMarks(marks.filter((m) => m.id !== cur.id)); setPop(null); }}>Remove</button>
+                <button className="ds-x" onClick={() => setPop(null)}>Done</button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ---------- the graphing calculator, Desmos ---------- */
+
+// Desmos's own calculator, loaded on first use. Set VITE_DESMOS_KEY to your own free key from
+// desmos.com/api; the shared demo key below is only for trying it out.
+const DESMOS_KEY = import.meta.env?.VITE_DESMOS_KEY || "dcb31709b452b1cf9dc26972add0fda6";
+let desmosP;
+function loadDesmos() {
+  desmosP ||= new Promise((res, rej) => {
+    if (window.Desmos) return res(window.Desmos);
+    const s = document.createElement("script");
+    s.src = `https://www.desmos.com/api/v1.11/calculator.js?apiKey=${DESMOS_KEY}`;
+    s.onload = () => (window.Desmos ? res(window.Desmos) : rej(new Error("none")));
+    s.onerror = () => { desmosP = null; rej(new Error("blocked")); };
+    document.head.appendChild(s);
+  });
+  return desmosP;
+}
+
+function CalcPanel({ open, onClose }) {
+  const [tab, setTab] = useState("graph");
+  const [failed, setFailed] = useState(false);
+  const box = useRef(null), calc = useRef(null), seen = useRef(false);
+  const [pos, setPos] = useState({ left: null, top: 70 });
+  const drag = useRef(null);
+
+  useEffect(() => {
+    if (!open || tab !== "graph" || calc.current || !box.current) return undefined;
+    let dead = false;
+    loadDesmos().then((D) => { if (dead || !box.current) return; calc.current = D.GraphingCalculator(box.current, { keypad: true, expressions: true, settingsMenu: false, zoomButtons: true, expressionsTopbar: true, border: false }); setFailed(false); })
+      .catch(() => { if (!dead) { setFailed(true); setTab("sci"); } });
+    return () => { dead = true; };
+  }, [open, tab]);
+  useEffect(() => {
+    const el = box.current; if (!el || !("ResizeObserver" in window)) return undefined;
+    const ro = new ResizeObserver(() => calc.current?.resize()); ro.observe(el); return () => ro.disconnect();
+  }, []);
+  useEffect(() => { if (open) { seen.current = true; calc.current?.resize(); } }, [open, tab]);
+
+  const down = (e) => { const r = e.currentTarget.parentElement.getBoundingClientRect(); drag.current = { dx: e.clientX - r.left, dy: e.clientY - r.top }; e.currentTarget.setPointerCapture(e.pointerId); };
+  const move = (e) => { if (drag.current) setPos({ left: Math.max(0, e.clientX - drag.current.dx), top: Math.max(0, e.clientY - drag.current.dy) }); };
+  const up = () => { drag.current = null; };
+
+  return (
+    <div className="ds-pop ds-desmos" style={{ display: open ? "grid" : "none", left: pos.left ?? undefined, right: pos.left == null ? 16 : undefined, top: pos.top }} role="dialog" aria-label="Calculator">
+      <div className="ds-maphead ds-drag" onPointerDown={down} onPointerMove={move} onPointerUp={up}><b>Calculator</b>
+        <span className="seg tight"><button className={tab === "graph" ? "on" : ""} onClick={() => setTab("graph")}>Graphing</button><button className={tab === "sci" ? "on" : ""} onClick={() => setTab("sci")}>Scientific</button></span>
+        <button className="ds-x" onPointerDown={(e) => e.stopPropagation()} onClick={onClose}>Close</button></div>
+      <div ref={box} className="ds-desmosbox" style={{ display: tab === "graph" && !failed ? "block" : "none" }} />
+      {tab === "graph" && failed && <p className="small">The graphing calculator could not load. Check your connection, or use the scientific one.</p>}
+      {tab === "sci" && <>{failed && <p className="small">The graphing calculator could not load here, so this is the scientific one. You can also open <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer">Desmos</a> in another tab.</p>}<Calculator embedded /></>}
+    </div>
+  );
+}
+
 /* ---------- a module ---------- */
 
 function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
@@ -125,6 +270,10 @@ function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
   const [hideClock, setHideClock] = useState(false);
   const [elim, setElim] = useState(false);
   const [panel, setPanel] = useState(null); // directions | calc | ref | map | more
+  const [annotate, setAnnotate] = useState(false);
+  const notes = (S.notes || {})[modId] || {};
+  const marksOf = (area) => notes[`${S.cur}:${area}`] || EMPTY;
+  const setMarks = (area) => (list) => patch({ notes: { ...(S.notes || {}), [modId]: { ...notes, [`${S.cur}:${area}`]: list } } });
   const answers = S.answers[modId] || {}, flags = S.flags[modId] || {}, strike = S.strike[modId] || {};
   const i = S.cur, q = mod[i];
   const done = useRef(false);
@@ -143,7 +292,7 @@ function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
   const split = math || Boolean(q.passage) || Boolean(q.figure) || Boolean(q.table);
   const stem = (
     <>
-      {q.passage && <Html html={q.passage} className="ds-passage" />}
+      {q.passage && <Notable key={`p${i}`} html={q.passage} className="ds-passage" marks={marksOf("p")} onMarks={setMarks("p")} on={annotate} />}
       {q.figure && <div className="ds-fig" dangerouslySetInnerHTML={{ __html: q.figure }} />}
       {q.table && <Html html={q.table} />}
     </>
@@ -152,20 +301,22 @@ function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
     <div className="dsat">
       <TopBar title={moduleName(modId)} left={left} hideClock={hideClock} setHideClock={setHideClock}>
         <button className="ds-tool" onClick={() => setPanel(panel === "directions" ? null : "directions")}>Directions</button>
+        <button className={"ds-tool" + (annotate ? " on" : "")} aria-pressed={annotate} onClick={() => setAnnotate(!annotate)}>Annotate</button>
         {math && <button className="ds-tool" onClick={() => setPanel(panel === "calc" ? null : "calc")}>Calculator</button>}
         {math && <button className="ds-tool" onClick={() => setPanel(panel === "ref" ? null : "ref")}>Reference</button>}
         <button className="ds-tool" onClick={() => setPanel(panel === "more" ? null : "more")}>More</button>
       </TopBar>
 
+      {annotate && <div className="ds-annobar small">Annotate is on. Select text to highlight it or add a note, and click a highlight to edit it.</div>}
       <div className={"ds-body" + (split ? " split" : "")}>
-        {split && <div className="ds-left">{math ? <><Html html={q.q} className="ds-stem" />{stem}</> : stem}</div>}
+        {split && <div className="ds-left">{math ? <><Notable key={`s${i}`} html={q.q} className="ds-stem" marks={marksOf("s")} onMarks={setMarks("s")} on={annotate} />{stem}</> : stem}</div>}
         <div className="ds-right">
           <div className="ds-qhead">
             <span className="ds-qnum">{i + 1}</span>
             <button className={"ds-flag" + (flags[i] ? " on" : "")} onClick={flag} aria-pressed={Boolean(flags[i])}>{flags[i] ? "Marked for review" : "Mark for review"}</button>
             {q.kind === "mc" && <button className={"ds-elim" + (elim ? " on" : "")} onClick={() => setElim(!elim)} aria-pressed={elim} title="Cross out choices">ABC</button>}
           </div>
-          {!(math && split) && <Html html={q.q} className="ds-stem" />}
+          {!(math && split) && <Notable key={`q${i}`} html={q.q} className="ds-stem" marks={marksOf("q")} onMarks={setMarks("q")} on={annotate} />}
           {q.kind === "mc" ? (
             <div className="ds-choices" role="radiogroup" aria-label="Answer choices">
               {q.choices.map((c, k) => {
@@ -207,7 +358,7 @@ function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
       )}
       {panel === "directions" && <Sheet title="Directions" onClose={() => setPanel(null)}>{math ? <p>The questions in this section address a number of math skills. Solve each problem and choose the best answer from the choices provided, or for student-produced response questions, type your answer in the box. Calculator use is permitted throughout. Unless stated otherwise, all variables and expressions represent real numbers, figures are drawn to scale, and the domain of a function is the set of all real numbers for which it is defined.</p> : <p>The questions in this section address a number of important reading and writing skills. Read each passage and question carefully, then choose the best answer to the question based on the passage. Some questions have a short text with a blank, and some have a table or graph.</p>}</Sheet>}
       {panel === "ref" && <Reference onClose={() => setPanel(null)} />}
-      {panel === "calc" && <Calculator onClose={() => setPanel(null)} />}
+      {math && <CalcPanel open={panel === "calc"} onClose={() => setPanel(null)} />}
       {panel === "more" && (
         <Sheet title="More" onClose={() => setPanel(null)}>
           <p>Leaving saves your place, and the clock for this module is saved with it.</p>
@@ -276,7 +427,7 @@ function Reference({ onClose }) {
   return <Sheet title="Reference" onClose={onClose}><dl className="ds-ref">{F.map(([a, b]) => <div key={a}><dt>{a}</dt><dd>{b}</dd></div>)}</dl></Sheet>;
 }
 
-function Calculator({ onClose }) {
+function Calculator({ onClose, embedded }) {
   const [expr, setExpr] = useState("");
   const [out, setOut] = useState("");
   const [ans, setAns] = useState(0);
@@ -287,8 +438,8 @@ function Calculator({ onClose }) {
   }
   const keys = [["sin(", "cos(", "tan(", "ln("], ["√(", "^", "π", "ans"], ["7", "8", "9", "÷"], ["4", "5", "6", "×"], ["1", "2", "3", "−"], ["0", ".", "(", ")"]];
   return (
-    <div className="ds-pop ds-calc" role="dialog" aria-label="Calculator">
-      <div className="ds-maphead"><b>Calculator</b><button className="ds-x" onClick={onClose}>Close</button></div>
+    <div className={embedded ? "ds-calc inline" : "ds-pop ds-calc"} role={embedded ? undefined : "dialog"} aria-label="Calculator">
+      {!embedded && <div className="ds-maphead"><b>Calculator</b><button className="ds-x" onClick={onClose}>Close</button></div>}
       <input className="ds-calcin" value={expr} onChange={(e) => setExpr(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder="Type or press keys" aria-label="Expression" autoComplete="off" />
       <div className="ds-calcout" aria-live="polite">{out}</div>
       <div className="ds-keys">

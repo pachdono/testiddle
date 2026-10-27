@@ -550,3 +550,21 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 .dsat *, .dsat *::before, .dsat *::after { box-sizing: border-box; }
 .ds-calc > * { min-width: 0; }
 .ds-keys { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.ds-tool.on { background: #fff3a3; }
+.ds-annobar { background: #fff8c9; border-bottom: 1px solid #e6d98a; padding: 6px 20px; color: #5b4d00; }
+.dq-html.annotating { cursor: text; user-select: text; }
+.dq-html mark.ds-hl { color: inherit; border-radius: 2px; padding: 0; cursor: pointer; }
+.dq-html mark.ds-hl.u { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.dq-html mark.ds-hl[data-note]::after { content: "\270E"; font: 11px system-ui; margin-left: 2px; color: #7a6a00; vertical-align: super; }
+.ds-notepop { z-index: 400; width: 280px; padding: 10px; }
+.ds-swatches { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ds-sw { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #8892a6; padding: 0; font-weight: 800; }
+.ds-sw.u { background: #fff; text-decoration: underline; }
+.ds-notebox { display: grid; gap: 8px; }
+.ds-notebox textarea { width: 100%; border: 1.5px solid #aab; border-radius: 8px; padding: 8px; font: 14px system-ui; resize: vertical; }
+.ds-desmos { position: fixed; width: min(640px, 62vw); height: min(560px, 72vh); min-width: 300px; min-height: 320px; resize: both; overflow: hidden; grid-template-rows: auto 1fr; padding: 0; z-index: 350; }
+.ds-desmos > .ds-maphead { padding: 8px 12px; border-bottom: 1px solid #d6dbe6; cursor: grab; touch-action: none; }
+.ds-desmosbox { width: 100%; height: 100%; min-height: 0; }
+.ds-desmos .ds-calc.inline { padding: 12px; width: auto; overflow: auto; }
+.ds-calc.inline { position: static; width: auto; display: grid; gap: 8px; }
