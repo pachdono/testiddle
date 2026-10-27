@@ -418,7 +418,7 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
         <section className="card pp-doc" aria-label="The paper">
           {entry.pdfUrl ? (
             <>
-              <PdfStudio key={tab} jumps={jumps} lead={(
+              <PdfStudio key={tab} lead={(
                 <>
                 <button className="btn ghost small pp-back" onClick={onBack}>&lsaquo; Back</button>
                 <div className="seg tight" role="tablist" aria-label="Paper or mark scheme">
@@ -481,6 +481,13 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
             )}
           </div>
 
+          {jumps.length > 0 && (
+            <div className="card card-pad pp-jump">
+              <b>Jump to</b>
+              <div className="pp-jumps">{jumps.map((j) => <button key={j.label} className="ps-chip" onClick={() => document.querySelector(`.ps-scroll [data-page="${j.page}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>{j.label}</button>)}
+</div>
+            </div>
+          )}
           {entry.pdfUrl && (
             <div className="card pp-links">
               <button className="pp-link" onClick={() => setTab("mark")}><span>Mark scheme</span><i aria-hidden="true">&rsaquo;</i></button>

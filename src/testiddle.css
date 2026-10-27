@@ -612,3 +612,5 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 .ps-jump { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 12px; border-bottom: 1px solid var(--line); }
 .ps-chip { padding: 4px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .ps-chip:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.pp-jump { display: grid; gap: 8px; }
+.pp-jumps { display: flex; flex-wrap: wrap; gap: 6px; }
