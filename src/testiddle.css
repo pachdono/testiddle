@@ -428,3 +428,13 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .paper-page .pp-crumbs { margin: 0 0 8px; }
 .ps-bar { gap: 6px; padding: 6px 10px; }
 @media (max-width: 900px) { .ps-scroll { justify-items: center; } }
+
+/* the paper takes the window, the way SaveMyExams does: header, then the paper and a slim panel */
+.ti-shell:has(.paper-page) .ti-foot { display: none; }
+.ti-main:has(.paper-page) { padding: 8px 8px 8px; max-width: none; }
+.ti-main .page.paper-page { padding: 0; }
+.paper-page .pp-layout { grid-template-columns: minmax(0, 1fr) 280px; gap: 8px; }
+.paper-page .pp-doc .ps { height: calc(100vh - 86px); min-height: 560px; }
+.paper-page .pp-side { max-height: calc(100vh - 86px); overflow-y: auto; gap: 10px; padding-right: 2px; }
+.paper-page .pp-clock { font-size: 34px; }
+@media (max-width: 900px) { .paper-page .pp-side { max-height: none; } .paper-page .pp-doc .ps { height: 84vh; } }

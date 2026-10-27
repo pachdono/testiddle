@@ -399,20 +399,19 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
 
   return (
     <div className="page wide fade paper-page">
-      <nav className="rp-crumbs small pp-crumbs" aria-label="Breadcrumb">
-        <button className="btn ghost small pp-back" onClick={onBack}>&lsaquo; Back to {paper.name}</button>
-        <span className="rp-trail"><button className="ti-linkbtn" onClick={onBack}>{paper.name}</button><span aria-hidden="true">/</span><b>{entry.title}</b></span>
-      </nav>
 
       <div className="pp-layout">
         <section className="card pp-doc" aria-label="The paper">
           {entry.pdfUrl ? (
             <>
               <PdfStudio key={tab} lead={(
+                <>
+                <button className="btn ghost small pp-back" onClick={onBack}>&lsaquo; Back</button>
                 <div className="seg tight" role="tablist" aria-label="Paper or mark scheme">
                   <button role="tab" aria-selected={tab === "paper"} className={tab === "paper" ? "on" : ""} onClick={() => setTab("paper")}>Question paper</button>
                   <button role="tab" aria-selected={tab === "mark"} className={tab === "mark" ? "on" : ""} onClick={() => setTab("mark")}>Mark scheme</button>
                 </div>
+                </>
               )} url={tab === "mark" ? entry.markUrl : entry.pdfUrl} paperKey={`${entry.ownId}-${tab}`} title={`${entry.title}${tab === "mark" ? " mark scheme" : ""}`} />
             </>
           ) : pdf ? (
