@@ -123,14 +123,20 @@ export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
   const [zoom, setZoom] = useState(1);
   // Zooming keeps the spot under the pointer where it is, or the middle of the view for the buttons.
   // The scroll is set after the new size is laid out, so it is not clamped to the old page.
-  const zoomRef = useRef(1), laidOut = useRef(1), anchor = useRef(null);
+  const zoomRef = useRef(1), anchor = useRef(null);
   const zoomTo = useCallback((z, x, y) => {
     const el = wrapRef.current; if (!el) return;
     z = Math.max(0.6, Math.min(3, Math.round(z * 100) / 100));
     if (Math.abs(z - zoomRef.current) < 0.005) return;
     const r = el.getBoundingClientRect();
-    const vx = (x ?? r.left + r.width / 2) - r.left, vy = (y ?? r.top + r.height / 2) - r.top;
-    anchor.current = { ux: (el.scrollLeft + vx) / laidOut.current, uy: (el.scrollTop + vy) / laidOut.current, vx, vy };
+    const px = x ?? r.left + r.width / 2, py = y ?? r.top + r.height / 2;
+    // remembered as a place on a page, so margins and gaps between pages do not throw it off
+    let best = null, near = Infinity;
+    el.querySelectorAll(".ps-sheet").forEach((pg, i) => {
+      const q = pg.getBoundingClientRect(); const d = py < q.top ? q.top - py : py > q.bottom ? py - q.bottom : 0;
+      if (d < near) { near = d; best = { i, fx: (px - q.left) / q.width, fy: (py - q.top) / q.height }; }
+    });
+    anchor.current = best && { ...best, vx: px - r.left, vy: py - r.top };
     zoomRef.current = z; setZoom(z);
   }, []);
   const wrap = useRef(null);
@@ -148,10 +154,12 @@ export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
   const [, bump] = useState(0);
   const bytes = useRef(null);
   useLayoutEffect(() => {
-    laidOut.current = zoom;
     const a = anchor.current, el = wrap.current; if (!a || !el) return;
     anchor.current = null;
-    el.scrollLeft = a.ux * zoom - a.vx; el.scrollTop = a.uy * zoom - a.vy;
+    const pg = el.querySelectorAll(".ps-sheet")[a.i]; if (!pg) return;
+    const q = pg.getBoundingClientRect(), r = el.getBoundingClientRect();
+    el.scrollLeft += q.left + a.fx * q.width - (r.left + a.vx);
+    el.scrollTop += q.top + a.fy * q.height - (r.top + a.vy);
   }, [zoom]);
   // ctrl and wheel (a trackpad pinch), and two fingers, zoom about the pointer
   useEffect(() => {
