@@ -614,3 +614,6 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 .ps-chip:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .pp-jump { display: grid; gap: 8px; }
 .pp-jumps { display: flex; flex-wrap: wrap; gap: 6px; }
+/* the paper pane never grows with the page inside it, so zooming scrolls instead of widening the pane */
+.pp-doc { grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.ps, .ps-scroll { min-width: 0; max-width: 100%; }

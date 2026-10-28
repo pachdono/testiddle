@@ -3,7 +3,7 @@
 // your writing back into a PDF to take to GoodNotes or print. Writing is kept in this
 // browser, per paper, so a refresh does not lose it.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const COLORS = ["#1b1b1b", "#2f6fb0", "#c0392b", "#2a8c76", "#e0a21a"];
 const PAGE_RATIO = 11 / 8.5;
@@ -36,7 +36,7 @@ function paint(ctx, strokes, w, h) {
   ctx.globalAlpha = 1;
 }
 
-function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onErase, wrapWidth, zoom }) {
+function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onErase, wrapWidth, pw }) {
   const box = useRef(null), cv = useRef(null), ink = useRef(null), live = useRef(null);
   const [near, setNear] = useState(index < 2);
   const [ratio, setRatio] = useState(PAGE_RATIO);
@@ -111,7 +111,7 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
   }
 
   return (
-    <div ref={box} data-page={index + 1} className={"ps-sheet" + (scratch ? " scratch" : "")} style={{ aspectRatio: `1 / ${ratio}`, width: `${zoom * 100}%` }}>
+    <div ref={box} data-page={index + 1} className={"ps-sheet" + (scratch ? " scratch" : "")} style={{ aspectRatio: `1 / ${ratio}`, width: pw ? `${pw}px` : "100%" }}>
       {scratch ? <span className="ps-tag">Scratch paper</span> : <canvas ref={cv} className="ps-page" />}
       {near && <canvas ref={ink} className={"ps-ink " + tool} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} />}
       <span className="ps-num">{scratch ? "" : index + 1}</span>
@@ -121,7 +121,20 @@ function Sheet({ index, doc, scratch, strokes, tool, color, size, onStroke, onEr
 
 export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
   const [zoom, setZoom] = useState(1);
+  // Zooming keeps the spot under the pointer where it is, or the middle of the view for the buttons.
+  // The scroll is set after the new size is laid out, so it is not clamped to the old page.
+  const zoomRef = useRef(1), laidOut = useRef(1), anchor = useRef(null);
+  const zoomTo = useCallback((z, x, y) => {
+    const el = wrapRef.current; if (!el) return;
+    z = Math.max(0.6, Math.min(3, Math.round(z * 100) / 100));
+    if (Math.abs(z - zoomRef.current) < 0.005) return;
+    const r = el.getBoundingClientRect();
+    const vx = (x ?? r.left + r.width / 2) - r.left, vy = (y ?? r.top + r.height / 2) - r.top;
+    anchor.current = { ux: (el.scrollLeft + vx) / laidOut.current, uy: (el.scrollTop + vy) / laidOut.current, vx, vy };
+    zoomRef.current = z; setZoom(z);
+  }, []);
   const wrap = useRef(null);
+  const wrapRef = wrap;
   const [doc, setDoc] = useState(null);
   const [state, setState] = useState("loading");
   const [pages, setPages] = useState(0);
@@ -134,6 +147,30 @@ export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
   const hist = useRef({ undo: [], redo: [] });
   const [, bump] = useState(0);
   const bytes = useRef(null);
+  useLayoutEffect(() => {
+    laidOut.current = zoom;
+    const a = anchor.current, el = wrap.current; if (!a || !el) return;
+    anchor.current = null;
+    el.scrollLeft = a.ux * zoom - a.vx; el.scrollTop = a.uy * zoom - a.vy;
+  }, [zoom]);
+  // ctrl and wheel (a trackpad pinch), and two fingers, zoom about the pointer
+  useEffect(() => {
+    const el = wrap.current; if (!el) return undefined;
+    const onWheel = (e) => { if (!e.ctrlKey) return; e.preventDefault(); zoomTo(zoomRef.current * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY); };
+    let pinch = null;
+    const span = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const mid = (t) => [(t[0].clientX + t[1].clientX) / 2, (t[0].clientY + t[1].clientY) / 2];
+    const ts = (e) => { if (e.touches.length === 2) pinch = { d: span(e.touches), z: zoomRef.current }; };
+    const tm = (e) => { if (e.touches.length === 2 && pinch) { e.preventDefault(); const [x, y] = mid(e.touches); zoomTo(pinch.z * (span(e.touches) / pinch.d), x, y); } };
+    const te = () => { pinch = null; };
+    let gz = null;
+    const gs = (e) => { e.preventDefault(); gz = zoomRef.current; };
+    const gc = (e) => { e.preventDefault(); if (gz != null) zoomTo(gz * e.scale, e.clientX, e.clientY); };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    el.addEventListener("touchstart", ts, { passive: true }); el.addEventListener("touchmove", tm, { passive: false }); el.addEventListener("touchend", te);
+    el.addEventListener("gesturestart", gs); el.addEventListener("gesturechange", gc);
+    return () => { el.removeEventListener("wheel", onWheel); el.removeEventListener("touchstart", ts); el.removeEventListener("touchmove", tm); el.removeEventListener("touchend", te); el.removeEventListener("gesturestart", gs); el.removeEventListener("gesturechange", gc); };
+  }, [zoomTo, state]);
   const key = inkKey(paperKey);
 
   useEffect(() => { const s = read(key); setInk(s?.ink || {}); setScratch(s?.scratch || 0); hist.current = { undo: [], redo: [] }; }, [key]);
@@ -218,9 +255,9 @@ export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
         )}
         <span className="ps-gap" />
         <span className="ps-zoom" role="group" aria-label="Zoom">
-          <button className="btn ghost small" onClick={() => setZoom((z) => Math.max(0.6, Math.round((z - 0.2) * 10) / 10))} aria-label="Zoom out">&minus;</button>
-          <button className="btn ghost small" onClick={() => setZoom(1)} aria-label="Fit to width">{Math.round(zoom * 100)}%</button>
-          <button className="btn ghost small" onClick={() => setZoom((z) => Math.min(2.6, Math.round((z + 0.2) * 10) / 10))} aria-label="Zoom in">+</button>
+          <button className="btn ghost small" onClick={() => zoomTo(zoomRef.current - 0.2)} aria-label="Zoom out">&minus;</button>
+          <button className="btn ghost small" onClick={() => zoomTo(1)} aria-label="Fit to width">{Math.round(zoom * 100)}%</button>
+          <button className="btn ghost small" onClick={() => zoomTo(zoomRef.current + 0.2)} aria-label="Zoom in">+</button>
         </span>
         <button className="btn ghost small" onClick={undo} disabled={!hist.current.undo.length}>Undo</button>
         <button className="btn ghost small" onClick={redo} disabled={!hist.current.redo.length}>Redo</button>
@@ -232,7 +269,7 @@ export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
         {state === "loading" && <p className="small muted ps-msg">Opening the paper</p>}
         {state === "error" && <p className="small ps-msg">The paper could not be opened here. <a href={url} target="_blank" rel="noopener noreferrer">Open the PDF in a new tab</a>.</p>}
         {state === "ready" && Array.from({ length: total }, (_, i) => (
-          <Sheet key={i} index={i} doc={doc} scratch={i >= pages} strokes={strokesOf(i)} tool={tool} color={color} size={size} onStroke={addStroke} onErase={erase} wrapWidth={Math.round(width * zoom)} zoom={zoom} />
+          <Sheet key={i} index={i} doc={doc} scratch={i >= pages} strokes={strokesOf(i)} tool={tool} color={color} size={size} onStroke={addStroke} onErase={erase} wrapWidth={Math.round(width * zoom)} pw={Math.round((width - 22) * zoom)} />
         ))}
       </div>
     </div>
