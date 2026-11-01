@@ -31,33 +31,6 @@ export function setChangedAt(times) {
   try { localStorage.setItem(TIMES, JSON.stringify({ ...load(TIMES, {}), ...times })); } catch { /* private mode */ }
 }
 
-// Session storage clears when the tab closes, which is what we want for things
-// that should reset on a fresh visit rather than be remembered forever.
-export function loadSession(key, fallback) {
-  try {
-    const raw = sessionStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-export function saveSession(key, value) {
-  try {
-    sessionStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // nothing to do
-  }
-}
-
-export function clearSession(key) {
-  try {
-    sessionStorage.removeItem(key);
-  } catch {
-    // nothing to do
-  }
-}
-
 export const KEYS = {
   theme: "dwiddle-theme",
   known: "dwiddle-known",   // card ids retired from the deck

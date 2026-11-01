@@ -9,7 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 import { sayAs, stopSpeaking } from "./tts.js";
 
-export function speechAvailable() {
+function speechAvailable() {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 

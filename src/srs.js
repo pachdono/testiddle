@@ -21,7 +21,7 @@ function addDays(iso, n) {
   return d.toISOString().slice(0, 10);
 }
 
-export const loadSrs = () => load(KEYS.srs, {});
+const loadSrs = () => load(KEYS.srs, {});
 
 export function recordReview(id, correct) {
   const all = loadSrs();
@@ -32,13 +32,3 @@ export function recordReview(id, correct) {
   return all;
 }
 
-// The items from a pool that are due today or overdue, most overdue first.
-export function dueFrom(pool, srs = loadSrs()) {
-  const now = today();
-  return pool
-    .filter((q) => srs[q.id] && srs[q.id].due <= now)
-    .sort((a, b) => (srs[a.id].due < srs[b.id].due ? -1 : 1));
-}
-
-export const reviewOn = () => load(KEYS.srsOn, true) !== false;
-export const setReviewOn = (on) => save(KEYS.srsOn, !!on);

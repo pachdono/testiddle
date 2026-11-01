@@ -526,7 +526,7 @@ The finding remains contested. Some researchers argue that comparable wear can a
 
 const TOEFL_LISTENING = `Transcript of a lecture: 'So last week we finished with the classical account of memory as a filing cabinet, storage and retrieval, and I said we would come back to why that picture is now considered wrong. The evidence that broke it came from reconsolidation studies. Briefly: when you recall a memory, it becomes temporarily unstable, and it has to be written back. Which means every act of remembering is also an act of editing. That is uncomfortable if you are, say, a juror listening to eyewitness testimony, and we will spend the second half on exactly that problem.'`;
 
-export const EXTRA = {
+const EXTRA = {
   act: [
     { id: "actr1", section: "Reading", skill: "Inference", passage: ACT_READING, q: "It can most reasonably be inferred that Elena continues walking the channel because:", choices: ["she expects the drought to end soon", "abandoning the routine would mean accepting something she resists", "her husband insists on it", "she is paid to maintain it"], answer: 1, why: "The narrator says stopping would have meant something she was not ready to mean. That is refusal to accept, not expectation of rain." },
     { id: "actr2", section: "Reading", skill: "Detail", passage: ACT_READING, q: "According to the passage, the Vasquez family left in:", choices: ["March", "June", "August", "the previous year"], answer: 1, why: "The neighbours left in March and the Vasquez family in June. Attaching the wrong month to the wrong family is the trap." },
@@ -617,7 +617,7 @@ What differs is everything else. The luciferins of fireflies, of certain deep se
 
 The function varies as widely as the chemistry. In fireflies the light is a mating signal. In deep sea fish it is more often counterillumination, a downward glow that matches the faint light from above and erases the animal's silhouette from the view of anything hunting from below.`;
 
-export const B1 = {
+const B1 = {
   ielts: [
     { id: "iep2a", section: "Reading", skill: "True, False, Not Given", passage: IE_P2, q: "Statement: Whorf's strongest version of the hypothesis is still widely accepted.", choices: ["True", "False", "Not Given"], answer: 1, why: "The passage says it collapsed under scrutiny in the 1960s, which contradicts the statement." },
     { id: "iep2b", section: "Reading", skill: "True, False, Not Given", passage: IE_P2, q: "Statement: Research on the question stopped entirely for around twenty years.", choices: ["True", "False", "Not Given"], answer: 0, why: "For two decades the question was considered closed, which supports the statement." },
@@ -686,7 +686,7 @@ const SS_P5 = `The village had one telephone, in the post office, and when it ra
 
 const SS_P6 = `Bamboo is a grass, not a tree, and some species grow nearly a metre a day. The stalk emerges from the ground at its final diameter and never thickens, which is why a bamboo forest looks so uniform. What appear to be separate plants are usually a single organism connected underground, and when one stalk flowers, every stalk of that organism flowers at the same time, sometimes across continents, and then the whole thing dies.`;
 
-export const B2 = {
+const B2 = {
   act: [
     { id: "arf1", section: "Reading", skill: "Main idea", passage: AR_FICTION, q: "The passage is primarily concerned with:", choices: ["the economics of running a small shop", "the narrator's changing understanding of a lesson", "a dispute between two customers", "the closure of a mill"], answer: 1, why: "The structure moves from the event, to the young narrator's reading of it, to the different reading thirty years later." },
     { id: "arf2", section: "Reading", skill: "Detail", passage: AR_FICTION, q: "The narrator was how old when the incident occurred?", choices: ["Ten", "Fourteen", "Twenty", "Fifty one"], answer: 1, why: "I learned this at fourteen. Fifty one is the number of years the grandmother kept the shop." },
@@ -776,7 +776,7 @@ Trial E, 2.0 M acid, small chips, heated to 40 C: 8.6 g lost.`;
 
 const SS_P7 = `Cartography was once a state secret. In sixteenth century Portugal and Spain, charts showing routes to the Indies were classified, and copying one carried the death penalty. The reasoning was straightforward: a route that took a decade and many lives to establish could be given away on a single sheet of paper. What eventually broke the system was not espionage but employment. Navigators moved between crowns for better pay, and they carried what they knew in their heads, where no law could reach it.`;
 
-export const B3 = {
+const B3 = {
   act: [
     { id: "sc1a", section: "Science", skill: "Data interpretation", passage: SCI_1, q: "As pendulum length increases, the period:", choices: ["decreases", "increases", "stays constant", "varies randomly"], answer: 1, why: "Period rises from 1.00 s at 0.25 m to 2.84 s at 2.00 m throughout." },
     { id: "sc1b", section: "Science", skill: "Data interpretation", passage: SCI_1, q: "What do the results of Experiment 2 show about mass?", choices: ["Heavier masses give longer periods", "Mass has essentially no effect on period", "Mass halves the period", "Mass doubles the period"], answer: 1, why: "Across a twentyfold change in mass the period varies only between 2.00 and 2.01 s." },
@@ -879,7 +879,7 @@ The pattern across these cases is consistent. Decipherment succeeds when the mat
 
 const mk = (id, passage, skill, q, choices, answer, why) => ({ id, section: "Reading", skill, passage, q, choices, answer, why });
 
-export const IELTS_READING = [
+const IELTS_READING = [
   // Passage 1, questions 1 to 13
   mk("ir1", P1, "True, False, Not Given", "Statement: By 1970 several major cities had buried over half of their watercourses.", ["True", "False", "Not Given"], 0, "The second sentence of paragraph one states exactly this."),
   mk("ir2", P1, "True, False, Not Given", "Statement: Culverting was introduced mainly to create space for housing.", ["True", "False", "Not Given"], 1, "The passage says planners wanted the land for roads, not housing, so the statement is contradicted."),

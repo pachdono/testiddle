@@ -101,7 +101,7 @@ const LATEST = new Set([KEYS.topic, KEYS.quizLen, KEYS.level, KEYS.srsOn, KEYS.f
 // the only thing that can approach it.
 const MAX_PAYLOAD = 600 * 1024;
 
-export function localSnapshot() {
+function localSnapshot() {
   const out = {};
   SYNCED.forEach((k) => { out[k] = load(k, null); });
   const times = changedAt();
@@ -109,7 +109,7 @@ export function localSnapshot() {
   return out;
 }
 
-export function applySnapshot(data) {
+function applySnapshot(data) {
   if (!data) return;
   SYNCED.forEach((k) => {
     // Written without a new time: this is the account's copy arriving, not a
@@ -257,7 +257,7 @@ export function merge(localData, remoteData) {
   return out;
 }
 
-export async function pullProgress(userId) {
+async function pullProgress(userId) {
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("progress").select("data").eq("user_id", userId).maybeSingle();
@@ -268,7 +268,7 @@ export async function pullProgress(userId) {
   return data?.data ?? null;
 }
 
-export async function pushProgress(userId, data) {
+async function pushProgress(userId, data) {
   if (!supabase) return false;
 
   // The bank is the only thing that can grow without bound. If a row gets too
@@ -287,92 +287,6 @@ export async function pushProgress(userId, data) {
     return false;
   }
   return true;
-}
-
-export async function saveMaterial(userId, title, payload) {
-  if (!supabase) return null;
-  const { data, error } = await supabase
-    .from("materials")
-    .insert({ user_id: userId, title, payload })
-    .select("id")
-    .single();
-  if (error) {
-    console.warn("[materials] save failed", error.message);
-    return null;
-  }
-  return data.id;
-}
-
-export async function listMaterials(userId) {
-  if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("materials")
-    .select("id, title, created_at, payload")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  if (error) {
-    console.warn("[materials] list failed", error.message);
-    return [];
-  }
-  return data || [];
-}
-
-// The headcount shown on the dashboard. Returns null rather than a guess when
-// the function is missing or the project is not configured, so the app can
-// simply not make the claim.
-export async function userCount() {
-  if (!supabase) return null;
-  const { data, error } = await supabase.rpc("user_count");
-  if (error) {
-    console.warn("[stats] user_count unavailable", error.message);
-    return null;
-  }
-  const n = Number(data);
-  return Number.isFinite(n) ? n : null;
-}
-
-// Feedback and reviews.
-//
-// Written straight to the table, which is insert only and readable only once
-// approved, so nothing anyone submits can appear anywhere until it is approved
-// in the dashboard.
-export async function submitFeedback({ kind, rating, message, contact, title }) {
-  if (!supabase) return { stored: false, reason: "Accounts are not configured" };
-
-  const { data: session } = await supabase.auth.getSession();
-  const user = session?.session?.user ?? null;
-
-  // The id is made here so the thank you email can quote a reference for it.
-  const id = crypto.randomUUID();
-  const { error } = await supabase.from("feedback").insert({
-    id,
-    user_id: user?.id ?? null,
-    kind,
-    rating: kind === "review" ? rating : null,
-    message,
-    contact: contact || user?.email || null,
-    ...(title ? { title } : {}),
-  });
-
-  if (error) {
-    console.warn("[feedback] insert failed", error.message);
-    return { stored: false, reason: error.message };
-  }
-  return { stored: true, id, from: user?.email ?? null };
-}
-
-// Only ever returns approved reviews: the policy enforces it, this just asks.
-export async function approvedReviews(limit = 6) {
-  if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("feedback")
-    .select("id, rating, message, created_at")
-    .eq("kind", "review")
-    .eq("approved", true)
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  if (error) return [];
-  return data || [];
 }
 
 // ---------- profile, announcements, update logs ----------
@@ -409,22 +323,6 @@ export async function saveLook(userId, { display_name, avatar }) {
   return data?.length ? { ok: true } : { ok: false, reason: "Fill in your details first." };
 }
 
-export async function activeAnnouncement() {
-  if (!supabase) return null;
-  const { data, error } = await supabase
-    .from("announcements").select("id, message, link").eq("active", true)
-    .order("created_at", { ascending: false }).limit(1);
-  return error ? null : data?.[0] ?? null;
-}
-
-export async function latestUpdates(limit = 4) {
-  if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("updates").select("id, version, title, body, published_at")
-    .order("published_at", { ascending: false }).limit(limit);
-  return error ? [] : data || [];
-}
-
 // The signed in person's staff role, tester flag and ban. Only decides what
 // the app shows; the database enforces all of it for itself.
 export async function myAccess() {
@@ -435,14 +333,6 @@ export async function myAccess() {
   // before roles.sql is run, fall back to the plain staff check
   const r = await supabase.rpc("is_staff");
   return { ...none, role: !r.error && r.data === true ? "admin" : null };
-}
-
-// Approved reviews with the reviewer's first name and picture.
-export async function publicReviews(n = 3) {
-  if (!supabase) return [];
-  const { data, error } = await supabase.rpc("public_reviews", { n });
-  if (!error) return data || [];
-  return approvedReviews(n);
 }
 
 

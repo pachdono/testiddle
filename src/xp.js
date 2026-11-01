@@ -7,14 +7,3 @@
 
 export const XP = { right: 10, tried: 3, lesson: 50, firstToday: 20 };
 
-export function levelOf(xp = 0) {
-  let level = 1, need = 100, left = Math.max(0, Math.floor(xp));
-  while (left >= need) { left -= need; level += 1; need += 50; }
-  return { level, into: left, need };
-}
-
-// Shows a small "+10 XP" wherever the app is.
-export function announceXp(amount, label = "") {
-  if (!amount) return;
-  window.dispatchEvent(new CustomEvent("dwiddle:xp", { detail: { amount, label } }));
-}

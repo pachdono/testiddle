@@ -585,16 +585,6 @@ function contextSet(section, n) {
 
 /* ---------- the section builders ---------- */
 
-export const POOL = {
-  grammar: GRAMMAR.length,
-  context: CONTEXT.length,
-  synonyms: SYNONYMS.length,
-  analogies: ANALOGIES.length,
-  rw: GRAMMAR.length + CONTEXT.length,
-  verbal: SYNONYMS.length + ANALOGIES.length,
-  maths: Infinity, // generated, so there is no ceiling
-};
-
 // Problem solving without geometry, which is how the GMAT Focus Edition and the
 // arithmetic and algebra heavy tests ask it.
 const NO_GEOMETRY = MATH_KEYS.filter((k) => !["circle", "rectangle", "pythagoras", "trig", "slope", "perpendicular", "midpoint", "vertex"].includes(k));

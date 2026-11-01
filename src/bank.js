@@ -12,7 +12,7 @@ import { tidyQuestion } from "./mathText.js";
 
 const key = (testId, sectionId) => `${testId}:${sectionId}`;
 
-export function loadBank() {
+function loadBank() {
   return load(KEYS.testBank, {});
 }
 
@@ -20,7 +20,7 @@ export function bankFor(testId, sectionId) {
   return loadBank()[key(testId, sectionId)] || [];
 }
 
-export function addToBank(testId, sectionId, questions) {
+function addToBank(testId, sectionId, questions) {
   const all = loadBank();
   const k = key(testId, sectionId);
   const existing = all[k] || [];
@@ -30,11 +30,11 @@ export function addToBank(testId, sectionId, questions) {
   return all[k];
 }
 
-export function loadSeen() {
+function loadSeen() {
   return new Set(load(KEYS.seen, []));
 }
 
-export function markSeen(ids) {
+function markSeen(ids) {
   const seen = loadSeen();
   ids.forEach((id) => seen.add(id));
   // Keep the list bounded. The oldest entries falling off simply means very old

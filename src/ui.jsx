@@ -1,7 +1,6 @@
 import { Component, useEffect, useRef, useState } from "react";
 import { M } from "./MathText.jsx";
 import { createPortal } from "react-dom";
-import { HL_KINDS } from "./mock.js";
 import { Duck } from "./Duck.jsx";
 
 // The small pieces every page is built from: the icon set, the heading at the
@@ -128,7 +127,7 @@ export function Loading({ label }) {
 // backdrop underneath can stop animating while nobody can see it. Counted, so
 // two layers open at once do not switch it back on early.
 let covers = 0;
-export function useCover(on = true) {
+function useCover(on = true) {
   useEffect(() => {
     if (!on) return;
     covers += 1;
@@ -146,7 +145,7 @@ export function Portal({ children }) {
 
 // Highlighted text: a run of segments, each plain or carrying a mark, shown or
 // hidden by the filters the reader has switched on.
-export function toSegments(parts) {
+function toSegments(parts) {
   if (Array.isArray(parts)) {
     return parts.filter((seg) => seg && typeof seg === "object" && typeof seg.t === "string");
   }
@@ -159,21 +158,6 @@ export function Marked({ parts, on }) {
     !seg.mark || !on[seg.mark]
       ? <span key={i}><M t={seg.t} /></span>
       : <mark key={i} className={"hl " + seg.mark}><M t={seg.t} /></mark>,
-  );
-}
-
-export function HighlightFilters({ on, setOn, counts }) {
-  return (
-    <div className="filters">
-      {Object.entries(HL_KINDS).map(([k, v]) => (
-        <button key={k} className={"filter " + k + (on[k] ? " on" : "")}
-          onClick={() => setOn((p) => ({ ...p, [k]: !p[k] }))} title={v.hint}>
-          <span className="swatch" />
-          {v.label}
-          <span className="count">{counts[k]}</span>
-        </button>
-      ))}
-    </div>
   );
 }
 

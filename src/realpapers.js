@@ -141,7 +141,7 @@ export const REAL_PAPERS = [
 // The ACT's key alternates A B C D with F G H J, and its five choice maths adds E and K.
 const ACT_MAP = { F: "A", G: "B", H: "C", J: "D", K: "E" };
 
-export function normaliseLetter(ch, letters) {
+function normaliseLetter(ch, letters) {
   const c = String(ch || "").toUpperCase();
   return letters === "act" ? ACT_MAP[c] || c : c;
 }

@@ -7,7 +7,6 @@ import { LevelPicker } from "./LevelPicker.jsx";
 import { myLevel, setMyLevel } from "./level.js";
 import { useEffect, useState } from "react";
 import { supabase, configured, enabledProviders, syncNow, getProfile, saveProfile } from "./supabase.js";
-import { Duck } from "./Duck.jsx";
 import { setHandle } from "./social.js";
 import { ProfileCard, setMyProfile } from "./Profile.jsx";
 
@@ -230,34 +229,11 @@ function GoogleMark() {
   );
 }
 
-// A page rather than a dialog, so there is room for both routes in.
-export function SignInPage({ onClose }) {
-  return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <Duck size={64} shadow={false} className="auth-duck" />
-        <h1>Save your progress</h1>
-        <p className="auth-sub">
-          {configured
-            ? "Your topics, missed questions and retired cards follow you to any device."
-            : "Accounts are not configured on this deployment yet, so progress stays in this browser."}
-        </p>
-
-        {configured && <SignInPanel />}
-
-        <button className="btn quiet auth-back" onClick={onClose}>
-          {configured ? "Continue without an account" : "Close"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // ---------- your details ----------
 
 // First name, last name, date of birth and country. Asked once, straight
 // after signing up, and changeable in Settings.
-export function ProfileForm({ user, initial, onSaved, onCancel, submitLabel = "Save" }) {
+function ProfileForm({ user, initial, onSaved, onCancel, submitLabel = "Save" }) {
   const [f, setF] = useState({ first_name: "", last_name: "", birth_date: "", country: "", display_name: "", handle: "", ...(initial || {}) });
   const [level, setLevel] = useState(() => myLevel()?.id || null);
   const [state, setState] = useState("idle");
@@ -426,7 +402,7 @@ export function Account({ user, syncedAt, signOut }) {
 // The circle beside a name: a real picture when the provider gave us one,
 // otherwise initials. A broken image URL falls back rather than showing a
 // broken image icon.
-export function Avatar({ user, size = 26, initials }) {
+function Avatar({ user, size = 26, initials }) {
   const [failed, setFailed] = useState(false);
   const src = failed ? null : avatarUrl(user);
 

@@ -204,7 +204,7 @@ const ASKS = /^(what|which|why|how|when|where|who|whose|whom|define|explain|desc
 // seed from the question itself, so it is random across questions but the same
 // every time one question is shown. "All of the above" and its kind stay last.
 const LAST = /\b(all|none|both|neither)\b.*\b(above|these|them)\b|\bboth\b.*\band\b/i;
-export function spreadAnswers(q) {
+function spreadAnswers(q) {
   if (!q || !Array.isArray(q.choices) || q.choices.length < 3 || !Number.isInteger(q.answer) || q.choices[q.answer] == null) return q;
   if (q.choices.some((c) => LAST.test(String(c)))) return q;
   let s = [...String(q.id ?? q.q)].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 17) || 1;
@@ -219,7 +219,7 @@ export function spreadAnswers(q) {
   return { ...q, choices: order.map((i) => q.choices[i]), answer: order.indexOf(q.answer) };
 }
 
-export function phraseQuestion(q) {
+function phraseQuestion(q) {
   return spreadAnswers(phrase(q));
 }
 function phrase(q) {
@@ -252,28 +252,14 @@ const UNSEEN = /\b(in|from|by|on) (the|these|your|this) (notes|text|passage|mate
 // A question that points at a picture. It cannot be answered without one, so
 // one is made when it is shown, rather than the question being dropped.
 const VISUAL = /\b(the|this|these|following|given) (image|diagram|figure|picture|graph|table|chart|photo|photograph|drawing|illustration)s?\b|\b(shown|pictured|illustrated|drawn|labelled) (above|below|in the|here)|\bin (the )?(image|diagram|figure|picture|graph)\b/i;
-export const needsVisual = (q) => !!q && typeof q.q === "string" && !q.picture && !q.passage && !q.figure && !q.image && !q.diagram && VISUAL.test(q.q);
-// What to ask the picture maker for, without giving the answer away.
-export function visualPrompt(q) {
-  if (q?.picture) return q.picture;
-  const opts = Array.isArray(q?.choices) ? ` The question's options are ${q.choices.join(", ")}: do not mark or label which one is right.` : "";
-  return `A clear, simple, labelled educational diagram for this exam question: "${q.q}" Topic: ${q.topic || "science"}.${opts} Keep labels few and correctly spelled.`;
-}
+const needsVisual = (q) => !!q && typeof q.q === "string" && !q.picture && !q.passage && !q.figure && !q.image && !q.diagram && VISUAL.test(q.q);
 const LABELLED = /\b(molecules?|substances?|compounds?|structures?|parts?|labels?|tubes?|samples?|objects?|points?|solutions?|liquids?|organs?|cells?|letters?) [A-Z]\b(?![a-z'])/;
 const NUMBERED = /\b(figure|fig\.?|table|diagram|graph|chart) ?\d/i;
 // A calculation whose options are all numbers but whose wording has none, like
 // "What is the acceleration of the aeroplane?" with 4.2, 2.8, 1.5 and 0.4 under
 // it: the data it depends on is missing, so it cannot be answered.
 const NUMERIC_OPTION = /^[-−+]?\d[\d.,]*\s*[^\s\d]{0,3}\s*[A-Za-zµμ°%/ ]{0,12}[⁻⁰¹²³⁴⁵⁶⁷⁸⁹/ ]*[A-Za-z⁻⁰¹²³⁴⁵⁶⁷⁸⁹]*$/;
-// A check that points at "the graph", "the diagram" or "the table" the student
-// is never shown. Multiple choice ones get a picture made; the other kinds
-// cannot, so they are left out.
-export const unseenVisual = (q) => {
-  const t = String(q?.q || "");
-  const W = "(graph|diagram|figure|chart|table|image|picture|illustration|map)";
-  return new RegExp(`\\b(according to|from|using|use|read|reading from|refer to|look at|based on|shown in|given in|in|on) the ${W}\\b|\\bthe ${W} (shows?|above|below|here|given|represents?)\\b|\\b(this|these|following|given) ${W}\\b|\\bparts? of the ${W}\\b|\\b(shown|illustrated|pictured|plotted) (above|below|here)\\b|\\b(above|below) ${W}\\b`, "i").test(t);
-};
-export const missingData = (q) => {
+const missingData = (q) => {
   const stem = String(q?.q || "");
   // options that are all numbers, wording with none
   if (Array.isArray(q?.choices) && q.choices.length >= 3 && !/\d/.test(stem) && q.choices.every((c) => NUMERIC_OPTION.test(String(c).trim()))) return true;
@@ -291,48 +277,3 @@ export function answerable(q) {
   return !UNSEEN.test(q.q) && !LABELLED.test(q.q) && !NUMBERED.test(q.q);
 }
 
-// One of each question. The same one turning up five times in a run happened
-// when the bank held several copies of it, or of a rewording that differs only
-// in case or punctuation.
-const key = (q) => String(q?.q || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-const STOP = new Set("the a an of in on to is are was were be by for and or with what which who how why does do did that this it its as at from into than then not no".split(" "));
-const words = (q) => ({
-  w: new Set(key(q).split(" ").filter((t) => t.length > 2 && !/^\d+$/.test(t) && !STOP.has(t)).map((t) => (t.length > 3 ? t.replace(/s$/, "") : t))),
-  nums: (String(q?.q || "").match(/\d+(\.\d+)?/g) || []).sort().join(","),
-});
-// the same question reworded: nearly all the same words and the same numbers
-// (a maths question with other numbers is a different question)
-const alike = (a, b) => {
-  if (a.nums !== b.nums || a.w.size < 3 || b.w.size < 3) return false;
-  let hit = 0;
-  a.w.forEach((t) => { if (b.w.has(t)) hit++; });
-  return hit / (a.w.size + b.w.size - hit) >= 0.72;
-};
-export function uniqueQuestions(list) {
-  const seen = new Set();
-  const kept = [];
-  return (list || []).filter((q) => {
-    const k = key(q);
-    if (!k || seen.has(k)) return false;
-    const w = words(q);
-    // the same question again with a few words changed, in the same topic, is a repeat too
-    if (kept.some((o) => (o.topic || "") === (q.topic || "") && alike(o.x, w))) return false;
-    seen.add(k);
-    kept.push({ topic: q.topic, x: w });
-    return true;
-  });
-}
-
-// The questions to practise from: duplicates out, and questions that lean on
-// something unseen out too, but never so many that a topic is left empty. A
-// topic made from a past paper can be full of "shown below", and those are
-// better than no questions at all, so if fewer than three would be left the
-// topic keeps all of its own.
-export function practiceBank(list) {
-  const unique = uniqueQuestions(list);
-  const byTopic = new Map();
-  unique.forEach((q) => { const k = q.topic || ""; (byTopic.get(k) || byTopic.set(k, []).get(k)).push(q); });
-  const out = [];
-  byTopic.forEach((qs) => { const ok = qs.filter(answerable); out.push(...(ok.length >= 3 ? ok : qs)); });
-  return unique.filter((q) => out.includes(q));
-}
