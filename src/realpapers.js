@@ -200,7 +200,7 @@ export function markSheet(answers, key, { letters = "mc" } = {}) {
     const given = answers[n];
     const blank = given === undefined || given === null || String(given).trim() === "";
     if (blank) return { n, status: "blank", yours: "", correct: Array.isArray(k) ? k[0] || "" : k || "" };
-    let ok = false;
+    let ok;
     if (k === null || k === undefined) return { n, status: "blank", yours: given, correct: "", unkeyed: true };
     if (Array.isArray(k)) ok = k.includes(norm(given));
     else ok = normaliseLetter(given, letters) === k;

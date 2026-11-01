@@ -184,7 +184,7 @@ export function HandleGate({ user }) {
       const first = String(p.first_name || "").toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 14);
       if (first.length >= 2) setV(first + Math.floor(100 + Math.random() * 900));
     } else if (p.handle) setV(p.handle);
-  }, [need]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [need]);
   // tells the tour to wait while this is on screen
   useEffect(() => {
     document.documentElement.dataset.gate = need ? "1" : "0";

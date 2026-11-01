@@ -105,7 +105,7 @@ function Between({ S, onGo }) {
   const id = S.resolved[S.plan[S.idx]] || S.plan[S.idx];
   return (
     <div className="dsat dsat-center">
-      <div className="ds-card"><h2>{moduleName(id)}</h2><p>You have {SECTIONS[sectionOf(id)].minutes} minutes for {SECTIONS[sectionOf(id)].questions === 27 ? 27 : 22} questions. The clock starts when you press the button.</p><button className="ds-btn blue" onClick={onGo}>Start module</button></div>
+      <div className="ds-card"><h2>{moduleName(id)}</h2><p>You have {SECTIONS[sectionOf(id)].minutes} minutes for {SECTIONS[sectionOf(id)].questions} questions. The clock starts when you press the button.</p><button className="ds-btn blue" onClick={onGo}>Start module</button></div>
     </div>
   );
 }
@@ -219,11 +219,11 @@ function CalcPanel({ open, onClose }) {
   const move = (e) => { if (drag.current) setPos({ left: Math.max(0, e.clientX - drag.current.dx), top: Math.max(0, e.clientY - drag.current.dy) }); };
   const up = () => { drag.current = null; };
   return (
-    <div className="ds-pop ds-desmos" style={{ display: open ? "grid" : "none", left: pos.left ?? undefined, right: pos.left == null ? 16 : undefined, top: pos.top }} role="dialog" aria-label="Calculator">
+    <div className="ds-pop ds-calcwin" style={{ display: open ? "grid" : "none", left: pos.left ?? undefined, right: pos.left == null ? 16 : undefined, top: pos.top }} role="dialog" aria-label="Calculator">
       <div className="ds-maphead ds-drag" onPointerDown={down} onPointerMove={move} onPointerUp={up}><b>Calculator</b>
         <span className="seg tight"><button onPointerDown={(e) => e.stopPropagation()} className={tab === "graph" ? "on" : ""} onClick={() => setTab("graph")}>Dwimos</button><button onPointerDown={(e) => e.stopPropagation()} className={tab === "sci" ? "on" : ""} onClick={() => setTab("sci")}>Scientific</button></span>
         <button className="ds-x" onPointerDown={(e) => e.stopPropagation()} onClick={onClose}>Close</button></div>
-      <div className="ds-desmosbox" style={{ display: tab === "graph" ? "block" : "none" }}><Graphing /></div>
+      <div className="ds-calcbox" style={{ display: tab === "graph" ? "block" : "none" }}><Graphing /></div>
       {tab === "sci" && <Calculator embedded />}
     </div>
   );
@@ -246,7 +246,7 @@ function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
   const done = useRef(false);
 
   useEffect(() => { const t = setInterval(() => setLeft((s) => s - 1), 1000); return () => clearInterval(t); }, [setLeft]);
-  useEffect(() => { if (left <= 0 && !done.current) { done.current = true; onFinish(); } }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (left <= 0 && !done.current) { done.current = true; onFinish(); } }, [left]);
 
   const setAns = (v) => patch({ answers: { ...S.answers, [modId]: { ...answers, [i]: v } } });
   const flag = () => patch({ flags: { ...S.flags, [modId]: { ...flags, [i]: !flags[i] } } });
@@ -435,7 +435,7 @@ function Results({ data, S, title, onBack, onAgain }) {
   const total = rw && math ? rw.score + math.score : null;
   const [filter, setFilter] = useState("missed");
   const items = [];
-  for (const [id, r] of rows) {
+  for (const [id] of rows) {
     data.modules[id].forEach((q, k) => { const given = (S.answers[id] || {})[k]; items.push({ id, k, q, given, ok: isRight(q, given), blank: String(given ?? "").trim() === "" }); });
   }
   const shown = items.filter((x) => filter === "all" || (filter === "missed" ? !x.ok : x.ok));

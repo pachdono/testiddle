@@ -150,7 +150,7 @@ export function AnswerFlash({ ok, seq }) {
     setShown({ ok, seq });
     const t = setTimeout(() => setShown(null), 750);
     return () => clearTimeout(t);
-  }, [seq]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [seq]);
   if (!shown) return null;
   return (
     <div className={"af " + (shown.ok ? "right" : "wrong")} key={shown.seq}>

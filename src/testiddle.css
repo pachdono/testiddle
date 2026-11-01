@@ -185,18 +185,10 @@ body { background: var(--bg); }
 /* the two ways in: real papers and practice tests */
 .ti-views { display: inline-flex; margin: 0 0 18px; }
 .ti-views button { min-width: 140px; }
-
-/* real papers */
-.rp-intro { max-width: 760px; margin: 0 0 22px; line-height: 1.55; }
 .rp-group { margin: 0 0 30px; }
 .rp-grouphead { margin: 0 0 12px; }
 .rp-grouphead h2 { margin: 0; font-size: 26px; }
 .rp-grouphead p { margin: 2px 0 0; }
-.rp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
-.rp-card { display: grid; gap: 10px; align-content: start; }
-.rp-card h3 { margin: 0; font-size: 17px; }
-.rp-blurb { margin: 0; line-height: 1.5; color: var(--ink-2); }
-.rp-sects { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .rp-hist { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; }
 .rp-hist + .rp-hist { border-top: 1px solid var(--line); }
 .rp-score { text-align: right; display: grid; }
@@ -259,12 +251,7 @@ body { background: var(--bg); }
 .rp-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
 .rp-filter { padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
 .rp-filter.on { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
-.rp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; margin: 0 0 28px; }
-button.rp-card { display: flex; align-items: center; gap: 14px; padding: 16px; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
-button.rp-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
 .rp-tile { display: grid; place-items: center; flex: none; width: 58px; height: 58px; border-radius: 14px; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; text-align: center; line-height: 1.05; }
-.rp-cardbody { display: grid; gap: 3px; min-width: 0; }
-.rp-cardname { font-size: 16px; line-height: 1.25; }
 .rp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .rp-tag { padding: 2px 9px; border-radius: 999px; background: var(--sunken); border: 1px solid var(--line); font-size: 12px; font-weight: 700; color: var(--ink-2); }
 .rp-tag.free { background: var(--good-soft); border-color: var(--good-line); color: var(--good); }
@@ -298,22 +285,10 @@ button.rp-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lif
   .rp-pdf { position: static; }
   .rp-pdf iframe { height: 60vh; }
 }
-
-/* past papers by year */
-.ppq-body { display: grid; gap: 14px; padding: 16px 18px 18px; }
-.ppq-body p { margin: 0; line-height: 1.5; }
 .ppq-pickers { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 16px; }
 .ppq-pickers .rp-filters { margin: 0; flex-basis: 100%; }
 .ppq-field { display: grid; gap: 4px; min-width: 200px; flex: 1 1 200px; }
 .ppq-field select { min-height: 42px; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
-.ppq-table { display: grid; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.ppq-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 10px 14px; background: var(--surface); }
-.ppq-row + .ppq-row { border-top: 1px solid var(--line); }
-.ppq-row:nth-child(even) { background: var(--sunken); }
-.ppq-when { display: flex; align-items: baseline; gap: 10px; min-width: 150px; }
-.ppq-when b { font-size: 17px; font-variant-numeric: tabular-nums; }
-.ppq-actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.ppq-more { justify-self: start; }
 .ppq-hubs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .ppq-group { display: grid; gap: 8px; }
 
@@ -378,8 +353,6 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .ti-main:has(.paper-page) { max-width: 1640px; }
 .ti-main .page.paper-page { max-width: none; }
 .ps-size { font-size: 12px; }
-
-.pp-crumbs { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .pp-back { font-weight: 700; }
 .ti-main:has(.paper-page) { max-width: none; padding: 12px 14px 40px; }
 .pp-layout { grid-template-columns: minmax(0, 1fr) 300px; }
@@ -408,7 +381,6 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .rp-crumbs { width: fit-content; max-width: 100%; padding: 8px 16px; border-radius: 999px; background: var(--surface); box-shadow: 0 1px 6px rgba(40, 30, 10, 0.10); }
 .rp-group > .rp-grouphead { display: flex; width: fit-content; padding: 8px 18px; border-radius: 999px; background: var(--surface); box-shadow: 0 1px 6px rgba(40, 30, 10, 0.10); }
 .rp-sit > p, .paper-page .pp-note, .stack > p.small, .rp > .empty, .rp-detail .empty { background: var(--surface); padding: 10px 16px; border-radius: 12px; box-shadow: 0 1px 6px rgba(40, 30, 10, 0.08); }
-.pp-crumbs { padding: 6px 10px 6px 6px; }
 
 .ti-main .page.wide:has(.rp-detail), .ti-main .page.wide:has(.rp) { max-width: none; }
 .ti-main .page.wide > .rp-detail, .ti-main .page.wide > .rp { max-width: none; }
@@ -425,7 +397,6 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .pp-doc .ps { height: calc(100vh - 118px); min-height: 640px; }
 .pp-layout { grid-template-columns: minmax(0, 1fr) 290px; gap: 14px; }
 .ti-main:has(.paper-page) { padding: 6px 10px 30px; }
-.paper-page .pp-crumbs { margin: 0 0 8px; }
 .ps-bar { gap: 6px; padding: 6px 10px; }
 @media (max-width: 900px) { .ps-scroll { justify-items: center; } }
 
@@ -563,10 +534,10 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 .ds-sw.u { background: #fff; text-decoration: underline; }
 .ds-notebox { display: grid; gap: 8px; }
 .ds-notebox textarea { width: 100%; border: 1.5px solid #aab; border-radius: 8px; padding: 8px; font: 14px system-ui; resize: vertical; }
-.ds-desmos { position: fixed; width: min(640px, 62vw); height: min(560px, 72vh); min-width: 300px; min-height: 320px; resize: both; overflow: hidden; grid-template-rows: auto 1fr; padding: 0; z-index: 350; }
-.ds-desmos > .ds-maphead { padding: 8px 12px; border-bottom: 1px solid #d6dbe6; cursor: grab; touch-action: none; }
-.ds-desmosbox { width: 100%; height: 100%; min-height: 0; }
-.ds-desmos .ds-calc.inline { padding: 12px; width: auto; overflow: auto; }
+.ds-calcwin { position: fixed; width: min(640px, 62vw); height: min(560px, 72vh); min-width: 300px; min-height: 320px; resize: both; overflow: hidden; grid-template-rows: auto 1fr; padding: 0; z-index: 350; }
+.ds-calcwin > .ds-maphead { padding: 8px 12px; border-bottom: 1px solid #d6dbe6; cursor: grab; touch-action: none; }
+.ds-calcbox { width: 100%; height: 100%; min-height: 0; }
+.ds-calcwin .ds-calc.inline { padding: 12px; width: auto; overflow: auto; }
 .ds-calc.inline { position: static; width: auto; display: grid; gap: 8px; }
 
 /* our own graphing calculator */
@@ -609,7 +580,6 @@ i.ds-cell { width: 20px; height: 20px; display: inline-block; vertical-align: mi
 
 .ps { display: flex; flex-direction: column; }
 .ps-scroll { flex: 1; min-height: 0; }
-.ps-jump { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 12px; border-bottom: 1px solid var(--line); }
 .ps-chip { padding: 4px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .ps-chip:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .pp-jump { display: grid; gap: 8px; }

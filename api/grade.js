@@ -1,6 +1,6 @@
 // Marks a writing task against the published criteria of its test.
 
-import { ask, safeParse, guard, fail, userError, MAX_INPUT } from "./_llm.js";
+import { ask, safeParse, fail, userError, MAX_INPUT } from "./_llm.js";
 import { allow } from "./_guard.js";
 
 export const config = { maxDuration: 60 };

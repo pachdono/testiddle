@@ -12,7 +12,7 @@ export function planFor(mode) {
   const rw = ["rw1", "rw2"], math = ["m1", "m2"];
   return mode === "rw" ? rw : mode === "math" ? math : [...rw, ...math];
 }
-export const sectionOf = (id) => (id.startsWith("rw") ? "rw" : "m").replace("m", "math").replace("rwath", "rw");
+export const sectionOf = (id) => (id.startsWith("rw") ? "rw" : "math");
 export const moduleName = (id) => `${SECTIONS[sectionOf(id)].name}, Module ${id.endsWith("1") ? 1 : 2}`;
 
 /** Which second module a student gets, from how many they got right in the first. */

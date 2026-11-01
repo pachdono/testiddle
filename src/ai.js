@@ -5,8 +5,6 @@ import { tidyQuestion, tidyMath } from "./mathText.js";
 import { levelForAI } from "./level.js";
 import { cleanSketch } from "./sketch.js";
 
-const TRANSIENT = new Set([429, 502, 503, 504]);
-
 // The free models fail intermittently: busy, slow, occasionally malformed. One
 // quiet retry turns most of those into a success rather than an error the
 // person has to act on.

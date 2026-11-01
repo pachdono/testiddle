@@ -531,7 +531,7 @@ function Sit({ paper, section, sheet, pdf, onAnswer, onSubmit, onLeave }) {
   const done = useRef(false);
 
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
-  useEffect(() => { if (left <= 0 && !done.current) { done.current = true; onSubmit(); } }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (left <= 0 && !done.current) { done.current = true; onSubmit(); } }, [left]);
 
   const set = (n, v) => onAnswer({ ...answers, [n]: v });
   const act = paper.letters === "act";
@@ -631,7 +631,7 @@ function Result({ paper, section, result, onSave, onDone, onAgain }) {
   const est = paper.test && H()?.estimate && total === section.questions ? H().estimate(paper.test, right, total) : null;
   const items = rows.map((r) => r.item || { n: r.n, status: r.status, yours: r.yours, correct: r.correct, skill: section.name });
 
-  useEffect(() => { if (!saved) { onSave({ right, total, minutes: result.minutes }); setSaved(true); } }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!saved) { onSave({ right, total, minutes: result.minutes }); setSaved(true); } }, []);
 
   return (
     <div className="page fade">

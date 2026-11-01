@@ -5,7 +5,7 @@
 // topped up from here with items the person has not seen, written to the style
 // and difficulty of the section they asked for.
 
-import { ask, safeParse, guard, fail, userError } from "./_llm.js";
+import { ask, safeParse, fail, userError } from "./_llm.js";
 import { allow } from "./_guard.js";
 
 export const config = { maxDuration: 60 };

@@ -125,7 +125,7 @@ export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
   // The scroll is set after the new size is laid out, so it is not clamped to the old page.
   const zoomRef = useRef(1), anchor = useRef(null);
   const zoomTo = useCallback((z, x, y) => {
-    const el = wrapRef.current; if (!el) return;
+    const el = wrap.current; if (!el) return;
     z = Math.max(0.6, Math.min(3, Math.round(z * 100) / 100));
     if (Math.abs(z - zoomRef.current) < 0.005) return;
     const r = el.getBoundingClientRect();
@@ -140,7 +140,6 @@ export default function PdfStudio({ url, paperKey, title, lead, jumps = [] }) {
     zoomRef.current = z; setZoom(z);
   }, []);
   const wrap = useRef(null);
-  const wrapRef = wrap;
   const [doc, setDoc] = useState(null);
   const [state, setState] = useState("loading");
   const [pages, setPages] = useState(0);

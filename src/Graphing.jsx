@@ -55,10 +55,8 @@ export default function Graphing() {
     const skip = new Set(["x", "y"]); const s = new Set();
     parsed.forEach((r) => {
       if (!r.p) return;
-      const fitted = r.p.kind === "fit" ? r.p.mvars : null;
       if (r.p.kind === "fit" || r.p.kind === "list") return;
       r.p.vars?.forEach((v) => { if (!skip.has(v) && !/^[xy]\d+$/.test(v)) s.add(v); });
-      void fitted;
     });
     return [...s].filter((l) => !funcNames.has(l)).sort();
   }, [parsed, funcNames]);

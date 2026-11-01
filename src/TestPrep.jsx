@@ -1,12 +1,11 @@
 import { M } from "./MathText.jsx";
-import { ready as notifyReady, askOnce as askNotify, startDesktopReminder } from "./notify.js";
-import { usePracticeSession, useCheerSounds, PracticeSides, Cheer, AnswerFlash } from "./PracticeCheer.jsx";
-import { useEffect, useRef, useState } from "react";
-import { Icon, PageHead, Loading, Marked, toSegments, HighlightFilters, Portal, BusyScreen, Boundary, useCover } from "./ui.jsx";
-import { setEarlyAccess, browse, moreQuestions, longQuestions, questionsFor, generateFromNotes, generateFromSyllabus, generateInParts, splitSource, condenseSource, gradeWriting, notifyFeedback, clarify, writeBrief, readYouTube, writeSyllabusNotes } from "./ai.js";
+import { AnswerFlash } from "./PracticeCheer.jsx";
+import { useEffect, useState } from "react";
+import { Icon, PageHead, Loading, Portal, BusyScreen } from "./ui.jsx";
+import { gradeWriting } from "./ai.js";
 import { AnnotatedText } from "./Annotate.jsx";
 import { buildFresh, unseenCount, clearSeen, bankFor } from "./bank.js";
-import { Duck, DuckMark, DuckSign } from "./Duck.jsx";
+import { DuckMark } from "./Duck.jsx";
 import { Player } from "./Listening.jsx";
 import { loadHeavy, H } from "./heavy.js";
 import RealPapers from "./RealPapers.jsx";
@@ -335,7 +334,7 @@ function TestPrep({ grade }) {
         if (qs.length) { setOpenId(tst.id); setPaper({ drill: true, sec, qs }); }
       } catch { setBuilding(null); }
     })();
-  }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   // Sitting a section assembles a paper you have not seen. Authored questions
   // come first, then anything written for you previously, then new ones.
@@ -442,7 +441,6 @@ function TestPrep({ grade }) {
               const cfg = sec.kind ? H().TASKS[test.id]?.[sec.kind] : null;
               const ready = cfg ? cfg.tasks.filter((t) => !t.soon).length : 0;
               const built = sec.kind || sec.soon ? null : buildPaper(test, sec);
-              const have = built ? built.qs.length : 0;
 
               return (
                 <div key={sec.id} className="sec-row">
@@ -664,7 +662,6 @@ function TestRun({ test, sec, qs, full, wrote = 0, label, grade, onExit, onDrill
 
   if (done) {
     const score = H().estimate(test.scoring, right, qs.length);
-    const wrong = qs.map((q, n) => ({ q, n })).filter(({ q, n }) => !isRight(q, answers[n]));
     return (
       <div className="page fade">
         <PageHead title={`${test.name}, ${sec.name}`} sub={`${label ? `${label}. ` : ""}${right} of ${qs.length} correct`} />
