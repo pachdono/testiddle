@@ -73,7 +73,7 @@ export default function DigitalSat({ n, title, onBack }) {
   if (S.phase === "results") return <Results data={data} S={S} title={title} onBack={onBack} onAgain={() => { write(KEY(n), null); setS(null); }} />;
   if (S.phase === "break") return <Break left={left} setLeft={setLeft} onResume={startNext} />;
   if (S.phase === "between") return <Between S={S} onGo={startNext} />;
-  return <Module key={modId} S={S} patch={patch} modId={modId} mod={mod} left={left} setLeft={setLeft} onFinish={finishModule} onExit={() => { write(KEY(n), { ...S, left: leftRef.current }); onBack(); }} />;
+  return <Module key={modId} S={S} patch={patch} modId={modId} mod={mod} left={left} setLeft={setLeft} onFinish={finishModule} onExit={() => { write(KEY(n), { ...S, left: leftRef.current }); onBack(); }} onRestart={() => { write(KEY(n), null); setS(null); }} />;
 }
 
 /* ---------- before you begin ---------- */
@@ -231,7 +231,7 @@ function CalcPanel({ open, onClose }) {
 
 /* ---------- a module ---------- */
 
-function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
+function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit, onRestart }) {
   const section = sectionOf(modId);
   const math = section === "math";
   const [hideClock, setHideClock] = useState(false);
@@ -300,7 +300,7 @@ function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
             </div>
           ) : (
             <div className="ds-spr">
-              <label>Answer<input type="text" inputMode="decimal" autoComplete="off" value={answers[i] || ""} onChange={(e) => setAns(e.target.value)} /></label>
+              <label>Answer<input type="text" autoComplete="off" autoCapitalize="none" spellCheck={false} value={answers[i] || ""} onChange={(e) => setAns(e.target.value)} /></label>
               <p className="small">Type a number or a fraction such as 3/2. Use a minus sign for negatives. You can type up to 5 characters.</p>
             </div>
           )}
@@ -330,6 +330,7 @@ function Module({ S, patch, modId, mod, left, setLeft, onFinish, onExit }) {
         <Sheet title="More" onClose={() => setPanel(null)}>
           <p>Leaving saves your place, and the clock for this module is saved with it.</p>
           <button className="ds-btn" onClick={() => { if (window.confirm("Leave the test? You can pick it up again from this page.")) onExit(); }}>Save and exit</button>
+          <button className="ds-btn" onClick={() => { if (window.confirm("Throw this sitting away and start again from the beginning?")) onRestart(); }}>Start over</button>
         </Sheet>
       )}
     </div>

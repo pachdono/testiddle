@@ -564,7 +564,7 @@ function Sit({ paper, section, sheet, pdf, onAnswer, onSubmit, onLeave }) {
             <div key={n} className={"rp-row" + (String(answers[n] ?? "").trim() !== "" ? " done" : "")}>
               <span className="rp-num">{n + 1}</span>
               {typed(n) ? (
-                <input type="text" inputMode={section.textFrom != null ? "decimal" : undefined} value={answers[n] || ""} onChange={(e) => set(n, e.target.value)} aria-label={`Answer ${n + 1}`} autoComplete="off" autoCapitalize="none" spellCheck={false} />
+                <input type="text" value={answers[n] || ""} onChange={(e) => set(n, e.target.value)} aria-label={`Answer ${n + 1}`} autoComplete="off" autoCapitalize="none" spellCheck={false} />
               ) : (
                 <div className="rp-bubbles">
                   {options.map((o, k) => (

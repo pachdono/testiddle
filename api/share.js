@@ -32,7 +32,10 @@ function describe(path) {
 }
 
 export default async function handler(req, res) {
-  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  const named = req.headers["x-forwarded-host"] || req.headers.host;
+  // only ever fetch this site's own page, whatever host the request names
+  const own = ["testiddle.vercel.app", process.env.VERCEL_PROJECT_PRODUCTION_URL, process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL].filter(Boolean);
+  const host = own.includes(named) ? named : own[0] || "testiddle.vercel.app";
   const path = String(req.query?.p || "/real").slice(0, 200);
   try {
     const page = await fetch(`https://${host}/index.html`).then((r) => r.text());

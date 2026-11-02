@@ -240,7 +240,7 @@ export default function Graphing() {
                 <div key={r.id} className="gr-row gr-table">
                   <div className="gr-trow"><span className="gr-dot" style={{ background: col }}>{n + 1}</span><b className="small">Table {k}</b><button className="gr-del" onClick={() => setRows((rs) => (rs.length > 1 ? rs.filter((x) => x.id !== r.id) : rs))} aria-label={`Delete table ${k}`}>&times;</button></div>
                   <div className="gr-cells"><b>x{k}</b><b>y{k}</b>
-                    {r.xs.map((x, i) => [<input key={`x${i}`} value={x} onChange={(e) => setCell(r.id, 0, i, e.target.value)} aria-label={`Table ${k}, row ${i + 1}, x`} inputMode="decimal" autoComplete="off" />, <input key={`y${i}`} value={r.ys[i]} onChange={(e) => setCell(r.id, 1, i, e.target.value)} aria-label={`Table ${k}, row ${i + 1}, y`} inputMode="decimal" autoComplete="off" />])}
+                    {r.xs.map((x, i) => [<input key={`x${i}`} value={x} onChange={(e) => setCell(r.id, 0, i, e.target.value)} aria-label={`Table ${k}, row ${i + 1}, x`} autoComplete="off" autoCapitalize="none" />, <input key={`y${i}`} value={r.ys[i]} onChange={(e) => setCell(r.id, 1, i, e.target.value)} aria-label={`Table ${k}, row ${i + 1}, y`} autoComplete="off" autoCapitalize="none" />])}
                   </div>
                 </div>
               );
