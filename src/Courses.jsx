@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { DuckAvatar, CHARACTERS } from "./DuckAvatars.jsx";
 import { Duck } from "./Duck.jsx";
 import { COURSES, HISTORY_KEY, summary } from "./courses.js";
-import { GOALS, activity, cardRatings, getAvatar, getGoal, hiddenCourses, longestRunOf, quizLog, setAvatar, setGoal, setHidden, streakWith, xpByDay, xpSeries } from "./progress.js";
+import { GOALS, activity, cardRatings, getAvatar, getGoal, hiddenCourses, longestRunOf, quizLog, setAvatar, setGoal, setHidden, streakWith, xpSeries } from "./progress.js";
 import { CARDS } from "./content.js";
 import { QUESTION_COUNT, doneFrom } from "./bank.js";
 
