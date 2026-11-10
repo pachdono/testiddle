@@ -708,3 +708,7 @@ button.cg-btn.primary { border-color: var(--ink); }
 .cg-modal.wide .cg-avatars, .cg-modal .cg-avatars { gap: 12px; }
 @media (max-width: 640px) { .cg-avatars { grid-template-columns: repeat(3, 1fr); } }
 .tiddle-av .tiddle { bottom: 0; }
+.tav { display: inline-block; flex: none; overflow: visible; }
+.tav svg { display: block; overflow: visible; }
+.cg-avatar .tav svg { border: 0; }
+.cg-avatars button { padding: 14px 6px 10px; }

@@ -87,13 +87,3 @@ export function Mascot({ size = 120, pose = "stand", outfit = "graduate", classN
     </svg>
   );
 }
-
-/** Tiddle in an outfit, spilling out of a soft circle, for avatars. */
-export function TiddleAvatar({ outfit = "graduate", size = 100 }) {
-  return (
-    <span className="tiddle-av" style={{ width: size, height: size }}>
-      <svg className="tiddle-av-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="56" r="38" fill="#e9f7f2" stroke="#7fbfb6" strokeWidth="1.1" /></svg>
-      <Mascot size={size * 1.14} outfit={outfit} title={`Tiddle, ${OUTFIT_NAMES[outfit] || "Graduate"}`} />
-    </span>
-  );
-}
