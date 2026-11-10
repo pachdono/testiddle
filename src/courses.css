@@ -594,3 +594,13 @@ button.cg-btn.primary { border-color: var(--ink); }
 @media (max-width: 900px) { .cg-contents { position: relative; top: auto; } }
 .cg-choices.cg-numbered button.on b { background: #3b82f6; color: #fff; }
 .cg-choices.cg-numbered button.right b { background: #3fb37f; color: #fff; }
+
+/* cards with a label on their top edge must not clip it */
+.cg-faq, .cg-sheetview, .cg-pick, .cg-years { overflow: visible; }
+.cg-faq .cg-faqitem:last-child, .cg-faq .cg-faqitem:last-child button { border-radius: 0 0 20px 20px; }
+.cg-pick button:last-child { border-radius: 0 0 20px 20px; }
+.cg-years .cg-year:last-child, .cg-years .cg-year:last-child .cg-yearrows { border-radius: 0 0 20px 20px; }
+.cg-years .cg-year:first-child .cg-yearhead { border-radius: 20px 20px 0 0; }
+.cg-sheetleft { border-radius: 20px 0 0 20px; }
+.cg-faqitem p, .cg-faqitem button span:first-child { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 900px) { .cg-sheetleft { border-radius: 20px 20px 0 0; } }
