@@ -134,6 +134,8 @@ export function TopBar({ path, nav, history, user, theme, setTheme, onSignOut, d
         <button onClick={() => nav("/")}>Dashboard</button>
         <button onClick={() => nav("/account/account")}>Account settings</button>
         <button onClick={() => nav("/account/activity")}>Activity log</button>
+        <button onClick={() => nav("/help")}>Help and FAQ</button>
+        <button onClick={() => nav("/whats-new")}>What's new</button>
         <a href={dwiddle}>Back to Dwiddle</a>
         <button onClick={onSignOut}>Sign out</button>
       </Menu>

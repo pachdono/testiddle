@@ -25,7 +25,7 @@ const clock = (s) => {
 };
 const lettersOf = (n) => Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
 
-export default function RealPapers({ path, nav }) {
+export default function RealPapers({ path, nav, ...rest }) {
   const [sheet, setSheet] = useState(() => read(SHEET, null)); // the paper being sat
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState(() => read(HISTORY, []));
@@ -83,7 +83,7 @@ export default function RealPapers({ path, nav }) {
   const back = () => nav(`/course/${course?.id || COURSES[0].id}`);
   if (entry?.digitalId) return <DigitalSat n={entry.digitalId} title={entry.title} onBack={back} />;
   if (entry) return <PaperPage entry={entry} paper={sat} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} onBack={back} />;
-  return <CoursePage course={course || COURSES[0]} history={history} onOpen={(e) => nav(`/real/sat/${e.slug}`)} entries={entriesOf(sat, course || COURSES[0])} onClear={() => { write(HISTORY, []); setHistory([]); }} nav={nav} />;
+  return <CoursePage course={course || COURSES[0]} history={history} onOpen={(e) => nav(`/real/sat/${e.slug}`)} entries={entriesOf(sat, course || COURSES[0])} onClear={() => { write(HISTORY, []); setHistory([]); }} nav={nav} {...rest} />;
 }
 
 

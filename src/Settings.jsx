@@ -1,8 +1,10 @@
 // The account area: Account, Preferences and Activity, with a side menu like the course site's.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getProfile, saveLook } from "./supabase.js";
+import { Modal } from "./Courses.jsx";
 import { COURSES, RANGES, byHour, courseOf, dayOf, inRange, kindOf, summary } from "./courses.js";
-import { cardRatings, quizLog } from "./progress.js";
+import { activity, cardRatings, quizLog } from "./progress.js";
 
 const TABS = [["account", "Account"], ["preferences", "Preferences"], ["activity", "Activity"]];
 const TAB_ICON = {
@@ -15,7 +17,7 @@ function Ico({ id }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={TAB_ICON[id]} /></svg>;
 }
 
-export function Settings({ tab, nav, history, user, theme, setTheme, onReset }) {
+export function Settings({ tab, nav, history, user, theme, setTheme, onReset, requestDelete }) {
   return (
     <div className="cg-settings">
       <nav className="cg-side" aria-label="Account">
@@ -24,34 +26,66 @@ export function Settings({ tab, nav, history, user, theme, setTheme, onReset }) 
       <div className="cg-sidemain">
         {tab === "preferences" ? <Preferences theme={theme} setTheme={setTheme} />
           : tab === "activity" ? <Activity history={history} />
-            : <AccountTab user={user} history={history} onReset={onReset} />}
+            : <AccountTab user={user} history={history} onReset={onReset} requestDelete={requestDelete} />}
       </div>
     </div>
   );
 }
 
-function AccountTab({ user, history, onReset }) {
-  const [sure, setSure] = useState(false);
+function AccountTab({ user, history, onReset, requestDelete }) {
   const meta = user?.user_metadata || {};
   const joined = user?.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { month: "short", year: "numeric" }) : "";
+  const [name, setName] = useState("");
+  const [profile, setProfile] = useState(undefined);
+  const [saved, setSaved] = useState(null);
+  const [dialog, setDialog] = useState(false);
+  useEffect(() => { if (!user?.id) return; getProfile(user.id).then((p) => { setProfile(p); setName(p?.display_name || meta.full_name || ""); }); }, [user?.id]);
+  const save = async () => {
+    setSaved("saving");
+    const r = await saveLook(user.id, { display_name: name.trim().slice(0, 40), avatar: profile?.avatar ?? null });
+    setSaved(r.ok ? "Saved" : r.reason);
+  };
   return (
     <div className="cg-stack">
       <section className="cg-card cg-form">
         <span className="cg-tag">Profile details</span>
-        <label>Name<input readOnly value={meta.full_name || meta.name || ""} placeholder="Not set" /></label>
+        <label>Display name<input value={name} maxLength={40} placeholder="Not set" onChange={(e) => { setName(e.target.value); setSaved(null); }} /></label>
         <label>Email<input readOnly value={user?.email || ""} /></label>
-        <p className="small muted">{joined ? `Joined ${joined}. ` : ""}This is the same account as Dwiddle, so change your name and picture there.</p>
+        <p className="small muted">{joined ? `Joined ${joined}. ` : ""}This is the same account as Dwiddle, so the name shows there too.</p>
+        <div className="cg-actions">{saved && saved !== "saving" && <span className="small muted">{saved}</span>}<button className="cg-btn primary" disabled={!user?.id || !name.trim() || saved === "saving"} onClick={save}>{saved === "saving" ? "Saving" : "Save changes"}</button></div>
       </section>
       <section className="cg-card cg-form">
-        <span className="cg-tag">Reset progress</span>
-        <p className="small muted">Start fresh by clearing your progress on this device. This removes your test results, quiz answers and flashcard confidence, and with them your XP and streak. Tests you have partly sat are not touched.</p>
-        <div className="cg-actions">
-          {sure
-            ? <><span className="small">Clear all your progress?</span><button className="cg-btn" onClick={() => setSure(false)}>Keep them</button><button className="cg-btn danger" onClick={() => { onReset(); setSure(false); }}>Yes, clear</button></>
-            : <button className="cg-btn danger" onClick={() => setSure(true)}>Reset progress</button>}
-        </div>
+        <span className="cg-tag">Reset course progress</span>
+        <p className="small muted">Start fresh by clearing your progress on one or all of your courses. This removes test results, and you can also clear quiz answers and flashcard confidence.</p>
+        <div className="cg-actions"><button className="cg-btn danger" onClick={() => setDialog(true)}>Reset progress</button></div>
       </section>
+      <section className="cg-card cg-form">
+        <span className="cg-tag">Delete account</span>
+        <p className="small muted">Your account is shared with Dwiddle, so the team deletes it for you, with all its data. This sends them the request; it cannot be undone once done.</p>
+        <div className="cg-actions"><button className="cg-btn danger" onClick={requestDelete}>Request deletion</button></div>
+      </section>
+      {dialog && <ResetDialog history={history} onClose={() => setDialog(false)} onReset={(o) => { onReset(o); setDialog(false); }} />}
     </div>
+  );
+}
+
+function ResetDialog({ history, onClose, onReset }) {
+  const [scope, setScope] = useState("some");
+  const [picked, setPicked] = useState([]);
+  const [everything, setEverything] = useState(false);
+  const ok = scope === "all" || picked.length > 0;
+  return (
+    <Modal title="Reset your progress" onClose={onClose}>
+      <h2>Reset your progress?</h2>
+      <p className="muted small">This permanently deletes your course progress on this device and can't be undone.</p>
+      <div className="cg-goals">
+        <button className={scope === "some" ? "on" : ""} onClick={() => setScope("some")}><span><b>Specific courses</b><small className="muted">Choose one or more courses to clear</small></span><i aria-hidden="true">{scope === "some" ? "\u2713" : ""}</i></button>
+        {scope === "some" && <div className="cg-pickcourses">{COURSES.map((c) => <label key={c.id}><input type="checkbox" checked={picked.includes(c.id)} onChange={() => setPicked(picked.includes(c.id) ? picked.filter((x) => x !== c.id) : [...picked, c.id])} />{c.name} <small className="muted">{history.filter((h) => courseOf(h.paper).id === c.id).length} results</small></label>)}</div>}
+        <button className={scope === "all" ? "on" : ""} onClick={() => setScope("all")}><span><b>All courses</b><small className="muted">Clear your results on every course you've added</small></span><i aria-hidden="true">{scope === "all" ? "\u2713" : ""}</i></button>
+      </div>
+      <label className="cg-tick"><input type="checkbox" checked={everything} onChange={(e) => setEverything(e.target.checked)} /><span>Also clear quiz answers, flashcards and notes progress, which resets your streak and XP to zero</span></label>
+      <div className="cg-actions spread"><button className="cg-link" onClick={onClose}>Cancel</button><button className="cg-btn danger" disabled={!ok} onClick={() => onReset({ courses: scope === "all" ? COURSES.map((c) => c.id) : picked, everything })}>Continue</button></div>
+    </Modal>
   );
 }
 
@@ -95,6 +129,29 @@ function Donut({ rows, unit }) {
   );
 }
 
+const KINDS = [["Test", "#4a90d9"], ["Quiz", "#9a58d0"], ["Flashcards", "#3fb37f"]];
+
+function DayByDay({ history }) {
+  const rows = activity(history);
+  const now = new Date();
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+  const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((label, i) => {
+    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    const key = dayOf(d);
+    return { label, parts: KINDS.map(([k]) => rows.filter((r) => r.on === key && r.kind === k).reduce((n, r) => n + r.xp, 0)) };
+  });
+  const top = Math.max(1, ...days.map((d) => d.parts.reduce((a, b) => a + b, 0)));
+  return (
+    <section className="cg-card">
+      <span className="cg-tag">Day by day</span>
+      <div className="cg-spread small muted"><span>XP this week, by activity</span><span className="cg-legend">{KINDS.map(([k, c]) => <span key={k}><i style={{ background: c }} />{k}</span>)}</span></div>
+      <div className="cg-daybars" role="img" aria-label="XP by day this week">{days.map((d) => (
+        <span key={d.label} title={`${d.label}: ${d.parts.reduce((a, b) => a + b, 0)} XP`}><span className="cg-stack-bar">{d.parts.map((v, i) => v ? <i key={i} style={{ height: `${(v / top) * 100}%`, background: KINDS[i][1] }} /> : null)}</span><small>{d.label}</small></span>
+      ))}</div>
+    </section>
+  );
+}
+
 const hourLabel = (h) => (h === 0 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`);
 
 function Activity({ history }) {
@@ -135,6 +192,8 @@ function Activity({ history }) {
         <section className="cg-stat purple"><span className="cg-statlabel">Sittings</span><b>{all.sittings}</b></section>
         <section className="cg-stat green"><span className="cg-statlabel">Questions</span><b>{list.reduce((n, h) => n + (h.total || 0), 0)}</b><small>{all.average === null ? "" : `${all.average}% right on average`}</small></section>
       </div>
+
+      <DayByDay history={history} />
 
       <div className="cg-two">
         <section className="cg-card"><span className="cg-tag">By course</span><Donut rows={group((h) => courseOf(h.paper).name)} unit={measure === "time" ? "min" : "sittings"} /></section>

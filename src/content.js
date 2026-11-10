@@ -107,52 +107,52 @@ export const FORMULAS = [
 export const CARDS = [...TERMS, ...FORMULAS];
 
 export const SHEETS = [
-  { id: "linear", subject: "Math", title: "Linear equations and graphs", blocks: [
+  { id: "linear", desc: "Forms of a line, slope, how many solutions an equation has, and reading a model in context.", subject: "Math", title: "Linear equations and graphs", blocks: [
     ["Forms of a line", ["Slope-intercept: y = mx + b", "Point-slope: y - y₁ = m(x - x₁)", "Standard: Ax + By = C, slope -A/B"]],
     ["Slope", ["m = rise / run = (y₂ - y₁) / (x₂ - x₁)", "Parallel lines: same slope", "Perpendicular lines: slopes multiply to -1"]],
     ["Solving", ["Do the same to both sides.", "Number of solutions: one if the slopes differ, none if parallel and different, infinitely many if identical.", "Flip an inequality sign when multiplying or dividing by a negative."]],
     ["In context", ["The slope is the rate of change per unit.", "The y-intercept is the starting amount.", "Check units before you answer."]],
   ] },
-  { id: "systems", subject: "Math", title: "Systems and inequalities", blocks: [
+  { id: "systems", desc: "Substitution, elimination, special cases, and systems of inequalities on a graph.", subject: "Math", title: "Systems and inequalities", blocks: [
     ["Methods", ["Substitution: solve one equation for a variable, put it in the other.", "Elimination: add or subtract the equations to cancel a variable.", "On a graph: the solution is where the lines cross."]],
     ["Special cases", ["No solution: the lines are parallel (same slope, different intercept).", "Infinitely many: the equations describe the same line."]],
     ["Inequalities", ["< and > use an open circle, ≤ and ≥ a closed one.", "Shade the side that makes the inequality true.", "The solution to a system of inequalities is where the shading overlaps."]],
   ] },
-  { id: "quadratics", subject: "Math", title: "Quadratics", blocks: [
+  { id: "quadratics", desc: "Three forms of a quadratic, the formula, the discriminant and the products worth knowing.", subject: "Math", title: "Quadratics", blocks: [
     ["Forms", ["Standard: y = ax² + bx + c", "Vertex: y = a(x - h)² + k, vertex (h, k)", "Factored: y = a(x - p)(x - q), zeros p and q"]],
     ["Solving", ["Factor if you can.", "Quadratic formula: x = (-b ± √(b² - 4ac)) / 2a", "Vertex x-value: -b / 2a"]],
     ["Discriminant b² - 4ac", ["Positive: two real solutions", "Zero: one real solution", "Negative: no real solutions"]],
     ["Useful products", ["(x + a)² = x² + 2ax + a²", "(x - a)² = x² - 2ax + a²", "(x + a)(x - a) = x² - a²"]],
   ] },
-  { id: "exponential", subject: "Math", title: "Exponentials and percentages", blocks: [
+  { id: "exponential", desc: "Growth and decay models, percentage multipliers and the exponent rules.", subject: "Math", title: "Exponentials and percentages", blocks: [
     ["Growth and decay", ["Growth: y = a(1 + r)^t", "Decay: y = a(1 - r)^t", "a is the starting amount, r the rate per step, t the number of steps."]],
     ["Percentages", ["Percent change = (new - old) / old × 100", "Increase by p%: multiply by (1 + p/100)", "Decrease by p%: multiply by (1 - p/100)", "Successive changes multiply; they do not add."]],
     ["Exponent rules", ["xᵃ · xᵇ = xᵃ⁺ᵇ", "(xᵃ)ᵇ = xᵃᵇ", "x⁻ᵃ = 1 / xᵃ", "x^(1/2) = √x"]],
   ] },
-  { id: "geometry", subject: "Math", title: "Geometry and trigonometry", blocks: [
+  { id: "geometry", desc: "Right triangles, trigonometry, circles and the volume formulas in one place.", subject: "Math", title: "Geometry and trigonometry", blocks: [
     ["Right triangles", ["a² + b² = c²", "30-60-90: sides x, x√3, 2x", "45-45-90: sides x, x, x√2", "Common triples: 3-4-5, 5-12-13, 8-15-17, 7-24-25"]],
     ["Trigonometry", ["sin = opposite / hypotenuse", "cos = adjacent / hypotenuse", "tan = opposite / adjacent", "sin θ = cos(90° - θ)", "180° = π radians"]],
     ["Circles", ["Area = πr², circumference = 2πr", "Arc length = (angle / 360°) × 2πr", "Sector area = (angle / 360°) × πr²", "Equation: (x - h)² + (y - k)² = r²"]],
     ["Volume", ["Prism: ℓwh", "Cylinder: πr²h", "Cone: ⅓πr²h", "Sphere: ⁴⁄₃πr³", "Pyramid: ⅓ℓwh"]],
   ] },
-  { id: "stats", subject: "Math", title: "Statistics and probability", blocks: [
+  { id: "stats", desc: "Mean, median, spread, reading data and the probability rules.", subject: "Math", title: "Statistics and probability", blocks: [
     ["Centre and spread", ["Mean: sum / count", "Median: the middle value, in order", "An outlier moves the mean more than the median.", "A larger standard deviation means more spread."]],
     ["Data", ["The line of best fit follows the trend; read predictions from it.", "Correlation is not causation.", "A random sample supports a conclusion about the population; a biased one does not."]],
     ["Probability", ["P = favourable / total", "Both events: multiply (if independent)", "Either event: add, then subtract the overlap", "Two-way tables: use the row or column the question names as the total."]],
   ] },
-  { id: "boundaries", subject: "Reading and Writing", title: "Sentence boundaries and punctuation", blocks: [
+  { id: "boundaries", desc: "Joining clauses, colons and dashes, commas and apostrophes.", subject: "Reading and Writing", title: "Sentence boundaries and punctuation", blocks: [
     ["Joining two independent clauses", ["Period.", "Semicolon ;", "Comma + FANBOYS (for, and, nor, but, or, yet, so)", "Never a comma alone: that is a comma splice."]],
     ["Colon and dash", ["A colon needs a complete sentence before it.", "A pair of dashes or commas sets off extra information; the sentence must still work without it."]],
     ["Commas", ["After an opening phrase.", "Around non-restrictive information.", "Never between a subject and its verb.", "Never before the first or after the last item in a list unless it is part of the pattern."]],
     ["Apostrophes", ["its = belonging to it; it's = it is", "dog's = one dog; dogs' = more than one", "Plain plurals never take an apostrophe."]],
   ] },
-  { id: "agreement", subject: "Reading and Writing", title: "Agreement and verb tense", blocks: [
+  { id: "agreement", desc: "Subject-verb and pronoun agreement, verb tense and modifiers.", subject: "Reading and Writing", title: "Agreement and verb tense", blocks: [
     ["Subject-verb", ["Find the real subject; ignore phrases between it and the verb.", "Each, every, either, neither, one: singular.", "Subjects joined by and: plural.", "In either/or, agree with the nearer subject."]],
     ["Pronouns", ["Match number: a company ... it/its.", "Match person: do not switch between you and one.", "A pronoun with no clear antecedent is unclear."]],
     ["Verb tense", ["Keep one time frame unless the time really changes.", "Use the past perfect (had done) for the earlier of two past events.", "Scientific facts and general truths use the present."]],
     ["Modifiers", ["Put the modifier beside what it describes.", "After an opening phrase, the subject must be the doer."]],
   ] },
-  { id: "transitions", subject: "Reading and Writing", title: "Transitions", blocks: [
+  { id: "transitions", desc: "Transition words grouped by job, and a method for choosing one.", subject: "Reading and Writing", title: "Transitions", blocks: [
     ["Contrast", ["however, but, yet, nevertheless, in contrast, on the other hand, still"]],
     ["Addition", ["moreover, furthermore, also, in addition, likewise, similarly"]],
     ["Cause and result", ["therefore, thus, consequently, as a result, accordingly"]],
@@ -160,13 +160,13 @@ export const SHEETS = [
     ["Time and sequence", ["first, next, then, afterward, meanwhile, subsequently, finally"]],
     ["Method", ["Read the sentence before and after. Decide in your own words how they relate, then choose the word that says it."]],
   ] },
-  { id: "words", subject: "Reading and Writing", title: "Words in context, tone and structure", blocks: [
+  { id: "words", desc: "Words in context, tone, purpose and structure, and inference questions.", subject: "Reading and Writing", title: "Words in context, tone and structure", blocks: [
     ["Words in context", ["Cover the choices and predict a word first.", "Use clue words in the sentence: but, although, because, so.", "Check connotation: the word must fit the tone."]],
     ["Tone", ["Find the loaded words: praising, doubting, neutral, urgent.", "Beware choices that are too extreme."]],
     ["Purpose and structure", ["Ask what the part does for the whole: gives an example, offers a counterargument, introduces the problem.", "Pick the choice that describes the function, not just the topic."]],
     ["Inference", ["The right answer follows from the text; it adds no new facts.", "Prefer the narrowest choice that the text guarantees."]],
   ] },
-  { id: "evidence", subject: "Reading and Writing", title: "Evidence, graphs and synthesis", blocks: [
+  { id: "evidence", desc: "Textual and quantitative evidence, rhetorical synthesis and paired texts.", subject: "Reading and Writing", title: "Evidence, graphs and synthesis", blocks: [
     ["Textual evidence", ["Restate the claim, then find the choice that directly supports (or weakens) it.", "Reject choices that are true but off-topic."]],
     ["Quantitative evidence", ["Read the title, axes and units first.", "Check each figure in the choice against the graph or table.", "The claim must match exactly: do not stretch it."]],
     ["Rhetorical synthesis", ["Find the goal in the question stem.", "The best sentence uses only the notes that serve that goal.", "Cross out choices that include irrelevant notes."]],

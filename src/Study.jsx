@@ -10,7 +10,7 @@ const Html = ({ html, className = "" }) => <div className={"dq-html " + classNam
 
 /* ---------- quiz ---------- */
 
-export function QuizTab({ onXp, startOpen = false }) {
+export function QuizTab({ onXp, startOpen = false, onExam, onCards, openSkill }) {
   const [bank, setBank] = useState(null);
   const [failed, setFailed] = useState(false);
   const [wizard, setWizard] = useState(startOpen);
@@ -20,7 +20,7 @@ export function QuizTab({ onXp, startOpen = false }) {
   const answered = Object.keys(done).length, right = Object.values(done).filter(Boolean).length;
   const skills = bank ? skillsOf(bank) : [];
 
-  if (wizard && bank) return <Wizard bank={bank} done={done} onClose={() => { setWizard(false); setLog(quizLog()); onXp?.(); }} />;
+  if (wizard && bank) return <Wizard bank={bank} done={done} onExam={onExam} onCards={onCards} onClose={() => { setWizard(false); setLog(quizLog()); onXp?.(); }} />;
   return (
     <div className="cg-stack">
       <section className="cg-card cg-quizhero">
@@ -33,7 +33,7 @@ export function QuizTab({ onXp, startOpen = false }) {
           <div className="cg-skills">{skills.filter((s) => s.subject === subject).map((s) => {
             const ids = bank.filter((q) => q.subject === s.subject && q.skill === s.skill).map((q) => q.id);
             const n = ids.filter((id) => id in done).length;
-            return <div key={s.skill} className="cg-skill"><span>{s.skill}</span><span className="cg-meter"><i style={{ width: `${(n / ids.length) * 100}%` }} /></span><small className="muted">{n} / {ids.length}</small></div>;
+            return <div key={s.skill} className="cg-skill"><button className="cg-link inline" onClick={() => openSkill?.(s)}>{s.skill}</button><span className="cg-meter"><i style={{ width: `${(n / ids.length) * 100}%` }} /></span><small className="muted">{n} / {ids.length}</small></div>;
           })}</div>
         </section>
       ))}
@@ -41,8 +41,9 @@ export function QuizTab({ onXp, startOpen = false }) {
   );
 }
 
-function Wizard({ bank, done, onClose }) {
+export function Wizard({ bank, done, onClose, onExam, onCards }) {
   const [step, setStep] = useState(1);
+  const [activity, setActivity] = useState("quiz");
   const [picked, setPicked] = useState(() => new Set());
   const [count, setCount] = useState(15);
   const [mode, setMode] = useState("learn");
@@ -59,10 +60,12 @@ function Wizard({ bank, done, onClose }) {
   if (quiz) return <Runner questions={quiz} onClose={onClose} />;
   return (
     <div className="cg-wizard">
-      <header><button className="cg-wx" aria-label={step === 1 ? "Close" : "Back"} onClick={() => (step === 1 ? onClose() : setStep(step - 1))}>{step === 1 ? "×" : "←"}</button><h2>{step === 1 ? "Create a revision session" : step === 2 ? "Select your skills" : "Customise your quiz"}</h2><span className="cg-step">Step {step} of 3</span></header>
+      <header><button className="cg-wx" aria-label={step === 1 ? "Close" : "Back"} onClick={() => (step === 1 ? onClose() : setStep(step - 1))}>{step === 1 ? "×" : "←"}</button><h2>{step === 1 ? "Create a revision session" : step === 2 ? "Select your skills" : activity === "exam" ? "Customise your paper" : "Customise your quiz"}</h2><span className="cg-step">Step {step} of 3</span></header>
       <div className="cg-wbody">
         {step === 1 && <section className="cg-card cg-pick"><span className="cg-tag">Select an activity</span>
-          <button onClick={() => setStep(2)}><i className="blue">?</i><span><b>Quiz</b><small className="muted">Test your knowledge with a quiz of questions.</small></span><em>&rsaquo;</em></button>
+          <button onClick={() => { setActivity("quiz"); setStep(2); }}><i className="blue">?</i><span><b>Quiz</b><small className="muted">Test your knowledge with a quiz of questions.</small></span><em>&rsaquo;</em></button>
+          {onCards && <button onClick={() => { setActivity("cards"); setStep(2); }}><i className="green">{"\u2750"}</i><span><b className="green">Flashcards</b><small className="muted">Review the key ideas of each skill with a flashcard deck.</small></span><em>&rsaquo;</em></button>}
+          {onExam && <button onClick={() => { setActivity("exam"); setStep(2); }}><i className="amber">{"\u2630"}</i><span><b className="amber">Exam</b><small className="muted">Practise answering exam questions, marked one by one.</small></span><em>&rsaquo;</em></button>}
         </section>}
         {step === 2 && <>
           <div className="cg-wbar"><span className="small">{picked.size} of {skills.length} selected</span><button className="cg-link" onClick={() => setPicked(picked.size === skills.length ? new Set() : new Set(skills.map(key)))}>{picked.size === skills.length ? "Clear all" : "Select all"}</button></div>
@@ -77,8 +80,8 @@ function Wizard({ bank, done, onClose }) {
           <div className="cg-modes">{[["learn", "Learn", "Mostly new questions, covering material you haven't seen yet."], ["balanced", "Balanced", "A mix of new questions and ones you got wrong."], ["fix", "Fix mistakes", "Focus on what you got wrong by prioritising past mistakes."]].map(([id, name, d]) => <button key={id} className={mode === id ? "on" : ""} onClick={() => setMode(id)}><span className="cg-modetag">{name}</span><small>{d}</small></button>)}</div>
         </section>}
       </div>
-      {step > 1 && <footer><span className="cg-chipsm blue">Quiz</span><span className="cg-chipsm">{picked.size} skills</span><span className="spacer" />{step === 3 && <small className="muted">{avail.length} questions available</small>}
-        <button className="cg-btn primary" disabled={step === 2 ? picked.size === 0 : n === 0} onClick={() => (step === 2 ? setStep(3) : setQuiz(mix))}>{step === 2 ? "Next" : "Start"}</button></footer>}
+      {step > 1 && <footer><span className="cg-chipsm blue">{{ quiz: "Quiz", cards: "Flashcards", exam: "Exam" }[activity]}</span><span className="cg-chipsm">{picked.size} skills</span><span className="spacer" />{step === 3 && <small className="muted">{avail.length} questions available</small>}
+        <button className="cg-btn primary" disabled={step === 2 ? picked.size === 0 : n === 0} onClick={() => { if (step === 2 && activity === "cards") { onCards(picked); return; } if (step === 2) { setStep(3); return; } if (activity === "exam") onExam(mix); else setQuiz(mix); }}>{step === 2 && activity !== "cards" ? "Next" : "Start"}</button></footer>}
     </div>
   );
 }

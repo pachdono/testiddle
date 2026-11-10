@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import RealPapers from "./RealPapers.jsx";
 import { TopBar, Dashboard, ManageCourses, readHistory, visibleCourses } from "./Courses.jsx";
 import { Settings } from "./Settings.jsx";
-import { HISTORY_KEY } from "./courses.js";
+import Landing from "./Landing.jsx";
+import { FaqPage, WhatsNew, FeedbackDialog, FeedbackButton } from "./Help.jsx";
+import { HISTORY_KEY, courseOf } from "./courses.js";
 import { useAuth, SignInPanel, ProfileGate } from "./Account.jsx";
 import { configured, myAccess } from "./supabase.js";
 import { Duck } from "./Duck.jsx";
@@ -15,22 +17,6 @@ const DWIDDLE = "https://dwiddle.vercel.app";
 
 function GateTop() {
   return <header className="cg-top"><a className="cg-brand" href="/"><Duck size={34} shadow={false} /><b>Testiddle</b></a></header>;
-}
-
-// Everything here needs an account, so this is the front door.
-function SignInGate() {
-  return (
-    <main className="ti-door">
-      <div className="ti-board">
-        <p className="ti-kicker">Class is in session</p>
-        <h1>Sign in to start practising</h1>
-        <p className="ti-sub">Full length SAT practice tests, marked and explained, on paper or on screen. Use your Dwiddle account, or make one here. They are the same account.</p>
-        {configured
-          ? <div className="ti-signin"><SignInPanel /></div>
-          : <p className="small warn-text">Accounts are not set up on this site yet.</p>}
-      </div>
-    </main>
-  );
 }
 
 // While Testiddle is being tried out it is for testers and staff only. Set VITE_OPEN_TO_ALL=1
@@ -87,6 +73,7 @@ export default function App() {
   const [, bump] = useState(0);
   useEffect(() => { const f = () => { setHistory(readHistory()); bump((n) => n + 1); }; window.addEventListener("testiddle:progress", f); return () => window.removeEventListener("testiddle:progress", f); }, []);
   const [managing, setManaging] = useState(false);
+  const [feedback, setFeedback] = useState(null); // null, or { prefill }
   const courses = visibleCourses();
 
   return (
@@ -94,7 +81,7 @@ export default function App() {
       {!auth.ready && !user ? (
         <><GateTop /><main className="ti-door"><Loading label="Opening the classroom" /></main></>
       ) : !user ? (
-        <><GateTop /><SignInGate /></>
+        <><GateTop /><Landing signIn={configured ? <SignInPanel /> : <p className="small warn-text">Accounts are not set up on this site yet.</p>} /></>
       ) : access === null && !OPEN ? (
         <><GateTop /><main className="ti-door"><Loading label="Checking your access" /></main></>
       ) : !allowed ? (
@@ -107,10 +94,18 @@ export default function App() {
         <>
           <TopBar path={path} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onSignOut={signOut} dwiddle={DWIDDLE} courses={courses} manage={() => setManaging(true)} />
           {managing && <ManageCourses onClose={() => setManaging(false)} />}
+          {feedback && <FeedbackDialog prefill={feedback.prefill} onClose={() => setFeedback(null)} />}
+          <FeedbackButton onClick={() => setFeedback({})} />
           <main className="cg-main">
             <Boundary>
-              {path.startsWith("/account") || path === "/activity" ? <Settings tab={path === "/activity" ? "activity" : path.split("/")[2] || "account"} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onReset={() => { try { [HISTORY_KEY, "testiddle-quiz", "testiddle-cards"].forEach((k) => localStorage.removeItem(k)); } catch { /* storage blocked */ } setHistory([]); bump((n) => n + 1); }} />
-                : path.startsWith("/course/") || path.startsWith("/real/") ? <RealPapers path={path} nav={nav} />
+              {path.startsWith("/account") || path === "/activity" ? <Settings tab={path === "/activity" ? "activity" : path.split("/")[2] || "account"} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onReset={({ courses: ids, everything }) => { try {
+                  const keep = readHistory().filter((h) => !ids.includes(courseOf(h.paper).id));
+                  localStorage.setItem(HISTORY_KEY, JSON.stringify(keep));
+                  if (everything) ["testiddle-quiz", "testiddle-cards", "testiddle-notes-read", "testiddle-ticks", "testiddle-exam"].forEach((k) => localStorage.removeItem(k));
+                } catch { /* storage blocked */ } setHistory(readHistory()); bump((n) => n + 1); }} requestDelete={() => setFeedback({ prefill: "Please delete my account." })} />
+                : path === "/help" ? <FaqPage nav={nav} feedback={() => setFeedback({})} />
+                : path === "/whats-new" ? <WhatsNew nav={nav} />
+                : path.startsWith("/course/") || path.startsWith("/real/") ? <RealPapers path={path} nav={nav} theme={theme} setTheme={setTheme} report={(prefill) => setFeedback({ prefill })} />
                 : <Dashboard nav={nav} history={history} user={user} courses={courses} manage={() => setManaging(true)} />}
             </Boundary>
           </main>
