@@ -9,6 +9,7 @@ import { NotesTab, StudyView, ExamTab, ExamView, CardDeck, cardsFor } from "./Le
 import { SUBTOPICS, TOPICS } from "./notes.js";
 import { CARDS, SHEETS } from "./content.js";
 import { cardRatings, quizLog } from "./progress.js";
+import { SheetPoster, SheetThumb } from "./Posters.jsx";
 import { doneFrom, loadBank } from "./bank.js";
 
 const base = import.meta.env.BASE_URL;
@@ -87,15 +88,14 @@ function CheatSheets() {
   const sheet = SHEETS[i];
   if (sheet) {
     const next = SHEETS[(i + 1) % SHEETS.length];
-    const body = <div className="cg-sheetbody"><span className="cg-chipr dark">{sheet.subject}</span><h2>{sheet.title}</h2>{sheet.blocks.map(([h, lines]) => <div key={h} className="cg-block"><b>{h}</b><ul>{lines.map((l) => <li key={l}>{l}</li>)}</ul></div>)}</div>;
     return (
       <div className="cg-stack tight">
         <div className="cg-spread"><button className="cg-link" onClick={() => setOpen(null)}>&larr; See all cheat sheets</button><button className="cg-link" onClick={() => setOpen(next.id)}>Next cheat sheet &rarr;</button></div>
         <section className="cg-card cg-sheetview"><span className="cg-tag dark">Cheat sheet</span>
-          <div className="cg-sheetleft"><div className="cg-spread"><small className="muted">A ONE PAGE SUMMARY OF {sheet.title.toUpperCase()}</small><button className="cg-link" onClick={() => setBig(true)}>{"⛶"} Expand</button></div><div className="cg-sheet">{body}</div></div>
-          <aside className="cg-sheetside"><h2>{sheet.title}</h2><p className="muted">{sheet.desc}</p><small className="muted">Written by the Testiddle team</small><button className="cg-btn primary" onClick={() => window.print()}>Print or save as PDF</button></aside>
+          <div className="cg-sheetleft"><div className="cg-spread"><small className="muted">A ONE PAGE SUMMARY OF {sheet.title.toUpperCase()}</small><button className="cg-link" onClick={() => setBig(true)}>{"\u26f6"} Expand</button></div><div className="cg-sheet"><SheetPoster sheet={sheet} /></div></div>
+          <aside className="cg-sheetside"><h2>{sheet.title}</h2><p className="muted">{sheet.desc}</p><small className="muted">Illustrated by the Testiddle team</small><button className="cg-btn primary" onClick={() => window.print()}>Print or save as PDF</button></aside>
         </section>
-        {big && <div className="cg-scrim dark" onMouseDown={(e) => { if (e.target === e.currentTarget) setBig(false); }} role="dialog" aria-modal="true" aria-label={sheet.title}><button className="cg-x fixed" onClick={() => setBig(false)} aria-label="Close">&times;</button><div className="cg-paper cg-sheet">{body}</div></div>}
+        {big && <div className="cg-scrim dark" onMouseDown={(e) => { if (e.target === e.currentTarget) setBig(false); }} role="dialog" aria-modal="true" aria-label={sheet.title}><button className="cg-x fixed" onClick={() => setBig(false)} aria-label="Close">&times;</button><div className="cg-paper cg-sheet"><SheetPoster sheet={sheet} /></div></div>}
       </div>
     );
   }
@@ -103,7 +103,7 @@ function CheatSheets() {
     <div className="cg-stack tight">
       <span className="cg-chipsm">{SHEETS.length} cheat sheets</span>
       {["Math", "Reading and Writing"].map((subject) => <section key={subject} className="cg-card cg-sheetlist"><span className="cg-tag dark">{subject}</span>
-        {SHEETS.filter((s) => s.subject === subject).map((s) => <button key={s.id} onClick={() => setOpen(s.id)}><span className="cg-thumb" aria-hidden="true">{s.blocks.slice(0, 3).map(([h]) => <i key={h} />)}</span><span><b>{s.title}</b><small className="muted">{s.desc}</small></span></button>)}
+        {SHEETS.filter((s) => s.subject === subject).map((s) => <button key={s.id} onClick={() => setOpen(s.id)}><SheetThumb sheet={s} /><span><b>{s.title}</b><small className="muted">{s.desc}</small></span></button>)}
       </section>)}
     </div>
   );
