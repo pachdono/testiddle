@@ -50,3 +50,22 @@ test("the longest run, the hours and the kind of sitting", () => {
   assert.equal(kindOf({ section: "Reading and Writing, Module 1" }), "Reading and Writing");
   assert.equal(kindOf({ section: "Full test" }), "Full test");
 });
+
+import { streakWith, activity, xpByDay, XP } from "../src/progress.js";
+
+test("a streak freeze covers one missed day, twice at most", () => {
+  const today = new Date(2026, 10, 10, 9);
+  const d = (s) => ({ on: s });
+  assert.equal(streakWith([d("2026-11-10"), d("2026-11-08"), d("2026-11-07")], today).run, 4);   // 9th covered
+  assert.equal(streakWith([d("2026-11-10"), d("2026-11-08")], today).used, 1);
+  assert.equal(streakWith([d("2026-11-10"), d("2026-11-08"), d("2026-11-06"), d("2026-11-04")], today).run, 5); // 9th and 7th covered, the third gap is not
+  assert.equal(streakWith([], today).run, 0);
+});
+
+test("XP counts right answers and sittings, quizzes and cards", () => {
+  const h = [{ id: 5, on: "2026-11-09", right: 10, total: 20, minutes: 5, paper: "a" }];
+  const rows = activity(h, [{ t: 6, id: "q", ok: true }, { t: 7, id: "r", ok: false }], { c1: { level: 3, t: 8 }, c2: { level: 0, t: 9 } });
+  const total = rows.reduce((n, r) => n + r.xp, 0);
+  assert.equal(total, 10 * XP.perRight + XP.sitting + XP.right + XP.tried + XP.card);
+  assert.ok(xpByDay(rows).get("2026-11-09") === 10 * XP.perRight + XP.sitting);
+});

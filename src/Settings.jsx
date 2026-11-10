@@ -1,7 +1,8 @@
 // The account area: Account, Preferences and Activity, with a side menu like the course site's.
 
 import { useMemo, useState } from "react";
-import { COURSES, RANGES, byHour, courseOf, inRange, kindOf, summary } from "./courses.js";
+import { COURSES, RANGES, byHour, courseOf, dayOf, inRange, kindOf, summary } from "./courses.js";
+import { cardRatings, quizLog } from "./progress.js";
 
 const TABS = [["account", "Account"], ["preferences", "Preferences"], ["activity", "Activity"]];
 const TAB_ICON = {
@@ -42,12 +43,12 @@ function AccountTab({ user, history, onReset }) {
         <p className="small muted">{joined ? `Joined ${joined}. ` : ""}This is the same account as Dwiddle, so change your name and picture there.</p>
       </section>
       <section className="cg-card cg-form">
-        <span className="cg-tag">Reset results</span>
-        <p className="small muted">Start fresh by clearing your results on this device. This removes your saved scores and streak. Tests you have partly sat are not touched.</p>
+        <span className="cg-tag">Reset progress</span>
+        <p className="small muted">Start fresh by clearing your progress on this device. This removes your test results, quiz answers and flashcard confidence, and with them your XP and streak. Tests you have partly sat are not touched.</p>
         <div className="cg-actions">
           {sure
-            ? <><span className="small">Clear {history.length} {history.length === 1 ? "result" : "results"}?</span><button className="cg-btn" onClick={() => setSure(false)}>Keep them</button><button className="cg-btn danger" onClick={() => { onReset(); setSure(false); }}>Yes, clear</button></>
-            : <button className="cg-btn danger" disabled={!history.length} onClick={() => setSure(true)}>Reset results</button>}
+            ? <><span className="small">Clear all your progress?</span><button className="cg-btn" onClick={() => setSure(false)}>Keep them</button><button className="cg-btn danger" onClick={() => { onReset(); setSure(false); }}>Yes, clear</button></>
+            : <button className="cg-btn danger" onClick={() => setSure(true)}>Reset progress</button>}
         </div>
       </section>
     </div>
@@ -109,10 +110,17 @@ function Activity({ history }) {
   const val = (h) => (measure === "time" ? h.minutes || 0 : 1);
   const group = (key) => { const m = new Map(); list.forEach((h) => m.set(key(h), (m.get(key(h)) || 0) + val(h))); return [...m].map(([name, value]) => ({ name, value })); };
   const hours = byHour(list), top = Math.max(1, ...hours), peak = hours.indexOf(Math.max(...hours));
-  const days = [...new Set(shown.map((h) => h.on))].sort().reverse();
+  // quizzes and flashcards, one line for each day
+  const extra = [];
+  if (course === "all") {
+    const byDay = (list, kind) => { const m = new Map(); list.forEach((e) => { const d = dayOf(new Date(e.t)); const x = m.get(d) || { id: `${kind}-${d}`, kind, on: d, t: e.t, n: 0, ok: 0 }; x.n += 1; x.ok += e.ok ? 1 : 0; x.t = Math.max(x.t, e.t); m.set(d, x); }); return [...m.values()]; };
+    extra.push(...inRange(byDay(quizLog(), "Quiz"), range), ...inRange(byDay(Object.values(cardRatings()).filter((c) => c?.t && c.level > 0).map((c) => ({ t: c.t, ok: c.level >= 3 })), "Flashcards"), range));
+  }
+  const shownExtra = extra.filter((e) => type === "all" || type === e.kind);
+  const days = [...new Set([...shown, ...shownExtra].map((h) => h.on))].sort().reverse();
   const today = new Date(); const dayName = (d) => { const t = new Date(d + "T12:00:00"); const diff = Math.round((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 86400000); return diff === 0 ? "Today" : diff === 1 ? "Yesterday" : t.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "short" }); };
   const mins = all.minutes;
-  const types = ["all", "Reading and Writing", "Math", "Full test"];
+  const types = ["all", "Reading and Writing", "Math", "Full test", "Quiz", "Flashcards"];
 
   return (
     <div className="cg-stack">
@@ -143,7 +151,7 @@ function Activity({ history }) {
       <section className="cg-card">
         <span className="cg-tag">What you've done</span>
         <div className="cg-typefilter"><select value={type} onChange={(e) => setType(e.target.value)} aria-label="Type">{types.map((t) => <option key={t} value={t}>{t === "all" ? "All types" : t}</option>)}</select></div>
-        {shown.length === 0 && <div className="cg-empty">Nothing in this period. Sit a test and it will show up here.</div>}
+        {shown.length + shownExtra.length === 0 && <div className="cg-empty">Nothing in this period. Sit a test and it will show up here.</div>}
         {days.map((d) => (
           <div key={d} className="cg-day-group">
             <div className="cg-daylabel">{dayName(d)}</div>
@@ -157,10 +165,13 @@ function Activity({ history }) {
                 {open === h.id && <div className="cg-detail small muted">{h.section}: {h.right} of {h.total} right ({Math.round((h.right / Math.max(1, h.total)) * 100)}%){h.minutes ? `, ${h.minutes} min` : ""}</div>}
               </div>
             ))}
+            {shownExtra.filter((e) => e.on === d).map((e) => (
+              <div key={e.id} className="cg-done"><button disabled><span className="cg-rowtext"><b>{e.kind === "Quiz" ? `${e.n} quiz ${e.n === 1 ? "question" : "questions"}` : `${e.n} ${e.n === 1 ? "flashcard" : "flashcards"} rated`}</b><span className="small muted">{e.kind} · {e.kind === "Quiz" ? `${e.ok} right` : `${e.ok} known`}</span></span><span className="small muted">{new Date(e.t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span></button></div>
+            ))}
           </div>
         ))}
       </section>
-      <p className="cg-note small muted">This page shows the tests you have finished. Study time is recorded for paper tests only.</p>
+      <p className="cg-note small muted">This page shows the tests you have finished, your quiz answers and your flashcards. Study time is recorded for paper tests only.</p>
     </div>
   );
 }

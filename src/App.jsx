@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import RealPapers from "./RealPapers.jsx";
-import { TopBar, Dashboard, readHistory } from "./Courses.jsx";
+import { TopBar, Dashboard, ManageCourses, readHistory, visibleCourses } from "./Courses.jsx";
 import { Settings } from "./Settings.jsx";
 import { HISTORY_KEY } from "./courses.js";
 import { useAuth, SignInPanel, ProfileGate } from "./Account.jsx";
@@ -83,6 +83,11 @@ export default function App() {
   // Results are saved by the test pages, so read them again whenever the page changes.
   const [history, setHistory] = useState(readHistory);
   useEffect(() => { setHistory(readHistory()); }, [path]);
+  // Quizzes, flashcards and settings say when they change something, so the bar and dashboard keep up.
+  const [, bump] = useState(0);
+  useEffect(() => { const f = () => { setHistory(readHistory()); bump((n) => n + 1); }; window.addEventListener("testiddle:progress", f); return () => window.removeEventListener("testiddle:progress", f); }, []);
+  const [managing, setManaging] = useState(false);
+  const courses = visibleCourses();
 
   return (
     <div className="ti-shell">
@@ -100,12 +105,13 @@ export default function App() {
         </>
       ) : (
         <>
-          <TopBar path={path} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onSignOut={signOut} dwiddle={DWIDDLE} />
+          <TopBar path={path} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onSignOut={signOut} dwiddle={DWIDDLE} courses={courses} manage={() => setManaging(true)} />
+          {managing && <ManageCourses onClose={() => setManaging(false)} />}
           <main className="cg-main">
             <Boundary>
-              {path.startsWith("/account") || path === "/activity" ? <Settings tab={path === "/activity" ? "activity" : path.split("/")[2] || "account"} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onReset={() => { try { localStorage.removeItem(HISTORY_KEY); } catch { /* storage blocked */ } setHistory([]); }} />
+              {path.startsWith("/account") || path === "/activity" ? <Settings tab={path === "/activity" ? "activity" : path.split("/")[2] || "account"} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onReset={() => { try { [HISTORY_KEY, "testiddle-quiz", "testiddle-cards"].forEach((k) => localStorage.removeItem(k)); } catch { /* storage blocked */ } setHistory([]); bump((n) => n + 1); }} />
                 : path.startsWith("/course/") || path.startsWith("/real/") ? <RealPapers path={path} nav={nav} />
-                : <Dashboard nav={nav} history={history} user={user} />}
+                : <Dashboard nav={nav} history={history} user={user} courses={courses} manage={() => setManaging(true)} />}
             </Boundary>
           </main>
           <ProfileGate user={user} />

@@ -1,6 +1,7 @@
 // One course: a banner, then tabs for its tests, its mark schemes and your results.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { QuizTab, FlashcardsTab, SheetsTab, TermsTab } from "./Study.jsx";
 import { historyOf, summary } from "./courses.js";
 import { CourseMark } from "./Courses.jsx";
 
@@ -27,7 +28,17 @@ export default function CoursePage({ course, entries, history, onOpen, onClear, 
   const stats = summary(history, course);
   const last = {};
   [...mine].reverse().forEach((h) => { last[h.paper] = h; });
-  const tabs = [["tests", "Tests"], ...(course.marks ? [["marks", "Mark schemes"]] : []), ["results", "Results"]];
+  const tabs = [["tests", "Tests"], ["quiz", "Quiz"], ["cards", "Flashcards"], ["sheets", "Cheat sheets"]];
+  const more = [["terms", "Key terms"], ...(course.marks ? [["marks", "Mark schemes"]] : []), ["results", "Results"]];
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef(null);
+  useEffect(() => {
+    if (!moreOpen) return undefined;
+    const f = (e) => { if (!moreRef.current?.contains(e.target)) setMoreOpen(false); };
+    document.addEventListener("mousedown", f);
+    return () => document.removeEventListener("mousedown", f);
+  }, [moreOpen]);
+  const [quizKey, setQuizKey] = useState(0);
 
   return (
     <div className="cg-page">
@@ -39,6 +50,7 @@ export default function CoursePage({ course, entries, history, onOpen, onClear, 
           <h1>{course.name}</h1>
           <p>{course.blurb}</p>
         </div>
+        <button className="cg-btn primary cg-multi" onClick={() => { setTab("quiz"); setQuizKey((k) => k + 1); }}>Study multiple skills &rarr;</button>
         <div className="cg-bannerstats">
           <div><b>{stats.sittings}</b><span>sittings</span></div>
           <div><b>{stats.average === null ? "-" : `${stats.average}%`}</b><span>average</span></div>
@@ -48,7 +60,16 @@ export default function CoursePage({ course, entries, history, onOpen, onClear, 
 
       <nav className="cg-tabs" aria-label="Course sections">
         {tabs.map(([id, label]) => <button key={id} className={tab === id ? "on" : ""} onClick={() => setTab(id)}>{label}</button>)}
+        <span className="cg-more" ref={moreRef}>
+          <button className={more.some(([id]) => id === tab) ? "on" : ""} aria-expanded={moreOpen} onClick={() => setMoreOpen(!moreOpen)}>{more.find(([id]) => id === tab)?.[1] || "More"} <span aria-hidden="true">{moreOpen ? "\u25b4" : "\u25be"}</span></button>
+          {moreOpen && <div className="cg-menulist">{more.map(([id, label]) => <button key={id} onClick={() => { setTab(id); setMoreOpen(false); }}>{label}</button>)}</div>}
+        </span>
       </nav>
+
+      {tab === "quiz" && <QuizTab key={quizKey} startOpen={quizKey > 0} />}
+      {tab === "cards" && <FlashcardsTab />}
+      {tab === "sheets" && <SheetsTab />}
+      {tab === "terms" && <TermsTab />}
 
       {tab === "tests" && (
         <div className="cg-list">
