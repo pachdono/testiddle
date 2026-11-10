@@ -5,7 +5,7 @@ import { TOPICS, SUBTOPICS } from "./notes.js";
 import { TERMS } from "./content.js";
 import { doneFrom, isRight, loadBank } from "./bank.js";
 import { logQuiz, quizLog, rateCard, cardRatings } from "./progress.js";
-import { Critter, castFor } from "./Critters.jsx";
+import { Critter, CritterFor, castFor } from "./Critters.jsx";
 
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); window.dispatchEvent(new Event("testiddle:progress")); } catch { /* private mode */ } };
@@ -194,6 +194,7 @@ function QuestionCard({ q, n, total, state, onAnswer, button = "Check" }) {
   const right = done && state.ok;
   return (
     <section className="cg-card cg-qcard">
+      <CritterFor n={n} />
       <div className="cg-spread"><small className="muted">{n} of {total}</small><Feedbacks id={q.id} /></div>
       {q.passage && <Html html={q.passage} className="cg-passage" />}
       {q.figure && <div className="ds-fig" dangerouslySetInnerHTML={{ __html: q.figure }} />}
@@ -263,6 +264,7 @@ export function CardDeck({ cards, browse, onProgress }) {
   );
   const face = (c, i) => (
     <section key={c.id} className="cg-flipwrap">
+      <CritterFor n={i + 2} only={["top", "side"]} />
       <button className={"cg-flip" + (flip[c.id] ? " is-flipped" : "")} onClick={() => turn(c)} aria-label={flip[c.id] ? "Show the front" : "Show the back"}>
         {side(c, i, false)}{side(c, i, true)}
       </button>
@@ -319,7 +321,7 @@ export function ExamView({ sub, picked, title, onClose, report }) {
         <div className="cg-qcol">
           {failed && <div className="cg-empty">The questions could not be loaded. Check your connection.</div>}
           {!failed && !qs.length && <div className="cg-empty">Loading questions</div>}
-          {qs.length > 0 && <section className="cg-card cg-examhead">
+          {qs.length > 0 && <section className="cg-card cg-examhead"><Critter who="sprout" where="corner" at="94%" />
             <div className="cg-spread"><h2>{name}</h2><button className="cg-btn" aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)}>{collapsed ? "▾" : "▴"}</button></div>
             {!collapsed && <><div className="cg-qnums">{qs.map((q, n) => <button key={q.id} className={(n === cur ? "on " : "") + (marks[q.id] ? (marks[q.id].ok ? "right" : "wrong") : "")} onClick={() => { setCur(n); refs.current[n]?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>{n + 1}</button>)}</div>
               <div className="cg-spread"><button className="cg-link" onClick={() => save({})}>{"↺"} Reset {qs.length} questions</button><span className="cg-markbox">Total marks: {got} / {qs.length}</span></div></>}

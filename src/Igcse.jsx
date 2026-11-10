@@ -6,6 +6,7 @@ import { useState } from "react";
 import { BOARDS, SUBJECTS, courseFor } from "./catalog.js";
 import { myCourses, setMyCourses } from "./progress.js";
 import { CourseMark } from "./Courses.jsx";
+import { Critter } from "./Critters.jsx";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
 const SESSIONS = { cie: [["May/June", "s"], ["October/November", "w"], ["February/March", "m"]], edexcel: [["May/June", "Jun"], ["January", "Jan"], ["October/November", "Nov"]] };
@@ -30,6 +31,7 @@ export default function IgcsePage({ id, nav }) {
   return (
     <div className="cg-page">
       <section className="cg-banner" style={{ "--tint": course.tint }}>
+        <Critter who="sprout" where="corner" at="84%" />
         <span className="cg-bannertag">{course.tag}</span>
         <CourseMark course={course} size={96} />
         <div className="cg-bannertext"><h1>{course.name}</h1><p>{course.blurb}</p>
@@ -47,7 +49,7 @@ export default function IgcsePage({ id, nav }) {
       {tab === "topics" && <div className="cg-stack tight">
         <div className="cg-listbar"><div className="cg-overall"><span className="small">Overall progress:</span><span className="cg-meter wide"><i style={{ width: `${pct * 100}%` }} /></span><b className="small">{Math.round(pct * 100)}%</b></div><span className="cg-spacer" />
           <button className="cg-btn" onClick={() => { const all = done.length === course.topics.length ? [] : course.topics.map((_, i) => i); setDone(all); try { localStorage.setItem(KEY(id), JSON.stringify(all)); } catch { /* private mode */ } }}>{done.length === course.topics.length ? "Clear all" : "Tick all"}</button></div>
-        <section className="cg-card ig-topics"><span className="cg-tag">Syllabus topics</span>
+        <section className="cg-card ig-topics"><Critter who="wiggle" where="under" at="80%" /><span className="cg-tag">Syllabus topics</span>
           {course.topics.map((t, i) => <label key={t} className={"ig-topic" + (done.includes(i) ? " done" : "")}><input type="checkbox" checked={done.includes(i)} onChange={() => toggle(i)} /><span className="ig-num">{i + 1}</span><span>{t}</span></label>)}
         </section>
         <p className="cg-note small muted">Tick a topic once you have revised it. Notes, quizzes and flashcards for IGCSE courses are being written; for now, use the past papers to practise.</p>

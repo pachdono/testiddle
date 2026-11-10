@@ -102,3 +102,12 @@ export function castFor(n) {
   ];
   return sets[n % sets.length];
 }
+
+const ROTATION = [["tiddle", "top", "82%"], ["inky", "side", "45%"], ["sprout", "corner", "92%"], ["tiddle", "top", "16%"], ["wiggle", "under", "84%"], ["sprout", "corner", "8%"], ["inky", "side", "62%"]];
+
+/** A critter for the nth card of a screen, so cards next to each other get different company. */
+export function CritterFor({ n = 0, only }) {
+  const pick = ROTATION.filter(([, where]) => !only || only.includes(where));
+  const [who, where, at] = pick[((n % pick.length) + pick.length) % pick.length];
+  return <Critter who={who} where={where} at={at} />;
+}

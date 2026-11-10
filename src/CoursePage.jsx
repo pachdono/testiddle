@@ -11,6 +11,7 @@ import { CARDS, SHEETS } from "./content.js";
 import { cardRatings, quizLog } from "./progress.js";
 import { SheetPoster, SheetThumb } from "./Posters.jsx";
 import { SubjectIcon } from "./SubjectIcons.jsx";
+import { Critter } from "./Critters.jsx";
 import { doneFrom, loadBank } from "./bank.js";
 
 const base = import.meta.env.BASE_URL;
@@ -190,6 +191,7 @@ export default function CoursePage({ course, entries, history, onOpen, onClear, 
   return (
     <div className="cg-page">
       <section className="cg-banner" style={{ "--tint": course.tint }}>
+        <Critter who="tiddle" where="top" at="78%" />
         <span className="cg-bannertag">{course.tag}</span>
         <CourseMark course={course} size={96} />
         <div className="cg-bannertext"><h1>{course.name}</h1><p>{course.blurb}</p></div>
