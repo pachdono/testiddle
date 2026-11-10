@@ -10,6 +10,7 @@ import { SUBTOPICS, TOPICS } from "./notes.js";
 import { CARDS, SHEETS } from "./content.js";
 import { cardRatings, quizLog } from "./progress.js";
 import { SheetPoster, SheetThumb } from "./Posters.jsx";
+import { SubjectIcon } from "./SubjectIcons.jsx";
 import { doneFrom, loadBank } from "./bank.js";
 
 const base = import.meta.env.BASE_URL;
@@ -52,31 +53,45 @@ function PastPapers({ entries, last, onOpen }) {
   );
 }
 
+function DeckRow({ icon, title, sub, done, total, onOpen, onDelete }) {
+  return (
+    <div className="cg-deckrow">
+      <button className="cg-deckmain" onClick={onOpen}>
+        <SubjectIcon id={icon} size={48} />
+        <span className="cg-decktext"><b>{title}</b><small className="muted">{sub || `${total} cards`}</small></span>
+        <span className="cg-deckprog"><span className="cg-meter"><i style={{ width: `${total ? (done / total) * 100 : 0}%` }} /></span><small className="muted">{done} / {total} confident</small></span>
+        <i className="cg-chev" aria-hidden="true">&rsaquo;</i>
+      </button>
+      {onDelete && <button className="cg-link cg-deckdel" onClick={onDelete}>Delete</button>}
+    </div>
+  );
+}
+
 function FlashcardsIndex({ openDeck, build }) {
   const ratings = cardRatings();
   const [decks, setDecks] = useState(readDecks);
   const [open, setOpen] = useState({});
   const conf = (cards) => cards.filter((c) => (ratings[c.id]?.level || 0) >= 3).length;
-  const fixed = [["Reading and Writing terms", CARDS.filter((c) => c.subject === "Reading and Writing" && !c.formula)], ["Math terms", CARDS.filter((c) => c.subject === "Math" && !c.formula)], ["Formulas", CARDS.filter((c) => c.formula)]];
+  const fixed = [["Reading and Writing terms", "rw", CARDS.filter((c) => c.subject === "Reading and Writing" && !c.formula)], ["Math terms", "math", CARDS.filter((c) => c.subject === "Math" && !c.formula)], ["Formulas", "addmaths", CARDS.filter((c) => c.formula)]];
   const asCards = (list) => list.map((c) => ({ id: c.id, front: c.term, back: c.def }));
   return (
     <div className="cg-stack tight">
-      {decks.length > 0 && <section className="cg-card cg-years"><span className="cg-tag">Your decks</span>{decks.map((d) => {
+      <div className="cg-listbar"><span className="cg-chipsm">{TOPICS.length} topics, {SUBTOPICS.length} skill decks</span><span className="cg-spacer" /><button className="cg-btn primary" onClick={build}>Build your own deck</button></div>
+      {decks.length > 0 && <section className="cg-card cg-decks"><span className="cg-tag">Your decks</span>{decks.map((d) => {
         const cards = SUBTOPICS.filter((s) => d.skills.includes(s.id)).flatMap(cardsFor);
-        return <div key={d.id} className="cg-yearrow"><button className="cg-link inline" onClick={() => openDeck(cards, d.name)}>{d.name}</button><small className="muted">{conf(cards)} / {cards.length} confident</small><button className="cg-link" onClick={() => { const n = decks.filter((x) => x.id !== d.id); setDecks(n); writeDecks(n); }}>Delete</button></div>;
+        return <DeckRow key={d.id} icon="global" title={d.name} sub={`${d.skills.length} skills, ${cards.length} cards`} done={conf(cards)} total={cards.length} onOpen={() => openDeck(cards, d.name)} onDelete={() => { const n = decks.filter((x) => x.id !== d.id); setDecks(n); writeDecks(n); }} />;
       })}</section>}
-      <section className="cg-card cg-years"><span className="cg-tag">Term and formula decks</span>{fixed.map(([name, list]) => <div key={name} className="cg-yearrow"><button className="cg-link inline" onClick={() => openDeck(asCards(list), name)}>{name}</button><small className="muted">{conf(list)} / {list.length} confident</small></div>)}</section>
+      <section className="cg-card cg-decks"><span className="cg-tag">Term and formula decks</span>{fixed.map(([name, icon, list]) => <DeckRow key={name} icon={icon} title={name} done={conf(list)} total={list.length} onOpen={() => openDeck(asCards(list), name)} />)}</section>
       {TOPICS.map((t, i) => {
         const subs = SUBTOPICS.filter((s) => s.topic.id === t.id);
         const all = subs.flatMap(cardsFor);
         return (
           <section key={t.id} className={"cg-topic" + (open[t.id] ? " open" : "")}>
-            <button className="cg-topichead" onClick={() => setOpen({ ...open, [t.id]: !open[t.id] })}><span className="cg-round">{open[t.id] ? "▴" : "▾"}</span><span><b>Topic {i + 1}</b> - {t.name}</span><span className="cg-meter"><i style={{ width: `${(conf(all) / all.length) * 100}%` }} /></span></button>
+            <button className="cg-topichead" aria-expanded={!!open[t.id]} onClick={() => setOpen({ ...open, [t.id]: !open[t.id] })}><span className="cg-round">{open[t.id] ? "\u25b4" : "\u25be"}</span><span><b>Topic {i + 1}</b> - {t.name}</span><span className="cg-meter"><i style={{ width: `${(conf(all) / all.length) * 100}%` }} /></span></button>
             {open[t.id] && <div className="cg-subs">{subs.map((s) => { const c = cardsFor(s); return <button key={s.id} onClick={() => openDeck(c, `${s.code} ${s.skill}`)}><span>{s.code} - {s.skill}</span><span className="cg-meter small"><i style={{ width: `${(conf(c) / c.length) * 100}%` }} /></span></button>; })}</div>}
           </section>
         );
       })}
-      <button className="cg-link" onClick={build}>Build your own deck from several skills</button>
     </div>
   );
 }

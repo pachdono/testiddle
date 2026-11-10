@@ -248,14 +248,21 @@ export function CardDeck({ cards, browse, onProgress }) {
   const [flip, setFlip] = useState({});
   const [ratings, setRatings] = useState(cardRatings);
   const rate = (c, level) => { rateCard(c.id, level); setRatings(cardRatings()); setFlip({}); const n = Math.min(cards.length, at + 1); setAt(n); onProgress?.(n / cards.length); };
+  const turn = (c) => setFlip({ ...flip, [c.id]: !flip[c.id] });
+  const side = (c, i, back) => (
+    <div className={"cg-side " + (back ? "back" : "front")} aria-hidden={Boolean(flip[c.id]) !== back}>
+      <div className="cg-spread"><span /><small className="muted">{i + 1} of {cards.length}</small><span className="cg-chipsm">{back ? "Back" : "Front"}</span></div>
+      <div className="cg-fbody">{back ? (Array.isArray(c.back) ? <ol>{c.back.map((b) => <li key={b}>{b}</li>)}</ol> : <span>{c.back}</span>) : <b>{c.front}</b>}</div>
+      <small className="muted cg-fhint"><i>{back ? "Tap to see the question" : "Tap card to flip"}</i></small>
+    </div>
+  );
   const face = (c, i) => (
-    <section key={c.id} className={"cg-card cg-fcard" + (flip[c.id] ? " back" : "")}>
-      <div className="cg-spread"><span /><small className="muted">{i + 1} of {cards.length}</small><span className="cg-chipsm">{flip[c.id] ? "Back" : "Front"}</span></div>
-      <button className="cg-fbody" onClick={() => setFlip({ ...flip, [c.id]: !flip[c.id] })} aria-label={flip[c.id] ? "Show the front" : "Show the back"}>
-        {flip[c.id] ? (Array.isArray(c.back) ? <ol>{c.back.map((b) => <li key={b}>{b}</li>)}</ol> : <span>{c.back}</span>) : <b>{c.front}</b>}
+    <section key={c.id} className="cg-flipwrap">
+      <button className={"cg-flip" + (flip[c.id] ? " is-flipped" : "")} onClick={() => turn(c)} aria-label={flip[c.id] ? "Show the front" : "Show the back"}>
+        {side(c, i, false)}{side(c, i, true)}
       </button>
-      <div className="cg-spread"><small className="muted"><i>Tap card to flip</i></small>{ratings[c.id]?.level ? <small className="muted">{ratings[c.id].level >= 3 ? "Confident" : "Still learning"}</small> : null}<Feedbacks id={c.id} /></div>
-      {browse && <div className="cg-rate"><button className="cg-btn bad" aria-label="Still learning" onClick={() => rate(c, 1)}>{"☹"}</button><button className="cg-btn" aria-label="Flip" onClick={() => setFlip({ ...flip, [c.id]: !flip[c.id] })}>{"↻"}</button><button className="cg-btn good" aria-label="Confident" onClick={() => rate(c, 3)}>{"☺"}</button></div>}
+      <div className="cg-spread cg-fmeta">{ratings[c.id]?.level ? <small className="muted">{ratings[c.id].level >= 3 ? "Confident" : "Still learning"}</small> : <span />}<Feedbacks id={c.id} /></div>
+      {browse && <div className="cg-rate"><button className="cg-btn bad" aria-label="Still learning" onClick={() => rate(c, 1)}>{"\u2639"}</button><button className="cg-btn" aria-label="Flip" onClick={() => turn(c)}>{"\u21bb"}</button><button className="cg-btn good" aria-label="Confident" onClick={() => rate(c, 3)}>{"\u263a"}</button></div>}
     </section>
   );
   if (!cards.length) return <div className="cg-empty">No cards in this deck.</div>;
