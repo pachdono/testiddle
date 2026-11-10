@@ -1,8 +1,8 @@
 // The shell around the courses: the top bar, the dashboard and the small dialogs.
 
 import { useEffect, useRef, useState } from "react";
-import { DuckAvatar, CHARACTERS } from "./DuckAvatars.jsx";
-import { Mascot } from "./Mascot.jsx";
+import { DuckAvatar } from "./DuckAvatars.jsx";
+import { Mascot, TiddleAvatar, OUTFIT_IDS, OUTFIT_NAMES } from "./Mascot.jsx";
 import { onboarding } from "./Onboarding.jsx";
 import { HISTORY_KEY, summary } from "./courses.js";
 import { courseFor } from "./catalog.js";
@@ -186,17 +186,18 @@ function Week({ rows }) {
 
 /* ---------- avatar and manage courses ---------- */
 
-/** The picture on the dashboard: Tiddle, or one of the Dwiddle ducks. */
+/** The picture on the dashboard: Tiddle in an outfit, or one of the Dwiddle ducks. */
 function Avatar({ id, size }) {
-  return id === "tiddle" ? <span className="cg-tiddleav" style={{ width: size, height: size }}><Mascot size={size * 0.86} /></span> : <DuckAvatar id={id} size={size} />;
+  if (id === "tiddle" || String(id).startsWith("tiddle:")) return <TiddleAvatar outfit={String(id).split(":")[1] || "graduate"} size={size} />;
+  return <DuckAvatar id={id} size={size} />;
 }
 
 function AvatarPicker({ onClose }) {
   const [pick, setPick] = useState(getAvatar());
   return (
-    <Modal title="Select your avatar" onClose={onClose}>
+    <Modal title="Select your avatar" onClose={onClose} wide>
       <h2>Select your avatar</h2>
-      <div className="cg-avatars">{[{ id: "tiddle", name: "Tiddle" }, ...CHARACTERS].map((c) => <button key={c.id} className={pick === c.id ? "on" : ""} onClick={() => setPick(c.id)} aria-label={c.name} aria-pressed={pick === c.id}><Avatar id={c.id} size={92} /></button>)}</div>
+      <div className="cg-avatars">{[...OUTFIT_IDS.map((o) => ({ id: o === "graduate" ? "tiddle" : `tiddle:${o}`, name: `Tiddle, ${OUTFIT_NAMES[o]}` }))].map((c) => <button key={c.id} className={pick === c.id ? "on" : ""} onClick={() => setPick(c.id)} aria-label={c.name} aria-pressed={pick === c.id}><Avatar id={c.id} size={104} />{pick === c.id && <i className="cg-avcheck" aria-hidden="true">{"\u2713"}</i>}</button>)}</div>
       <div className="cg-actions spread"><button className="cg-link" onClick={onClose}>Cancel</button><button className="cg-btn primary" onClick={() => { setAvatar(pick); onClose(); }}>Confirm</button></div>
     </Modal>
   );
