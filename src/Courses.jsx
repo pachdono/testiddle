@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { DuckAvatar, CHARACTERS } from "./DuckAvatars.jsx";
-import { Duck } from "./Duck.jsx";
+import { Mascot } from "./Mascot.jsx";
+import { onboarding, CourseIcon } from "./Onboarding.jsx";
 import { COURSES, HISTORY_KEY, summary } from "./courses.js";
 import { GOALS, activity, cardRatings, getAvatar, getGoal, hiddenCourses, longestRunOf, quizLog, setAvatar, setGoal, setHidden, streakWith, xpSeries } from "./progress.js";
 import { CARDS } from "./content.js";
@@ -17,15 +18,7 @@ export const visibleCourses = () => COURSES.filter((c) => !hiddenCourses().inclu
 
 // A course's picture: a printed page or a screen, in the course's colour.
 export function CourseMark({ course, size = 44 }) {
-  return (
-    <span className="cg-mark" style={{ width: size, height: size, "--tint": course.tint }} aria-hidden="true">
-      <svg width={size * 0.58} height={size * 0.58} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        {course.mark === "paper"
-          ? <><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></>
-          : <><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4M8 9l2 2 4-4" /></>}
-      </svg>
-    </span>
-  );
+  return <span className="cg-mark illus" style={{ width: size, height: size }} aria-hidden="true"><CourseIcon id={course.mark} size={size} /></span>;
 }
 
 function useAway(open, setOpen) {
@@ -113,7 +106,7 @@ export function TopBar({ path, nav, history, user, theme, setTheme, onSignOut, d
   return (
     <header className="cg-top">
       {home
-        ? <a className="cg-brand" href="/" onClick={(e) => { e.preventDefault(); nav("/"); }}><Duck size={34} shadow={false} /><b>Testiddle</b></a>
+        ? <a className="cg-brand" href="/" onClick={(e) => { e.preventDefault(); nav("/"); }}><Mascot size={40} /><b>Testiddle</b></a>
         : <button className="cg-brand back" onClick={() => nav("/")}><span aria-hidden="true">&larr;</span><b>Dashboard</b></button>}
       <Menu label="My courses">
         <button onClick={manage}><span className="cg-menuico" aria-hidden="true">+</span><span>Manage my courses</span></button>
@@ -188,12 +181,17 @@ function Week({ rows }) {
 
 /* ---------- avatar and manage courses ---------- */
 
+/** The picture on the dashboard: Tiddle, or one of the Dwiddle ducks. */
+function Avatar({ id, size }) {
+  return id === "tiddle" ? <span className="cg-tiddleav" style={{ width: size, height: size }}><Mascot size={size * 0.86} /></span> : <DuckAvatar id={id} size={size} />;
+}
+
 function AvatarPicker({ onClose }) {
   const [pick, setPick] = useState(getAvatar());
   return (
     <Modal title="Select your avatar" onClose={onClose}>
       <h2>Select your avatar</h2>
-      <div className="cg-avatars">{CHARACTERS.map((c) => <button key={c.id} className={pick === c.id ? "on" : ""} onClick={() => setPick(c.id)} aria-label={c.name} aria-pressed={pick === c.id}><DuckAvatar id={c.id} size={92} /></button>)}</div>
+      <div className="cg-avatars">{[{ id: "tiddle", name: "Tiddle" }, ...CHARACTERS].map((c) => <button key={c.id} className={pick === c.id ? "on" : ""} onClick={() => setPick(c.id)} aria-label={c.name} aria-pressed={pick === c.id}><Avatar id={c.id} size={92} /></button>)}</div>
       <div className="cg-actions spread"><button className="cg-link" onClick={onClose}>Cancel</button><button className="cg-btn primary" onClick={() => { setAvatar(pick); onClose(); }}>Confirm</button></div>
     </Modal>
   );
@@ -221,6 +219,7 @@ export function ManageCourses({ onClose }) {
 /* ---------- dashboard ---------- */
 
 export function Dashboard({ nav, history, user, courses, manage }) {
+  const ob = (user?.id && onboarding(user.id)) || {};
   const [order, setOrder] = useState("added");
   const [avatarOpen, setAvatarOpen] = useState(false);
   const rows = activity(history);
@@ -235,9 +234,9 @@ export function Dashboard({ nav, history, user, courses, manage }) {
   return (
     <div className="cg-page">
       <section className="cg-card cg-hello">
-        <span className="cg-tag">SAT practice</span>
+        <span className="cg-tag">{[ob.role || "SAT practice", ob.year].filter(Boolean).join(" \u00b7 ")}</span>
         <div className="cg-who">
-          <span className="cg-avatar"><DuckAvatar id={getAvatar()} size={110} /><button className="cg-pencil" aria-label="Change your avatar" onClick={() => setAvatarOpen(true)}>{"✎"}</button></span>
+          <span className="cg-avatar"><Avatar id={getAvatar()} size={110} /><button className="cg-pencil" aria-label="Change your avatar" onClick={() => setAvatarOpen(true)}>{"✎"}</button></span>
           <div><h1>Hi {name}</h1><span className="cg-freezepill inline">{"❄"} {left} {left === 1 ? "freeze" : "freezes"}</span></div>
         </div>
         <Week rows={rows} />
@@ -253,7 +252,7 @@ export function Dashboard({ nav, history, user, courses, manage }) {
           const s = summary(history, c);
           return (
             <button key={c.id} className="cg-tr" onClick={() => nav(`/course/${c.id}`)}>
-              <span className="cg-course"><CourseMark course={c} /><span><b>{c.name}</b><span className="small muted">{c.count} full length tests</span></span></span>
+              <span className="cg-course"><CourseMark course={c} /><span><b>{c.name}</b><span className="small muted">{c.count} full length tests{ob.courses?.[c.id] && ob.courses[c.id] !== "Not sure yet" ? `, sitting in ${ob.courses[c.id]}` : ""}</span></span></span>
               <span>{s.sittings} <small className="muted">{s.average === null ? "~" : `${s.average}%`}</small></span>
               <span>{answered} / {QUESTION_COUNT} <small className="muted">{answered ? `${Math.round((right / answered) * 100)}%` : "~"}</small></span>
               <span>{rated.length} / {CARDS.length} <small className="muted">{conf === null ? "~" : `${conf}%`}</small></span>

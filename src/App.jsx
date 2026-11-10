@@ -3,11 +3,12 @@ import RealPapers from "./RealPapers.jsx";
 import { TopBar, Dashboard, ManageCourses, readHistory, visibleCourses } from "./Courses.jsx";
 import { Settings } from "./Settings.jsx";
 import Landing from "./Landing.jsx";
+import { AuthCard, Onboarding, onboarding } from "./Onboarding.jsx";
+import { Mascot } from "./Mascot.jsx";
 import { FaqPage, WhatsNew, FeedbackDialog, FeedbackButton } from "./Help.jsx";
 import { HISTORY_KEY, courseOf } from "./courses.js";
-import { useAuth, SignInPanel, ProfileGate } from "./Account.jsx";
-import { configured, myAccess } from "./supabase.js";
-import { Duck } from "./Duck.jsx";
+import { useAuth, ProfileGate } from "./Account.jsx";
+import { myAccess } from "./supabase.js";
 import { Boundary, Loading } from "./ui.jsx";
 import { savedTheme, applyTheme } from "./theme.js";
 
@@ -15,8 +16,8 @@ import { savedTheme, applyTheme } from "./theme.js";
 // as Dwiddle, because it talks to the same Supabase project.
 const DWIDDLE = "https://dwiddle.vercel.app";
 
-function GateTop() {
-  return <header className="cg-top"><a className="cg-brand" href="/"><Duck size={34} shadow={false} /><b>Testiddle</b></a></header>;
+function GateTop({ onSignIn }) {
+  return <header className="cg-top"><a className="cg-brand" href="/"><Mascot size={40} /><b>Testiddle</b></a><span className="cg-spacer" />{onSignIn && <button className="cg-btn primary" onClick={onSignIn}>Sign in</button>}</header>;
 }
 
 // While Testiddle is being tried out it is for testers and staff only. Set VITE_OPEN_TO_ALL=1
@@ -73,6 +74,8 @@ export default function App() {
   const [, bump] = useState(0);
   useEffect(() => { const f = () => { setHistory(readHistory()); bump((n) => n + 1); }; window.addEventListener("testiddle:progress", f); return () => window.removeEventListener("testiddle:progress", f); }, []);
   const [managing, setManaging] = useState(false);
+  const [authPage, setAuthPage] = useState(false);
+  const [, setOnboarded] = useState(0);
   const [feedback, setFeedback] = useState(null); // null, or { prefill }
   const courses = visibleCourses();
 
@@ -81,7 +84,9 @@ export default function App() {
       {!auth.ready && !user ? (
         <><GateTop /><main className="ti-door"><Loading label="Opening the classroom" /></main></>
       ) : !user ? (
-        <><GateTop /><Landing signIn={configured ? <SignInPanel /> : <p className="small warn-text">Accounts are not set up on this site yet.</p>} /></>
+        authPage
+          ? <><GateTop /><AuthCard /><button className="cg-link ob-home" onClick={() => setAuthPage(false)}>&larr; Back to the home page</button></>
+          : <><GateTop onSignIn={() => setAuthPage(true)} /><Landing onStart={() => setAuthPage(true)} /></>
       ) : access === null && !OPEN ? (
         <><GateTop /><main className="ti-door"><Loading label="Checking your access" /></main></>
       ) : !allowed ? (
@@ -90,6 +95,8 @@ export default function App() {
           <TestersOnly email={user.email} onSignOut={signOut} />
           <ProfileGate user={user} />
         </>
+      ) : !onboarding(user.id) ? (
+        <Onboarding user={user} onDone={() => { setOnboarded((n) => n + 1); nav("/"); }} />
       ) : (
         <>
           <TopBar path={path} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onSignOut={signOut} dwiddle={DWIDDLE} courses={courses} manage={() => setManaging(true)} />

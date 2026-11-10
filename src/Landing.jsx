@@ -1,7 +1,7 @@
 // What someone sees before signing in: what Testiddle is, then the sign in form.
 
 import { useRef, useState } from "react";
-import { Duck } from "./Duck.jsx";
+import { Mascot } from "./Mascot.jsx";
 
 const FEATURES = [
   ["notes", "Notes for every skill", "Read short revision notes for all 43 SAT skills, with the key points to tick off as you learn them.", "Every skill in eight topics"],
@@ -25,9 +25,9 @@ function Demo() {
   );
 }
 
-export default function Landing({ signIn }) {
+export default function Landing({ onStart }) {
   const form = useRef(null);
-  const go = () => form.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  const go = onStart;
   const [open, setOpen] = useState(null);
   const faq = [
     ["What is Testiddle?", "Free practice for the digital SAT: full tests, notes, quizzes, flashcards and cheat sheets."],
@@ -42,7 +42,7 @@ export default function Landing({ signIn }) {
         <h1>Looking for a better way to prepare for the SAT?</h1>
         <p>Notes for every skill, quizzes with explanations, flashcards, and ten full length tests on paper and on screen.</p>
         <button className="cg-btn primary big" onClick={go}>Get started, it's free &rarr;</button>
-        <div className="cg-lshot"><Demo /><Duck size={110} shadow={false} /></div>
+        <div className="cg-lshot"><Demo /><Mascot size={130} pose="wave" /></div>
       </section>
       {FEATURES.map(([id, title, text, tag], i) => (
         <section key={id} className={"cg-lfeature " + id + (i % 2 ? " flip" : "")}>
@@ -58,7 +58,8 @@ export default function Landing({ signIn }) {
         <span className="cg-badge dark">Start practising</span>
         <h2>Get the score you're working for</h2>
         <p>Sign in with your Dwiddle account, or make one. It's the same account.</p>
-        <div className="cg-lsign">{signIn}</div>
+        <Mascot size={110} pose="cheer" />
+        <button className="cg-btn primary big" onClick={onStart}>Start revising, it's free</button>
       </section>
     </main>
   );

@@ -73,7 +73,7 @@ export function streakWith(rows, today = new Date(), freezes = 2) {
 export const hiddenCourses = () => { const h = read(KEYS.hidden, []); return Array.isArray(h) ? h : []; };
 export function setHidden(list) { write(KEYS.hidden, list); changed(); }
 
-export const getAvatar = () => read(KEYS.avatar, "dwiddle");
+export const getAvatar = () => read(KEYS.avatar, "tiddle");
 export function setAvatar(id) { write(KEYS.avatar, id); changed(); }
 
 /** XP for the bars in the popover: the last 7 days, 30 days, 12 months or every month so far. */
