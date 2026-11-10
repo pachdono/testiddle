@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import RealPapers from "./RealPapers.jsx";
-import { TopBar, Dashboard, Activity, readHistory } from "./Courses.jsx";
+import { TopBar, Dashboard, readHistory } from "./Courses.jsx";
+import { Settings } from "./Settings.jsx";
+import { HISTORY_KEY } from "./courses.js";
 import { useAuth, SignInPanel, ProfileGate } from "./Account.jsx";
 import { configured, myAccess } from "./supabase.js";
 import { Duck } from "./Duck.jsx";
@@ -101,7 +103,7 @@ export default function App() {
           <TopBar path={path} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onSignOut={signOut} dwiddle={DWIDDLE} />
           <main className="cg-main">
             <Boundary>
-              {path === "/activity" ? <Activity history={history} />
+              {path.startsWith("/account") || path === "/activity" ? <Settings tab={path === "/activity" ? "activity" : path.split("/")[2] || "account"} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onReset={() => { try { localStorage.removeItem(HISTORY_KEY); } catch { /* storage blocked */ } setHistory([]); }} />
                 : path.startsWith("/course/") || path.startsWith("/real/") ? <RealPapers path={path} nav={nav} />
                 : <Dashboard nav={nav} history={history} user={user} />}
             </Boundary>

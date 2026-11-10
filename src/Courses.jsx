@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Duck } from "./Duck.jsx";
-import { COURSES, HISTORY_KEY, courseOf, streak, summary } from "./courses.js";
+import { COURSES, HISTORY_KEY, longestRun, streak, summary } from "./courses.js";
 
 export function readHistory() {
   try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY)); return Array.isArray(h) ? h : []; } catch { return []; }
@@ -21,7 +21,7 @@ export function CourseMark({ course, size = 44 }) {
   );
 }
 
-function Menu({ label, children, wide }) {
+function Menu({ label, children, wide, icon }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useEffect(() => {
@@ -33,7 +33,7 @@ function Menu({ label, children, wide }) {
   }, [open]);
   return (
     <div className="cg-menu" ref={ref}>
-      <button className="cg-menubtn" aria-expanded={open} onClick={() => setOpen(!open)}>{label}<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 8 5 5 5-5" /></svg></button>
+      <button className={"cg-menubtn" + (icon ? " icon" : "")} aria-label={icon ? label : undefined} aria-expanded={open} onClick={() => setOpen(!open)}>{icon ? <span aria-hidden="true">{"\u21c5"}</span> : label}{icon ? null : <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 8 5 5 5-5" /></svg>}</button>
       {open && <div className={"cg-menulist" + (wide ? " wide" : "")} onClick={() => setOpen(false)}>{children}</div>}
     </div>
   );
@@ -54,14 +54,15 @@ export function TopBar({ path, nav, history, user, theme, setTheme, onSignOut, d
       <span className="cg-spacer" />
       <div className="cg-chips">
         <span className="cg-chip" title="Tests you have sat"><b>{history.length}</b> {history.length === 1 ? "sitting" : "sittings"}</span>
-        <button className="cg-chip link" onClick={() => nav("/activity")}>Activity</button>
+        <button className="cg-chip link" onClick={() => nav("/account/activity")}>Activity</button>
         <span className="cg-chip" title="Days in a row you have sat a test"><b>{run}</b> {run === 1 ? "day" : "days"}</span>
       </div>
       <Menu label={name} wide>
         <div className="cg-menuhead">{user?.email || "Signed in"}</div>
+        <button className="cg-toggle" onClick={(e) => { e.stopPropagation(); setTheme(theme === "dark" ? "light" : "dark"); }}>Dark mode<span className={"cg-switch small" + (theme === "dark" ? " on" : "")}><i /></span></button>
         <button onClick={() => nav("/")}>Dashboard</button>
-        <button onClick={() => nav("/activity")}>Activity</button>
-        <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light mode" : "Dark mode"}</button>
+        <button onClick={() => nav("/account/account")}>Account settings</button>
+        <button onClick={() => nav("/account/activity")}>Activity log</button>
         <a href={dwiddle}>Back to Dwiddle</a>
         <button onClick={onSignOut}>Sign out</button>
       </Menu>
@@ -69,9 +70,27 @@ export function TopBar({ path, nav, history, user, theme, setTheme, onSignOut, d
   );
 }
 
+function Explainer({ history, cells, range, onClose }) {
+  const { run } = streak(history);
+  return (
+    <div className="cg-scrim" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} role="dialog" aria-modal="true" aria-label="Your streak">
+      <div className="cg-modal">
+        <button className="cg-x" onClick={onClose} aria-label="Close">&times;</button>
+        <h2>Your streak</h2>
+        <p className="cg-longest">Longest streak: {Math.max(longestRun(history), run)} {Math.max(longestRun(history), run) === 1 ? "day" : "days"}</p>
+        <div className="cg-weekbox"><span className="small muted">{range}</span><div className="cg-week">{cells.map((c, i) => <span key={i} className={"cg-day" + (c.on ? " on" : "")}>{c.on ? "\u2713" : c.l}</span>)}</div></div>
+        <div className="cg-tip"><b>Sit a test every day</b><span className="small muted">Finish any module or full test to keep your streak going.</span></div>
+        <div className="cg-tip"><b>Days in a row</b><span className="small muted">Missing a day starts the count again. Today only counts once you have sat something.</span></div>
+        <div className="cg-actions"><button className="cg-btn" onClick={onClose}>Got it</button></div>
+      </div>
+    </div>
+  );
+}
+
 const WEEK = ["M", "T", "W", "T", "F", "S", "S"];
 
 function Week({ history }) {
+  const [explain, setExplain] = useState(false);
   const { days, run, fmt } = streak(history);
   const now = new Date();
   const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
@@ -82,14 +101,17 @@ function Week({ history }) {
     <div className="cg-streak">
       <div className="cg-streakhead">
         <div><b className="cg-big">{run} {run === 1 ? "day" : "days"}</b><span className="muted small">Current streak</span></div>
-        <span className="cg-range small muted">{span(monday)} - {span(sunday)}</span>
+        <span className="cg-range small muted">{span(monday)} - {span(sunday)}<button className="cg-info" aria-label="How streaks work" onClick={() => setExplain(true)}>i</button></span>
       </div>
+      {explain && <Explainer history={history} cells={cells} range={`${span(monday)} - ${span(sunday)}`} onClose={() => setExplain(false)} />}
       <div className="cg-week">{cells.map((c, i) => <span key={i} className={"cg-day" + (c.on ? " on" : "") + (c.today ? " today" : "")} aria-label={`${c.l}${c.on ? ", sat a test" : ""}`}>{c.on ? "✓" : c.l}</span>)}</div>
     </div>
   );
 }
 
 export function Dashboard({ nav, history, user }) {
+  const [order, setOrder] = useState("added");
+  const sorted = order === "az" ? [...COURSES].sort((a, b) => a.name.localeCompare(b.name)) : order === "za" ? [...COURSES].sort((a, b) => b.name.localeCompare(a.name)) : COURSES;
   const name = (user?.user_metadata?.full_name || user?.email || "").split(/[ @]/)[0] || "there";
   return (
     <div className="cg-page">
@@ -102,8 +124,8 @@ export function Dashboard({ nav, history, user }) {
       <div className="cg-sectionhead"><span className="cg-label">{COURSES.length} courses</span><span className="cg-dash" /></div>
 
       <section className="cg-card cg-table" aria-label="Your courses">
-        <div className="cg-th"><span>Course</span><span>Sittings</span><span>Average score</span><span /></div>
-        {COURSES.map((c) => {
+        <div className="cg-th"><span className="cg-sort"><Menu label="Course sort order" icon><button onClick={() => setOrder("added")}>Default order{order === "added" ? " \u2713" : ""}</button><button onClick={() => setOrder("az")}>A to Z{order === "az" ? " \u2713" : ""}</button><button onClick={() => setOrder("za")}>Z to A{order === "za" ? " \u2713" : ""}</button></Menu>Course</span><span>Sittings</span><span>Average score</span><span /></div>
+        {sorted.map((c) => {
           const s = summary(history, c);
           return (
             <button key={c.id} className="cg-tr" onClick={() => nav(`/course/${c.id}`)}>
@@ -114,45 +136,6 @@ export function Dashboard({ nav, history, user }) {
             </button>
           );
         })}
-      </section>
-    </div>
-  );
-}
-
-export function Activity({ history }) {
-  const all = summary(history);
-  const mins = Math.round(all.minutes);
-  const rows = COURSES.map((c) => ({ c, s: summary(history, c) }));
-  const top = Math.max(1, ...rows.map((r) => r.s.sittings));
-  return (
-    <div className="cg-page">
-      <h1 className="cg-title">Activity</h1>
-      <div className="cg-stats">
-        <section className="cg-stat blue"><span className="cg-statlabel">Sittings</span><b>{all.sittings}</b></section>
-        <section className="cg-stat purple"><span className="cg-statlabel">Average score</span><b>{all.average === null ? "-" : `${all.average}%`}</b></section>
-        <section className="cg-stat green"><span className="cg-statlabel">Time on paper tests</span><b>{mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`}</b></section>
-      </div>
-
-      <section className="cg-card cg-bycourse">
-        <span className="cg-tag">By course</span>
-        {rows.map(({ c, s }) => (
-          <div key={c.id} className="cg-bar">
-            <span>{c.name}</span>
-            <span className="cg-track"><i style={{ width: `${(s.sittings / top) * 100}%`, background: c.tint }} /></span>
-            <b>{s.sittings}</b>
-          </div>
-        ))}
-      </section>
-
-      <section className="cg-card cg-recent">
-        <span className="cg-tag">Recent</span>
-        {history.length === 0 && <div className="cg-empty">Nothing yet. Sit a test and it will show up here.</div>}
-        {history.slice(0, 12).map((h) => (
-          <div key={h.id} className="cg-row static flat">
-            <span className="cg-rowtext"><b>{h.paper}</b><span className="small muted">{courseOf(h.paper).name} · {h.section} · {h.on}</span></span>
-            <span className="cg-score"><b>{h.right} / {h.total}</b><span className="small muted">{Math.round((h.right / Math.max(1, h.total)) * 100)}%</span></span>
-          </div>
-        ))}
       </section>
     </div>
   );
