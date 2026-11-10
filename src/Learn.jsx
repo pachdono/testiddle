@@ -23,26 +23,27 @@ export function cardsFor(sub) {
   ];
 }
 
-function useBank() {
+function useBank(skip = false) {
   const [bank, setBank] = useState(null);
   const [failed, setFailed] = useState(false);
-  useEffect(() => { loadBank().then(setBank).catch(() => setFailed(true)); }, []);
+  useEffect(() => { if (!skip) loadBank().then(setBank).catch(() => setFailed(true)); }, [skip]);
   return { bank, failed };
 }
 const questionsFor = (bank, sub) => (bank || []).filter((q) => q.skill === sub.skill && q.subject === sub.topic.subject);
 
 /* ---------- topic list, shared by notes and exam practice ---------- */
 
-function TopicList({ progressOf, onOpen, search = true }) {
+export function TopicList({ progressOf, onOpen, search = true, topics = TOPICS, subs: list = SUBTOPICS, terms = TERMS }) {
   const [open, setOpen] = useState({});
   const [q, setQ] = useState("");
   const [focus, setFocus] = useState(false);
-  const all = Object.values(open).filter(Boolean).length === TOPICS.length;
-  const overall = SUBTOPICS.length ? SUBTOPICS.reduce((n, s) => n + progressOf(s), 0) / SUBTOPICS.length : 0;
+  const all = Object.values(open).filter(Boolean).length === topics.length;
+  const mixed = new Set(topics.map((x) => x.subject)).size > 1;
+  const overall = list.length ? list.reduce((n, s) => n + progressOf(s), 0) / list.length : 0;
   const t = q.trim().toLowerCase();
   const results = !t ? [] : [
-    ...SUBTOPICS.filter((s) => s.skill.toLowerCase().includes(t) || s.intro.toLowerCase().includes(t)).map((s) => ({ key: s.id, label: `${s.code} ${s.skill}`, sub: s })),
-    ...TERMS.filter((k) => k.term.toLowerCase().includes(t)).slice(0, 6).map((k) => ({ key: k.id, label: k.term, sub: SUBTOPICS.find((s) => s.topic.subject === k.subject) })),
+    ...list.filter((s) => s.skill.toLowerCase().includes(t) || s.intro.toLowerCase().includes(t)).map((s) => ({ key: s.id, label: `${s.code} ${s.skill}`, sub: s })),
+    ...terms.filter((k) => k.term.toLowerCase().includes(t)).slice(0, 6).map((k) => ({ key: k.id, label: k.term, sub: list.find((s) => s.topic.subject === k.subject) })),
   ].slice(0, 8);
   return (
     <div className="cg-stack tight">
@@ -51,15 +52,15 @@ function TopicList({ progressOf, onOpen, search = true }) {
         <span className="cg-spacer" />
         {search && <div className="cg-tsearch"><input type="search" placeholder="Search topics and terms" value={q} onChange={(e) => setQ(e.target.value)} onFocus={() => setFocus(true)} onBlur={() => setTimeout(() => setFocus(false), 150)} aria-label="Search this course" />
           {focus && t && <div className="cg-suggest">{results.length === 0 ? <div className="small muted">No results</div> : <><div className="small muted">Select a result</div>{results.map((r) => <button key={r.key} onMouseDown={() => onOpen(r.sub)}>{r.label}</button>)}</>}</div>}</div>}
-        <button className="cg-btn" onClick={() => setOpen(all ? {} : Object.fromEntries(TOPICS.map((x) => [x.id, true])))}>{all ? "Collapse all" : "Expand all"}</button>
+        <button className="cg-btn" onClick={() => setOpen(all ? {} : Object.fromEntries(topics.map((x) => [x.id, true])))}>{all ? "Collapse all" : "Expand all"}</button>
       </div>
-      {TOPICS.map((topic, i) => {
-        const subs = SUBTOPICS.filter((s) => s.topic.id === topic.id);
+      {topics.map((topic, i) => {
+        const subs = list.filter((s) => s.topic.id === topic.id);
         const p = subs.reduce((n, s) => n + progressOf(s), 0) / subs.length;
         return (
           <section key={topic.id} className={"cg-topic" + (open[topic.id] ? " open" : "")}>
             <button className="cg-topichead" aria-expanded={!!open[topic.id]} onClick={() => setOpen({ ...open, [topic.id]: !open[topic.id] })}>
-              <Chev open={open[topic.id]} /><span><b>Topic {i + 1}</b> - {topic.name} <small className="muted">{topic.subject}</small></span><span className="cg-meter"><i style={{ width: `${p * 100}%` }} /></span>
+              <Chev open={open[topic.id]} /><span><b>Topic {i + 1}</b> - {topic.name} {mixed && <small className="muted">{topic.subject}</small>}</span><span className="cg-meter"><i style={{ width: `${p * 100}%` }} /></span>
             </button>
             {open[topic.id] && <div className="cg-subs">{subs.map((s) => <button key={s.id} onClick={() => onOpen(s)}><span>{s.code} - {s.skill}</span><span className="cg-meter small"><i style={{ width: `${progressOf(s) * 100}%` }} /></span></button>)}</div>}
           </section>
@@ -78,7 +79,7 @@ export function NotesTab({ open }) {
 
 const ACCENTS = [["Plain", "#8a8f98"], ["Amber", "#d9962b"], ["Blue", "#3b82f6"], ["Rose", "#d0496d"], ["Green", "#3fa46a"], ["Purple", "#7c5cd6"], ["Slate", "#4b5563"]];
 
-export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, report }) {
+export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, report, subs = SUBTOPICS }) {
   const [look, setLook] = useState(() => read(LOOK_KEY, { accent: "#3fa46a", outlines: "some" }));
   const [menu, setMenu] = useState(false);
   const [switcher, setSwitcher] = useState(false);
@@ -87,9 +88,9 @@ export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, 
   const [progress, setProgress] = useState(0);
   const [stats, setStats] = useState({ xp: 0, run: 0 });
   const setL = (p) => { const n = { ...look, ...p }; setLook(n); try { localStorage.setItem(LOOK_KEY, JSON.stringify(n)); } catch { /* private mode */ } };
-  const topicSubs = SUBTOPICS.filter((s) => s.topic.id === sub.topic.id);
-  const idx = SUBTOPICS.findIndex((s) => s.id === sub.id);
-  const next = SUBTOPICS[idx + 1];
+  const topicSubs = subs.filter((s) => s.topic.id === sub.topic.id);
+  const idx = subs.findIndex((s) => s.id === sub.id);
+  const next = subs[idx + 1];
   const body = useRef(null);
   useEffect(() => { body.current?.scrollTo(0, 0); setProgress(0); setStats({ xp: 0, run: 0 }); }, [sub.id, mode]);
   useEffect(() => { const f = (e) => { if (e.key === "Escape") { if (menu || switcher || panel) { setMenu(false); setSwitcher(false); setPanel(false); } else onClose(); } }; document.addEventListener("keydown", f); return () => document.removeEventListener("keydown", f); }, [menu, switcher, panel, onClose]);
@@ -117,7 +118,7 @@ export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, 
             <div className="cg-optrow"><span>Card outlines</span></div>
             <div className="cg-seg">{["none", "some", "all"].map((o) => <button key={o} className={look.outlines === o ? "on" : ""} onClick={() => setL({ outlines: o })}>{o[0].toUpperCase() + o.slice(1)}</button>)}</div>
             <button className="cg-optrow btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}><span>Dark mode</span><span className={"cg-switch small" + (theme === "dark" ? " on" : "")}><i /></span></button>
-            <button className="cg-optrow btn" onClick={() => { navigator.clipboard?.writeText(`${location.origin}/learn/${sub.id}/${mode}`); setMenu(false); }}>Copy link</button>
+            <button className="cg-optrow btn" onClick={() => { navigator.clipboard?.writeText(sub.questions ? location.href : `${location.origin}/learn/${sub.id}/${mode}`); setMenu(false); }}>Copy link</button>
             <button className="cg-optrow btn" onClick={() => { setMenu(false); report(`Issue with ${sub.code} ${sub.skill} (${mode})`); }}>Report an issue</button>
           </div>}
         </div>
@@ -134,7 +135,7 @@ export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, 
 }
 
 function NotesBody({ sub, compact }) {
-  const cast = castFor(SUBTOPICS.findIndex((x) => x.id === sub.id));
+  const cast = castFor(sub.n ?? SUBTOPICS.findIndex((x) => x.id === sub.id));
   return (
     <>
       <section className="cg-ncard head">
@@ -166,7 +167,7 @@ function NotesPage({ sub, next, onMode, onSub }) {
       <div className="cg-nmain">
         <NotesBody sub={sub} />
         <section className="cg-ncard">
-          {(() => { const k = castFor(SUBTOPICS.findIndex((x) => x.id === sub.id)).keys; return <Critter who={k[0]} where={k[1]} at={k[2]} />; })()}
+          {(() => { const k = castFor(sub.n ?? SUBTOPICS.findIndex((x) => x.id === sub.id)).keys; return <Critter who={k[0]} where={k[1]} at={k[2]} />; })()}
           <h3>{"☑"} Key points to remember</h3>
           {sub.points.map((p, i) => <label key={p} className="cg-tick"><input type="checkbox" checked={mine.includes(i)} onChange={() => save(mine.includes(i) ? mine.filter((x) => x !== i) : [...mine, i])} /><span>{p}</span></label>)}
           <div className="cg-tickbar"><button className="cg-link" onClick={() => save(sub.points.map((_, i) => i))}>Tick all</button><button className="cg-link" disabled={!mine.length} onClick={() => save([])}>Reset</button></div>
@@ -210,15 +211,17 @@ function QuestionCard({ q, n, total, state, onAnswer, button = "Check", critter 
 }
 
 function SkillQuiz({ sub, browse, onStats, onProgress }) {
-  const { bank, failed } = useBank();
+  const own = sub.questions;
+  const { bank: loaded, failed } = useBank(Boolean(own));
+  const bank = own || loaded;
   const [answers, setAnswers] = useState({});
   const [i, setI] = useState(0);
   const qs = useMemo(() => {
     if (!bank) return [];
     const done = doneFrom(quizLog());
-    const list = questionsFor(bank, sub);
+    const list = own || questionsFor(bank, sub);
     return [...list.filter((q) => !(q.id in done)), ...list.filter((q) => done[q.id] === false), ...list.filter((q) => done[q.id] === true)].slice(0, 10);
-  }, [bank, sub]);
+  }, [bank, own, sub]);
   const answer = (q, given) => {
     const ok = isRight(q, given);
     logQuiz(q.id, ok);
@@ -228,7 +231,7 @@ function SkillQuiz({ sub, browse, onStats, onProgress }) {
     onStats({ xp: Object.values(next).reduce((n, a) => n + (a.ok ? 10 : 3), 0), run });
     onProgress(Object.keys(next).length / qs.length);
   };
-  if (failed) return <div className="cg-empty">The questions could not be loaded. Check your connection.</div>;
+  if (failed && !own) return <div className="cg-empty">The questions could not be loaded. Check your connection.</div>;
   if (!bank) return <div className="cg-empty">Loading questions</div>;
   if (!qs.length) return <div className="cg-empty">No questions for this skill yet.</div>;
   const count = Object.keys(answers).length;

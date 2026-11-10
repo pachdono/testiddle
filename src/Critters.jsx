@@ -193,7 +193,7 @@ export function castFor(n) {
     { head: ["sprout", "corner", "88%"], note: ["bumble", "fly", "70%"], keys: ["pip", "perch", "24%"] },
     { head: ["pip", "perch", "80%"], note: ["inky", "left", "36%"], keys: ["tiddle", "top", "82%"] },
     { head: ["bumble", "fly", "86%"], note: ["mochi", "perch", "30%"], keys: ["fern", "side", "50%"] },
-    { head: ["tiddle", "top", "18%"], note: ["sprout", "corner", "92%"], keys: ["dot", "climb", "40%"] },
+    { head: ["tiddle", "top", "44%"], note: ["sprout", "corner", "92%"], keys: ["dot", "climb", "40%"] },
     { head: ["inky", "side", "50%"], note: ["wiggle", "under", "70%"], keys: ["mochi", "perch", "84%"] },
     { head: ["fern", "side", "46%"], note: ["pip", "perch", "76%"], keys: ["bumble", "fly", "18%"] },
   ];
