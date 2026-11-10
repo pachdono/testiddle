@@ -82,71 +82,14 @@
 
 body { background: var(--bg); }
 
-/* the classroom, blurred behind everything: the duck teaching at the board */
-.ti-shell { position: relative; min-height: 100vh; display: flex; flex-direction: column; color: var(--ink); background: var(--bg); isolation: isolate; }
-.ti-shell::before {
-  content: ""; position: fixed; inset: -24px; z-index: -2; pointer-events: none;
-  background: url("/classroom.svg") center / cover no-repeat; filter: blur(7px) saturate(0.92);
-}
-.ti-shell::after {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(180deg, rgba(247, 240, 224, 0.46), rgba(247, 240, 224, 0.62));
-}
-:root[data-theme="dark"] .ti-shell::before { filter: blur(7px) saturate(0.7) brightness(0.55); }
-:root[data-theme="dark"] .ti-shell::after { background: linear-gradient(180deg, rgba(20, 32, 27, 0.5), rgba(20, 32, 27, 0.72)); }
+.ti-shell { min-height: 100vh; display: flex; flex-direction: column; color: var(--ink); background: var(--bg); }
 
-/* the desk bar: light wood with a little grain */
-.ti-top {
-  position: sticky; top: 0; z-index: 20;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 9px max(18px, env(safe-area-inset-right)) 9px max(18px, env(safe-area-inset-left));
-  background:
-    repeating-linear-gradient(90deg, rgba(120, 80, 30, 0.05) 0 2px, transparent 2px 9px),
-    linear-gradient(180deg, color-mix(in srgb, var(--ti-wood) 100%, #fff 12%), var(--ti-wood));
-  border-bottom: 5px solid var(--ti-wood-2);
-  box-shadow: 0 2px 0 var(--ti-wood-3), 0 8px 16px rgba(60, 40, 15, 0.14);
-  color: #3a2a18;
-}
-:root[data-theme="dark"] .ti-top { color: #f0e2c9; }
-.ti-brand { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
-.ti-brand b { font-family: var(--chalk-font); font-weight: 400; font-size: 29px; letter-spacing: 0.02em; line-height: 1; }
-.ti-theme { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ti-wood-3); background: var(--surface); color: var(--ink-2); cursor: pointer; box-shadow: 0 2px 0 var(--ti-wood-3); transition: transform 0.12s, box-shadow 0.12s; }
-.ti-theme:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--ti-wood-3); }
-.ti-theme:active { transform: translateY(2px); box-shadow: 0 0 0 var(--ti-wood-3); }
-.ti-theme:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-
-.ti-main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 22px 16px 56px; }
-.ti-main .page { padding-top: 0; }
-
-/* every page opens with a chalkboard in a wooden frame */
-.ti-main .page-head {
-  position: relative; margin: 6px 0 38px; padding: 20px 26px 22px; border-radius: 12px; color: var(--ti-chalk);
-  background:
-    radial-gradient(120% 160% at 12% 0%, rgba(255, 255, 255, 0.1), transparent 55%),
-    linear-gradient(160deg, var(--ti-board), var(--ti-board-2));
-  border: 9px solid var(--ti-wood); outline: 2px solid var(--ti-wood-3); outline-offset: -1px;
-  box-shadow: var(--shadow-lift);
-}
-.ti-main .page-head h1 { margin: 0 0 4px; font-family: var(--chalk-font); font-weight: 400; font-size: 42px; line-height: 1.05; letter-spacing: 0.01em; color: var(--ti-chalk); text-shadow: 0 0 1px rgba(255, 255, 255, 0.5); }
-.ti-main .page-head p { margin: 0; font-size: 15px; color: rgba(247, 245, 234, 0.85); }
-/* the chalk tray under it, with a stick of chalk and an eraser */
-.ti-main .page-head::after {
-  content: ""; position: absolute; left: 26px; right: 26px; bottom: -22px; height: 11px; border-radius: 0 0 6px 6px;
-  background: linear-gradient(180deg, var(--ti-wood-2), var(--ti-wood-3)); box-shadow: 0 4px 8px rgba(60, 40, 15, 0.18);
-}
-.ti-main .page-head::before {
-  content: ""; position: absolute; right: 78px; bottom: -17px; width: 36px; height: 7px; border-radius: 3px; z-index: 1;
-  background: linear-gradient(180deg, #fffdf2, #e8e4d2);
-  box-shadow: -56px 0 0 -1px #f6d86b, 60px -2px 0 3px #7a8a82;
-}
-
-.ti-main .card { border-radius: 12px; border-color: var(--line); }
+.cg-main .card { border-radius: 12px; border-color: var(--line); }
 
 /* a highlighter stroke behind the small badges */
-.ti-main .pill { background: color-mix(in srgb, #fbe7a6 78%, var(--surface)); color: #3b3210; border-color: transparent; }
-:root[data-theme="dark"] .ti-main .pill { background: color-mix(in srgb, #fbe7a6 26%, var(--surface)); color: #fdf0c4; }
+.cg-main .pill { background: color-mix(in srgb, #fbe7a6 78%, var(--surface)); color: #3b3210; border-color: transparent; }
+:root[data-theme="dark"] .cg-main .pill { background: color-mix(in srgb, #fbe7a6 26%, var(--surface)); color: #fdf0c4; }
 
-.ti-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 18px; padding: 14px 16px 24px; margin-top: 8px; border-top: 6px solid var(--ti-wood); font-size: 13px; color: var(--ink-3); background: color-mix(in srgb, var(--ti-wood) 22%, var(--bg)); }
 .ti-foot a, .ti-linkbtn { color: var(--ink-2); font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; cursor: pointer; }
 
 /* the front door: the same board, with the sign in form pinned to it */
@@ -170,14 +113,14 @@ body { background: var(--bg); }
   .ti-brand b { font-size: 25px; }
   .ti-board { padding: 24px 16px 20px; border-width: 8px; }
   .ti-board h1 { font-size: 33px; }
-  .ti-main .page-head { padding: 16px 18px 18px; border-width: 7px; }
-  .ti-main .page-head h1 { font-size: 34px; }
-  .ti-main .page-head::before { display: none; }
+  .cg-main .page-head { padding: 16px 18px 18px; border-width: 7px; }
+  .cg-main .page-head h1 { font-size: 34px; }
+  .cg-main .page-head::before { display: none; }
 }
 
 /* buttons on the board are chalk too */
-.ti-main .page-head .btn.quiet { color: var(--ti-chalk); background: rgba(255, 255, 255, 0.12); border: 1px dashed rgba(247, 245, 234, 0.5); }
-.ti-main .page-head .btn.quiet:hover { background: rgba(255, 255, 255, 0.2); }
+.cg-main .page-head .btn.quiet { color: var(--ti-chalk); background: rgba(255, 255, 255, 0.12); border: 1px dashed rgba(247, 245, 234, 0.5); }
+.cg-main .page-head .btn.quiet:hover { background: rgba(255, 255, 255, 0.2); }
 
 /* questions with lettered statements, such as data sufficiency, keep their line breaks */
 .q-text { white-space: pre-line; }
@@ -350,18 +293,18 @@ body { background: var(--bg); }
 
 .pp-doc .ps { height: calc(100vh - 160px); }
 button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-align: left; cursor: pointer; }
-.ti-main:has(.paper-page) { max-width: 1640px; }
-.ti-main .page.paper-page { max-width: none; }
+.cg-main:has(.paper-page) { max-width: 1640px; }
+.cg-main .page.paper-page { max-width: none; }
 .ps-size { font-size: 12px; }
 .pp-back { font-weight: 700; }
-.ti-main:has(.paper-page) { max-width: none; padding: 12px 14px 40px; }
+.cg-main:has(.paper-page) { max-width: none; padding: 12px 14px 40px; }
 .pp-layout { grid-template-columns: minmax(0, 1fr) 300px; }
 .pp-doc { position: static; min-height: 0; }
 .pp-doc .ps { height: calc(100vh - 150px); min-height: 600px; }
 @media (max-width: 900px) { .pp-layout { grid-template-columns: 1fr; } .pp-doc .ps { height: 80vh; } }
 
 /* the exam pages: wider, more room between things, and a plain backing wherever words would sit on the picture */
-.ti-main:has(.rp), .ti-main:has(.rp-detail) { max-width: 1480px; }
+.cg-main:has(.rp), .cg-main:has(.rp-detail) { max-width: 1480px; }
 .rp-detail [id], .rp [id] { scroll-margin-top: 96px; }
 .rp-detail .rp-main { gap: 28px; }
 .rp-layout { grid-template-columns: 270px minmax(0, 1fr); gap: 26px; }
@@ -382,9 +325,9 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .rp-group > .rp-grouphead { display: flex; width: fit-content; padding: 8px 18px; border-radius: 999px; background: var(--surface); box-shadow: 0 1px 6px rgba(40, 30, 10, 0.10); }
 .rp-sit > p, .paper-page .pp-note, .stack > p.small, .rp > .empty, .rp-detail .empty { background: var(--surface); padding: 10px 16px; border-radius: 12px; box-shadow: 0 1px 6px rgba(40, 30, 10, 0.08); }
 
-.ti-main .page.wide:has(.rp-detail), .ti-main .page.wide:has(.rp) { max-width: none; }
-.ti-main .page.wide > .rp-detail, .ti-main .page.wide > .rp { max-width: none; }
-.ti-main .page.wide.rp-detail { max-width: none; }
+.cg-main .page.wide:has(.rp-detail), .cg-main .page.wide:has(.rp) { max-width: none; }
+.cg-main .page.wide > .rp-detail, .cg-main .page.wide > .rp { max-width: none; }
+.cg-main .page.wide.rp-detail { max-width: none; }
 
 .pp-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .pp-chips .rp-filter { padding: 6px 12px; font-size: 12.5px; }
@@ -396,14 +339,13 @@ button.pp-link { width: 100%; background: none; border: 0; font: inherit; text-a
 .ps-zoom { display: inline-flex; gap: 4px; }
 .pp-doc .ps { height: calc(100vh - 118px); min-height: 640px; }
 .pp-layout { grid-template-columns: minmax(0, 1fr) 290px; gap: 14px; }
-.ti-main:has(.paper-page) { padding: 6px 10px 30px; }
+.cg-main:has(.paper-page) { padding: 6px 10px 30px; }
 .ps-bar { gap: 6px; padding: 6px 10px; }
 @media (max-width: 900px) { .ps-scroll { justify-items: center; } }
 
 /* the paper takes the window, the way SaveMyExams does: header, then the paper and a slim panel */
-.ti-shell:has(.paper-page) .ti-foot { display: none; }
-.ti-main:has(.paper-page) { padding: 8px 8px 8px; max-width: none; }
-.ti-main .page.paper-page { padding: 0; }
+.ti-shell:has(.paper-page) .cg-main:has(.paper-page) { padding: 8px 8px 8px; max-width: none; }
+.cg-main .page.paper-page { padding: 0; }
 .paper-page .pp-layout { grid-template-columns: minmax(0, 1fr) 280px; gap: 8px; }
 .paper-page .pp-doc .ps { height: calc(100vh - 86px); min-height: 560px; }
 .paper-page .pp-side { max-height: calc(100vh - 86px); overflow-y: auto; gap: 10px; padding-right: 2px; }

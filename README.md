@@ -1,6 +1,6 @@
 # Testiddle
 
-Timed SAT, ACT, SSAT, IELTS and TOEFL practice, split out of Dwiddle.
+SAT practice tests, on paper and on computer, split out of Dwiddle.
 
 - `src/TestPrep.jsx` is the Test prep page, moved from Dwiddle's `App.jsx` unchanged.
 - `src/tests.js`, `generate.js`, `tasks.js`, `scoring.js`, `bank.js` hold the tests, question builders, rubrics and the fresh question bank.

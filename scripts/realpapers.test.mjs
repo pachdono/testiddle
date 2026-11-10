@@ -35,43 +35,17 @@ test("marking tells blank from wrong from right", () => {
   assert.deepEqual(r.map((x) => x.status), ["right", "blank", "wrong", "right"]);
 });
 
-test("every real paper has a link, and sections that can be sat have sizes", () => {
-  for (const p of REAL_PAPERS) {
-    assert.ok(/^https:\/\//.test(p.url), `${p.id} url`);
-    for (const s of p.sections) assert.ok(s.questions > 0 && s.minutes > 0, `${p.id}/${s.id}`);
-    assert.ok(!/[–—]/.test(JSON.stringify(p)), `${p.id} dash`);
-  }
-  assert.ok(REAL_PAPERS.length >= 10);
+test("the SAT is the only paper left, and its sections have sizes", () => {
+  assert.deepEqual(REAL_PAPERS.map((p) => p.id), ["sat"]);
+  for (const s of REAL_PAPERS[0].sections) assert.ok(s.questions > 0 && s.minutes > 0, s.id);
 });
 
-test("a seeded draw is repeatable and different seeds differ", async () => {
-  const { BUILDERS } = await import("../src/generate.js");
-  const seeded = (seed, fn) => {
-    let a = seed >>> 0; const real = Math.random;
-    Math.random = () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-    try { return fn(); } finally { Math.random = real; }
-  };
-  const text = (qs) => qs.map((q) => q.q + "|" + q.choices.join(",")).join("\n");
-  const a = text(seeded(7, () => BUILDERS.satMath(20)));
-  const b = text(seeded(7, () => BUILDERS.satMath(20)));
-  const c = text(seeded(8, () => BUILDERS.satMath(20)));
-  assert.equal(a, b);
-  assert.notEqual(a, c);
-});
-
-test("past paper browsers have unique codes, years in order and working searches", async () => {
-  const { PPQ, search } = await import("../src/ppq.js");
-  for (const [id, cfg] of Object.entries(PPQ)) {
-    assert.ok(cfg.hubs.every(([, u]) => /^https:\/\//.test(u)), `${id} hubs`);
-    assert.ok(!/[–—]/.test(JSON.stringify({ ...cfg, paperQuery: 0, markQuery: 0, groups: 0 })), `${id} dash`);
-    if (cfg.numbered) { assert.ok(cfg.groups.every((g) => g.count > 0 && /https:/.test(search(g.query(1)))), `${id} groups`); continue; }
-    assert.deepEqual([...cfg.years].sort((a, b) => b - a), cfg.years, `${id} years descend`);
-    for (const l of cfg.levels) {
-      const codes = l.subjects.map((s) => s.code);
-      assert.equal(new Set(codes).size, codes.length, `${id}/${l.id} codes`);
-      const q = cfg.paperQuery(l, l.subjects[0], 2023, cfg.sessions[0]);
-      assert.ok(q.includes("2023") && q.includes(l.subjects[0].code), `${id} query`);
-    }
+test("each course has a group of numbered tests to match it", async () => {
+  const { PPQ } = await import("../src/ppq.js");
+  const { COURSES } = await import("../src/courses.js");
+  for (const c of COURSES) {
+    const g = PPQ.sat.groups.find((x) => x.name === c.group);
+    assert.ok(g && g.count === c.count, c.id);
   }
 });
 

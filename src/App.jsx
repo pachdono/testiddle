@@ -1,36 +1,18 @@
 import { useEffect, useState } from "react";
-import TestPrep from "./TestPrep.jsx";
+import RealPapers from "./RealPapers.jsx";
+import { TopBar, Dashboard, Activity, readHistory } from "./Courses.jsx";
 import { useAuth, SignInPanel, ProfileGate } from "./Account.jsx";
 import { configured, myAccess } from "./supabase.js";
-import { logAnswer } from "./studylog.js";
-import { recordReview } from "./srs.js";
 import { Duck } from "./Duck.jsx";
 import { Boundary, Loading } from "./ui.jsx";
 import { savedTheme, applyTheme } from "./theme.js";
 
-// Testiddle: timed SAT, ACT, SSAT, IELTS and TOEFL practice. The same accounts
+// Testiddle: SAT practice, as paper tests and computer tests. The same accounts
 // as Dwiddle, because it talks to the same Supabase project.
 const DWIDDLE = "https://dwiddle.vercel.app";
 
-function ThemeButton({ theme, setTheme }) {
-  const dark = theme === "dark";
-  return (
-    <button className="ti-theme" onClick={() => setTheme(dark ? "light" : "dark")}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} title={dark ? "Light mode" : "Dark mode"}>
-      {dark
-        ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2" /><path d="M12 2.5v2.3M12 19.2v2.3M2.5 12h2.3M19.2 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6" /></svg>
-        : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z" /></svg>}
-    </button>
-  );
-}
-
-function Top({ theme, setTheme }) {
-  return (
-    <header className="ti-top">
-      <a className="ti-brand" href="/"><Duck size={36} shadow={false} /><b>Testiddle</b></a>
-      <ThemeButton theme={theme} setTheme={setTheme} />
-    </header>
-  );
+function GateTop() {
+  return <header className="cg-top"><a className="cg-brand" href="/"><Duck size={34} shadow={false} /><b>Testiddle</b></a></header>;
 }
 
 // Everything here needs an account, so this is the front door.
@@ -40,7 +22,7 @@ function SignInGate() {
       <div className="ti-board">
         <p className="ti-kicker">Class is in session</p>
         <h1>Sign in to start practising</h1>
-        <p className="ti-sub">Timed SAT, ACT, SSAT, IELTS and TOEFL papers, marked and scored. Use your Dwiddle account, or make one here. They are the same account.</p>
+        <p className="ti-sub">Full length SAT practice tests, marked and explained, on paper or on screen. Use your Dwiddle account, or make one here. They are the same account.</p>
         {configured
           ? <div className="ti-signin"><SignInPanel /></div>
           : <p className="small warn-text">Accounts are not set up on this site yet.</p>}
@@ -92,34 +74,38 @@ export default function App() {
   const allowed = OPEN || (access && !access.banned && (access.tester === true || Boolean(access.role)));
   function signOut() { setKept(null); auth.signOut(); }
 
-  // A question joins the missed list when it is wrong and leaves it when it is right.
-  function grade(id, correct, topicName, kind, meta) {
-    logAnswer({ id, topic: topicName, ok: correct, kind: kind || "mc", ...(meta || {}) });
-    recordReview(id, correct);
-  }
+  // The address says where you are, so Back works and a page can be shared.
+  const [path, setPath] = useState(() => window.location.pathname);
+  useEffect(() => { const f = () => setPath(window.location.pathname); window.addEventListener("popstate", f); return () => window.removeEventListener("popstate", f); }, []);
+  const nav = (to) => { if (to !== window.location.pathname) window.history.pushState({}, "", to); setPath(to); window.scrollTo(0, 0); };
+  // Results are saved by the test pages, so read them again whenever the page changes.
+  const [history, setHistory] = useState(readHistory);
+  useEffect(() => { setHistory(readHistory()); }, [path]);
 
   return (
     <div className="ti-shell">
-      <Top theme={theme} setTheme={setTheme} />
       {!auth.ready && !user ? (
-        <main className="ti-door"><Loading label="Opening the classroom" /></main>
+        <><GateTop /><main className="ti-door"><Loading label="Opening the classroom" /></main></>
       ) : !user ? (
-        <SignInGate />
+        <><GateTop /><SignInGate /></>
       ) : access === null && !OPEN ? (
-        <main className="ti-door"><Loading label="Checking your access" /></main>
+        <><GateTop /><main className="ti-door"><Loading label="Checking your access" /></main></>
       ) : !allowed ? (
         <>
+          <GateTop />
           <TestersOnly email={user.email} onSignOut={signOut} />
           <ProfileGate user={user} />
         </>
       ) : (
         <>
-          <main className="ti-main"><Boundary><TestPrep grade={grade} /></Boundary></main>
-          <footer className="ti-foot">
-            <span>Signed in as {user.email || "you"}</span>
-            <button className="ti-linkbtn" onClick={signOut}>Sign out</button>
-            <a href={DWIDDLE}>Back to Dwiddle</a>
-          </footer>
+          <TopBar path={path} nav={nav} history={history} user={user} theme={theme} setTheme={setTheme} onSignOut={signOut} dwiddle={DWIDDLE} />
+          <main className="cg-main">
+            <Boundary>
+              {path === "/activity" ? <Activity history={history} />
+                : path.startsWith("/course/") || path.startsWith("/real/") ? <RealPapers path={path} nav={nav} />
+                : <Dashboard nav={nav} history={history} user={user} />}
+            </Boundary>
+          </main>
           <ProfileGate user={user} />
         </>
       )}

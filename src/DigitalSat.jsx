@@ -6,6 +6,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Graphing from "./Graphing.jsx";
 import { SECTIONS, planFor, sectionOf, moduleName, secondModule, isRight, sectionScore, calc } from "./digitalsat.js";
+import { dayOf } from "./courses.js";
 
 const KEY = (n) => `testiddle-dsat-${n}`;
 const HISTORY = "testiddle-real-history";
@@ -63,7 +64,7 @@ export default function DigitalSat({ n, title, onBack }) {
   function saveHistory(done) {
     const rows = Object.values(done); const right = rows.reduce((a, r) => a + r.correct, 0), total = rows.reduce((a, r) => a + r.total, 0);
     const list = read(HISTORY, []);
-    write(HISTORY, [{ id: Date.now(), paper: title, section: S.mode === "full" ? "Full test" : SECTIONS[S.mode].name, right, total, minutes: 0, on: new Date().toISOString().slice(0, 10) }, ...list].slice(0, 30));
+    write(HISTORY, [{ id: Date.now(), paper: title, section: S.mode === "full" ? "Full test" : SECTIONS[S.mode].name, right, total, minutes: 0, on: dayOf() }, ...list].slice(0, 30));
   }
   function startNext() { const id = S.resolved[S.plan[S.idx]] || S.plan[S.idx]; setLeft(SECTIONS[sectionOf(id)].minutes * 60); patch({ phase: "module", cur: 0 }); }
 

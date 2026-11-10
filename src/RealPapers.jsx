@@ -4,9 +4,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PageHead } from "./ui.jsx";
-import { H } from "./heavy.js";
-import { REAL_GROUPS, REAL_PAPERS, OWN_SECTIONS, ownPaper, parseKey, markSheet, markOwn } from "./realpapers.js";
-import { PPQ, search } from "./ppq.js";
+import { REAL_PAPERS, OWN_SECTIONS, ownPaper, parseKey, markSheet, markOwn } from "./realpapers.js";
+import { PPQ } from "./ppq.js";
+import { COURSES, courseOf, dayOf } from "./courses.js";
+import CoursePage from "./CoursePage.jsx";
 import Review from "./Review.jsx";
 import PdfStudio from "./PdfStudio.jsx";
 import DigitalSat from "./DigitalSat.jsx";
@@ -24,14 +25,11 @@ const clock = (s) => {
 };
 const lettersOf = (n) => Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
 
-export default function RealPapers({ head }) {
+export default function RealPapers({ path, nav }) {
   const [sheet, setSheet] = useState(() => read(SHEET, null)); // the paper being sat
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState(() => read(HISTORY, []));
-  // The address says where you are, so Back works and a page can be shared: /real/sat/paper-sat-test-2
-  const [path, setPath] = useState(() => window.location.pathname);
-  useEffect(() => { const f = () => setPath(window.location.pathname); window.addEventListener("popstate", f); return () => window.removeEventListener("popstate", f); }, []);
-  const nav = (to) => { if (to !== window.location.pathname) window.history.pushState({}, "", to); setPath(to); window.scrollTo(0, 0); };
+  // The address says where you are, so Back works and a test can be shared: /real/sat/paper-sat-test-2
   const [, detail, slug] = /^\/real(?:\/([^/]+))?(?:\/([^/]+))?\/?$/.exec(path) || [];
   const [pdf, setPdf] = useState(null); // a paper the student downloaded, shown beside the sheet; it stays in this browser
 
@@ -53,7 +51,7 @@ export default function RealPapers({ head }) {
   }
 
   function saveResult(r) {
-    const row = { id: Date.now(), paper: paper.name, section: section.name, right: r.right, total: r.total, minutes: r.minutes, on: new Date().toISOString().slice(0, 10) };
+    const row = { id: Date.now(), paper: paper.name, section: section.name, right: r.right, total: r.total, minutes: r.minutes, on: dayOf() };
     const next = [row, ...history].slice(0, 30);
     write(HISTORY, next); setHistory(next);
   }
@@ -79,265 +77,20 @@ export default function RealPapers({ head }) {
     if (sheet.step === "key") return <KeyStep paper={paper} section={section} sheet={sheet} onBack={() => update({ step: "sit" })} onMarked={setResult} onDiscard={leave} />;
     return <Sit paper={paper} section={section} sheet={sheet} pdf={paper.own ? { name: paper.name, own: `${paper.own.kind}-${paper.own.n}-paper`, url: `${import.meta.env.BASE_URL}papers/${paper.own.kind}-${paper.own.n}.pdf` } : pdf} onAnswer={(answers) => update({ answers })} onSubmit={submit} onLeave={leave} />;
   }
-  const open = REAL_PAPERS.find((p) => p.id === detail);
-  if (open) return <Detail paper={open} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} slug={slug} onSlug={(sl) => nav(sl ? `/real/${open.id}/${sl}` : `/real/${open.id}`)} onBack={() => nav("/real")} history={history.filter((h) => h.paper === open.name)} />;
-  return <List head={head} onOpen={(id) => nav(`/real/${id}`)} history={history} onClear={() => { write(HISTORY, []); setHistory([]); }} />;
-}
-
-/* ---------- the library ---------- */
-
-// Each exam gets a colour and initials, the way a subject does on a revision site.
-const TILE = { sat: "#2f6fb0", psat: "#2f6fb0", act: "#c0582f", ssat: "#2a8c76", isee: "#7a5cb0", gre: "#b0842f", gmat: "#2f8f9a", ielts: "#b03a5a", toefl: "#3a6fb0", det: "#5aa02f", "igcse-mcq": "#2a8c76", edexcel: "#6a4fb0", aqa: "#b0562f", ocr: "#2f7a9a" };
-const INITIALS = { sat: "SAT", psat: "PSAT", act: "ACT", ssat: "SSAT", isee: "ISEE", gre: "GRE", gmat: "GMAT", ielts: "IELTS", toefl: "TOEFL", det: "DET", "igcse-mcq": "IGCSE", edexcel: "EDX", aqa: "AQA", ocr: "OCR" };
-const FILTERS = [["all", "All exams"], ...REAL_GROUPS.map((g) => [g.id, g.name])];
-
-function Tile({ id }) {
-  return <span className="rp-tile" style={{ background: TILE[id] || "#2a8c76" }} aria-hidden="true">{INITIALS[id] || id.slice(0, 3).toUpperCase()}</span>;
-}
-
-function List({ head, onOpen, history, onClear }) {
-  const [q, setQ] = useState("");
-  const [group, setGroup] = useState("all");
-  const shown = REAL_PAPERS.filter((p) => (group === "all" || p.group === group) && (!q.trim() || `${p.name} ${p.org} ${p.test || ""} ${p.id}`.toLowerCase().includes(q.trim().toLowerCase())));
-
-  return (
-    <div className="rp">
-      {head}
-      <div className="rp-hero card card-pad">
-        <div>
-          <h2>Real exam papers</h2>
-          <p className="small muted">Official papers from the people who write the exams, with a timed answer sheet, marking against the official key, and every question explained.</p>
-        </div>
-        <input className="rp-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search exams, for example SAT or IGCSE" aria-label="Search exams" />
-      </div>
-
-      <div className="rp-filters" role="tablist" aria-label="Type of exam">
-        {FILTERS.map(([k, label]) => <button key={k} role="tab" aria-selected={group === k} className={"rp-filter" + (group === k ? " on" : "")} onClick={() => setGroup(k)}>{label}</button>)}
-      </div>
-
-      {shown.length === 0 && <div className="empty small">No exams match that.</div>}
-      <div className="test-grid">
-        {shown.map((p) => {
-          const cfg = PPQ[p.id];
-          const count = cfg?.numbered ? `${cfg.groups.reduce((n, g) => n + g.count, 0)} tests` : cfg ? "By year" : p.sections.length ? `${p.sections.length} sections` : "Official site";
-          return (
-            <button key={p.id} className="test-card" onClick={() => onOpen(p.id)}>
-              <div className="spread">
-                <b className="test-name">{p.name}</b>
-                <span className="pill accent">{count}</span>
-              </div>
-              <span className="small muted">{p.card.full}</span>
-              <div className="test-meta">
-                <span><b>{p.card.scale}</b></span>
-                <span className="muted">{p.card.length}</span>
-              </div>
-              <span className="small muted">{p.card.who}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {history.length > 0 && (
-        <section className="rp-group">
-          <div className="rp-grouphead spread"><h2>Your results</h2><button className="ti-linkbtn" onClick={onClear}>Clear</button></div>
-          <div className="card">
-            {history.map((h) => (
-              <div key={h.id} className="rp-hist">
-                <div><b>{h.paper}</b><div className="small muted">{h.section}, {h.on}</div></div>
-                <div className="rp-score"><b>{h.right} / {h.total}</b><span className="small muted">{Math.round((h.right / Math.max(1, h.total)) * 100)}%</span></div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
-  );
-}
-
-// One exam's page: what it is, the official source, how to sit it, and its sections.
-function Detail({ paper, pdf, onPdf, onClearPdf, onStart, slug, onSlug, onBack, history }) {
-  const fileRef = useRef(null);
-  const [picked, setPicked] = useState(null); // a past paper opened from a card
-  const entry = slug ? (picked && (picked.slug || slugify(picked.key)) === slug ? picked : findNumbered(paper, slug)) : null;
-  const setEntry = (e) => { setPicked(e); onSlug(e ? e.slug || slugify(e.key) : null); };
-  const hasSheet = paper.sections.length > 0;
-  const [here, setHere] = useState("rp-how");
-  const go = (id) => (e) => { e.preventDefault(); setHere(id); document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); };
-
-  if (entry?.digitalId) return <DigitalSat n={entry.digitalId} title={entry.title} onBack={() => setEntry(null)} />;
-  if (entry) return <PaperPage entry={entry} paper={paper} pdf={pdf} onPdf={onPdf} onClearPdf={onClearPdf} onStart={onStart} onBack={() => setEntry(null)} />;
-
-  return (
-    <div className="page wide fade rp-detail">
-      <nav className="rp-crumbs small" aria-label="Breadcrumb">
-        <button className="ti-linkbtn" onClick={onBack}>Real papers</button><span aria-hidden="true">/</span><b>{paper.name}</b>
-      </nav>
-
-      <div className="rp-layout">
-        <aside className="rp-side card" aria-label="On this page">
-          <div className="rp-sidehead"><Tile id={paper.id} /><div><b>{paper.name}</b><span className="small muted">{paper.org}</span></div></div>
-          <a className={"rp-sidelink" + (here === "rp-how" ? " on" : "")} href="#rp-how" onClick={go("rp-how")}>How it works</a>
-          {PPQ[paper.id] && <a className={"rp-sidelink" + (here === "rp-ppq" ? " on" : "")} href="#rp-ppq" onClick={go("rp-ppq")}>{PPQ[paper.id].numbered ? "Practice tests" : "Past papers by year"}</a>}
-          {hasSheet && <a className={"rp-sidelink" + (here === "rp-sections" ? " on" : "")} href="#rp-sections" onClick={go("rp-sections")}>Sit a section</a>}
-          {hasSheet && <a className={"rp-sidelink" + (here === "rp-yours" ? " on" : "")} href="#rp-yours" onClick={go("rp-yours")}>Add your paper</a>}
-          {history.length > 0 && <a className={"rp-sidelink" + (here === "rp-results" ? " on" : "")} href="#rp-results" onClick={go("rp-results")}>Your results</a>}
-          <a className="btn small rp-sidebtn" href={paper.url} target="_blank" rel="noopener noreferrer">Practice paper</a>
-          <button className="ti-linkbtn rp-sideback" onClick={onBack}>Back to all exams</button>
-        </aside>
-
-        <div className="rp-main stack">
-          <section className="card card-pad" id="rp-how">
-            <h1>{paper.name}</h1>
-            <p className="rp-lead">{paper.blurb}</p>
-            <ol className="rp-steps">
-              <li><b>Get the paper.</b> Open the official page and download the paper and its answer key. They are free from the publisher.</li>
-              {hasSheet ? (
-                <>
-                  <li><b>Sit it here.</b> Pick a section below. The clock runs at the real length, and you fill in the answer sheet as you work through the paper.</li>
-                  <li><b>Get it marked.</b> Paste in the official key and it marks you straight away, then lets you go back through every question you missed and every one you got right.</li>
-                </>
-              ) : (
-                <li><b>Mark it yourself.</b> This is a written paper, so use the publisher's mark scheme to mark your answers, and note what you lost marks on.</li>
-              )}
-            </ol>
-            <div className="row">
-              <a className="btn cta" href={paper.url} target="_blank" rel="noopener noreferrer">Practice paper</a>
-            </div>
-          </section>
-
-          <Ppq paper={paper} onOpenPaper={setEntry} />
-
-          {hasSheet && (
-            <section className="card" id="rp-sections">
-              <div className="card-head"><h3>Sit a section</h3><span className="small muted">Real length and real timing</span></div>
-              {paper.sections.map((s) => (
-                <div key={s.id} className="rp-secrow">
-                  <div>
-                    <b>{s.name}</b>
-                    <div className="small muted">{s.questions} questions, {s.minutes} minutes{s.note ? `. ${s.note}` : ""}</div>
-                  </div>
-                  <button className="btn cta small" onClick={() => onStart(paper, s)}>Start</button>
-                </div>
-              ))}
-            </section>
-          )}
-
-          {hasSheet && (
-            <section className="card card-pad" id="rp-yours">
-              <h3>Add the paper you downloaded</h3>
-              <p className="small muted">Optional. Open your PDF beside the answer sheet while you sit, so everything is on one screen. It stays in this browser and is not uploaded anywhere.</p>
-              <input ref={fileRef} type="file" accept="application/pdf,.pdf" hidden onChange={(e) => { onPdf(e.target.files?.[0]); e.target.value = ""; }} />
-              <div className="row">
-                <button className="btn ghost" onClick={() => fileRef.current?.click()}>{pdf ? "Choose a different PDF" : "Choose a PDF"}</button>
-                {pdf && <><span className="small">{pdf.name}</span><button className="ti-linkbtn" onClick={onClearPdf}>Remove</button></>}
-              </div>
-            </section>
-          )}
-
-          {history.length > 0 && (
-            <section className="card" id="rp-results">
-              <div className="card-head"><h3>Your results</h3></div>
-              {history.map((h) => (
-                <div key={h.id} className="rp-hist">
-                  <div><b>{h.section}</b><div className="small muted">{h.on}</div></div>
-                  <div className="rp-score"><b>{h.right} / {h.total}</b><span className="small muted">{Math.round((h.right / Math.max(1, h.total)) * 100)}%</span></div>
-                </div>
-              ))}
-            </section>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  const sat = REAL_PAPERS.find((p) => p.id === "sat");
+  const entry = detail === "sat" && slug ? findNumbered(sat, slug) : null;
+  const course = entry ? courseOf(entry.title) : COURSES.find((c) => path === `/course/${c.id}`);
+  const back = () => nav(`/course/${course?.id || COURSES[0].id}`);
+  if (entry?.digitalId) return <DigitalSat n={entry.digitalId} title={entry.title} onBack={back} />;
+  if (entry) return <PaperPage entry={entry} paper={sat} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} onBack={back} />;
+  return <CoursePage course={course || COURSES[0]} history={history} onOpen={(e) => nav(`/real/sat/${e.slug}`)} entries={entriesOf(sat, course || COURSES[0])} onClear={() => { write(HISTORY, []); setHistory([]); }} nav={nav} />;
 }
 
 
-/* ---------- past papers: a card for each paper ---------- */
 
-// Each paper is listed like the exams are on the front page, and opens on its own page.
-function Ppq({ paper, onOpenPaper }) {
-  const cfg = PPQ[paper.id];
-  if (!cfg) return null;
-  return cfg.numbered ? <Numbered paper={paper} cfg={cfg} onOpenPaper={onOpenPaper} /> : <ByYear paper={paper} cfg={cfg} onOpenPaper={onOpenPaper} />;
-}
-
-const Hubs = ({ hubs }) => (
-  <div className="ppq-hubs">
-    {hubs.map(([label, url]) => <a key={url} className="btn ghost small" href={url} target="_blank" rel="noopener noreferrer">{label}</a>)}
-  </div>
-);
-
-function PaperCard({ entry, onOpen }) {
-  const own = Boolean(entry.ownId);
-  const dig = Boolean(entry.digitalId);
-  return (
-    <button className="test-card pc" onClick={() => onOpen(entry)}>
-      <div className="spread">
-        <b className="test-name">{entry.title}</b>
-        {(entry.sections?.length > 0 || dig) && <span className="pill accent">{dig ? "Adaptive" : own ? "Auto-marked" : "Answer sheet"}</span>}
-      </div>
-      <span className="small muted">{entry.subtitle}{entry.code ? `  ·  ${entry.code}` : ""}</span>
-      <div className="test-meta">
-        <span><b>{entry.minutes > 0 ? `${entry.minutes} min` : "Official paper"}</b></span>
-        {entry.questions > 0 && <span className="muted">{entry.questions} questions</span>}
-      </div>
-      <span className="pc-actions">
-        <span className="pc-btn main">{dig ? "Start test" : own ? "Practice paper" : entry.sections?.length > 0 ? "Practice on the answer sheet" : "Practice paper"}</span>
-        <span className="pc-btn">{dig ? "Calculator and score estimate" : own ? "Mark scheme included" : "Mark scheme"}</span>
-      </span>
-    </button>
-  );
-}
-
-function ByYear({ paper, cfg, onOpenPaper }) {
-  const [li, setLi] = useState(0);
-  const lvl = cfg.levels[li];
-  const [si, setSi] = useState(0);
-  const subject = lvl.subjects[Math.min(si, lvl.subjects.length - 1)];
-  const [sess, setSess] = useState("all");
-  const [more, setMore] = useState(false);
-  const levelSessions = lvl.sessions || cfg.sessions;
-  const sessions = levelSessions.filter(([k]) => sess === "all" || k === sess);
-  const years = more ? cfg.years : cfg.years.slice(0, 4);
-
-  const entries = years.flatMap((y) => sessions.map(([k, name]) => ({
-    key: `${lvl.id}-${subject.code}-${y}-${k}`,
-    tile: paper.id,
-    title: `${subject.name} ${subject.code}`,
-    subtitle: `${cfg.board} ${lvl.name}, ${name} ${y}`,
-    org: cfg.board, code: subject.code, year: y, session: name,
-    minutes: subject.mcq ? 45 : 90, minutesEditable: !subject.mcq,
-    sections: subject.mcq ? paper.sections : [],
-    links: { paper: search(cfg.paperQuery(lvl, subject, y, [k, name])), mark: search(cfg.markQuery(lvl, subject, y, [k, name])), report: search(`${cfg.board} ${lvl.name} ${subject.name} ${subject.code} ${name} ${y} examiner report`) },
-    hubs: cfg.hubs,
-    note: subject.mcq ? "Multiple choice, so you can sit it here on the answer sheet." : "A written paper: sit it on paper, then mark yourself against the mark scheme.",
-  })));
-
-  return (
-    <section className="ppq" id="rp-ppq">
-      <div className="rp-grouphead"><h2>Past papers by year</h2><p className="small muted">{cfg.board}. {cfg.note}</p></div>
-      <div className="ppq-pickers">
-        {cfg.levels.length > 1 && (
-          <div className="rp-filters" role="tablist" aria-label="Level">
-            {cfg.levels.map((l, i) => <button key={l.id} role="tab" aria-selected={li === i} className={"rp-filter" + (li === i ? " on" : "")} onClick={() => { setLi(i); setSi(0); }}>{l.name}</button>)}
-          </div>
-        )}
-        <label className="ppq-field"><span className="small muted">Subject</span>
-          <select value={Math.min(si, lvl.subjects.length - 1)} onChange={(e) => setSi(Number(e.target.value))}>
-            {lvl.subjects.map((s, i) => <option key={s.code} value={i}>{s.name} ({s.code})</option>)}
-          </select>
-        </label>
-        <label className="ppq-field"><span className="small muted">Session</span>
-          <select value={sess} onChange={(e) => setSess(e.target.value)}>
-            <option value="all">All sessions</option>
-            {levelSessions.map(([k, name]) => <option key={k} value={k}>{name}</option>)}
-          </select>
-        </label>
-      </div>
-      <div className="test-grid">{entries.map((e) => <PaperCard key={e.key} entry={e} onOpen={onOpenPaper} />)}</div>
-      {!more && cfg.years.length > 4 && <button className="btn ghost small" onClick={() => setMore(true)}>Show earlier years, back to {cfg.years[cfg.years.length - 1]}</button>}
-    </section>
-  );
+// The small coloured badge beside a test's name.
+function Tile() {
+  return <span className="rp-tile" style={{ background: "#2f6fb0" }} aria-hidden="true">SAT</span>;
 }
 
 const slugify = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -353,11 +106,7 @@ function numberedEntry(paper, cfg, g, n) {
     return { key: `${g.name}-${n}`, slug, tile: paper.id, title: g.title(n), subtitle: "Testiddle practice test", org: "Testiddle", minutes: g.minutes, questions: g.questions, minutesEditable: true,
       sections: OWN_SECTIONS, ownId: `${g.own}-${n}`, pdfUrl: `${base}.pdf`, markUrl: `${base}-markscheme.pdf`, links: {}, note: g.note };
   }
-  return { key: `${g.name}-${n}`, slug, tile: paper.id, title: g.title(n), subtitle: cfg.board, org: cfg.board, minutes: g.minutes, questions: g.questions,
-    sections: g.sheet ? paper.sections : [],
-    links: { paper: search(g.query(n)), mark: search(`${g.query(n)} answers scoring`) },
-    hubs: cfg.hubs,
-    note: g.sheet ? "A full length official test. Take it in the Bluebook app or from the PDF, then use the answer sheet here." : "A full length official test, from the PDF." };
+  return null;
 }
 function findNumbered(paper, slug) {
   const cfg = PPQ[paper.id];
@@ -366,20 +115,11 @@ function findNumbered(paper, slug) {
   return null;
 }
 
-function Numbered({ paper, cfg, onOpenPaper }) {
-  return (
-    <section className="ppq" id="rp-ppq">
-      <div className="rp-grouphead"><h2>Practice tests</h2><p className="small muted">{cfg.board}. {cfg.note}</p></div>
-      {cfg.groups.map((g) => (
-        <div key={g.name} className="ppq-group">
-          {cfg.groups.length > 1 && <><b>{g.name}</b>{g.blurb && <p className="small muted ppq-blurb">{g.blurb}</p>}</>}
-          <div className="test-grid">
-            {Array.from({ length: g.count }, (_, i) => i + 1).map((n) => <PaperCard key={n} onOpen={onOpenPaper} entry={numberedEntry(paper, cfg, g, n)} />)}
-          </div>
-        </div>
-      ))}
-    </section>
-  );
+// The numbered tests of one course, as the entries a page opens.
+function entriesOf(paper, course) {
+  const cfg = PPQ[paper.id];
+  const g = cfg.groups.find((x) => x.name === course.group);
+  return Array.from({ length: g.count }, (_, i) => numberedEntry(paper, cfg, g, i + 1));
 }
 
 /* ---------- one paper's page ---------- */
@@ -510,7 +250,6 @@ function PaperPage({ entry, pdf, onPdf, onClearPdf, onStart, onBack, paper }) {
           )}
 
           <p className="small muted pp-note">{entry.note}</p>
-          {entry.hubs && <Hubs hubs={entry.hubs} />}
         </aside>
       </div>
     </div>
@@ -627,8 +366,6 @@ function Result({ paper, section, result, onSave, onDone, onAgain }) {
   const missed = rows.filter((r) => r.status === "wrong").length;
   const blank = rows.filter((r) => r.status === "blank").length;
   const pct = total ? Math.round((right / total) * 100) : 0;
-  // a scaled estimate only means something when the whole section was keyed
-  const est = paper.test && H()?.estimate && total === section.questions ? H().estimate(paper.test, right, total) : null;
   const items = rows.map((r) => r.item || { n: r.n, status: r.status, yours: r.yours, correct: r.correct, skill: section.name });
 
   useEffect(() => { if (!saved) { onSave({ right, total, minutes: result.minutes }); setSaved(true); } }, []);
@@ -642,15 +379,8 @@ function Result({ paper, section, result, onSave, onDone, onAgain }) {
             <span className="score-value">{pct}%</span>
             <span className="score-unit">{right} right, {missed} wrong{blank ? `, ${blank} blank` : ""}</span>
           </div>
-          {est && (
-            <div className="score-side">
-              <div className="spread small"><span className="muted">Estimated scaled score for this section alone</span><b>{est.scaled}</b></div>
-              <p className="small muted" style={{ margin: "8px 0 0" }}>{est.unit}. A real score combines every section and uses the publisher's own conversion table, so use the one in the scoring guide for the true number.</p>
-            </div>
-          )}
         </div>
 
-        {total < section.questions && <p className="small muted">The key you pasted covered {total} of {section.questions} questions, so only those were marked and there is no scaled estimate.</p>}
 
         <Review items={items} test={paper.name} section={section.name} explainable={!paper.own} />
 

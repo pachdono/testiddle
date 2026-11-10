@@ -7,24 +7,21 @@ import { PPQ } from "../src/ppq.js";
 
 export const config = { maxDuration: 10 };
 
-const NAMES = { sat: "SAT", psat: "PSAT/NMSQT", act: "ACT", ssat: "SSAT", isee: "ISEE", gre: "GRE", gmat: "GMAT", ielts: "IELTS", toefl: "TOEFL iBT", det: "Duolingo English Test", "igcse-mcq": "Cambridge IGCSE", edexcel: "Pearson Edexcel", aqa: "AQA", ocr: "OCR" };
+const NAMES = { sat: "SAT" };
 const slug = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 function describe(path) {
   const [, , exam, sl] = path.split("/");
   const name = NAMES[exam];
-  if (!exam || !name) return { title: "Real exam papers | Testiddle", text: "Practice papers for the SAT, ACT, SSAT, IELTS, TOEFL and more, timed and marked, with every question explained. Free." };
+  if (!exam || !name) return { title: "Real exam papers | Testiddle", text: "Full length SAT practice tests, on paper or on screen, marked with every question explained. Free." };
   const cfg = PPQ[exam];
   if (sl && cfg?.numbered) {
     for (const g of cfg.groups) for (let n = 1; n <= g.count; n++) {
       if (`${slug(g.name)}-test-${n}` !== sl) continue;
-      const own = g.own || g.digital;
       return {
         title: `${g.title(n)} | Testiddle`,
-        text: own
-          ? `${g.title(n)}: ${g.questions} original questions in ${g.minutes} minutes, marked automatically with an explanation for every question. Free on Testiddle.`
-          : `${g.title(n)}: the official ${cfg.board} test, with a timed answer sheet and a review of every question. Free on Testiddle.`,
+        text: `${g.title(n)}: ${g.questions} original questions in ${g.minutes} minutes, marked automatically with an explanation for every question. Free on Testiddle.`,
       };
     }
   }
