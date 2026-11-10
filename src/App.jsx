@@ -3,6 +3,7 @@ import RealPapers from "./RealPapers.jsx";
 import { TopBar, Dashboard, ManageCourses, readHistory, visibleCourses } from "./Courses.jsx";
 import { Settings } from "./Settings.jsx";
 import Landing from "./Landing.jsx";
+import IgcsePage from "./Igcse.jsx";
 import { AuthCard, Onboarding, onboarding } from "./Onboarding.jsx";
 import { Mascot } from "./Mascot.jsx";
 import { FaqPage, WhatsNew, FeedbackDialog, FeedbackButton } from "./Help.jsx";
@@ -112,6 +113,7 @@ export default function App() {
                 } catch { /* storage blocked */ } setHistory(readHistory()); bump((n) => n + 1); }} requestDelete={() => setFeedback({ prefill: "Please delete my account." })} />
                 : path === "/help" ? <FaqPage nav={nav} feedback={() => setFeedback({})} />
                 : path === "/whats-new" ? <WhatsNew nav={nav} />
+                : path.startsWith("/course/igcse-") ? <IgcsePage key={path} id={path.slice(8)} nav={nav} />
                 : path.startsWith("/course/") || path.startsWith("/real/") ? <RealPapers path={path} nav={nav} theme={theme} setTheme={setTheme} report={(prefill) => setFeedback({ prefill })} />
                 : <Dashboard nav={nav} history={history} user={user} courses={courses} manage={() => setManaging(true)} />}
             </Boundary>

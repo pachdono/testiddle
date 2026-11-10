@@ -4,16 +4,16 @@ import { courseOf, historyOf, summary, streak, dayOf, COURSES } from "../src/cou
 
 const row = (paper, right, total, on, minutes = 0) => ({ id: Math.random(), paper, section: "x", right, total, minutes, on });
 
-test("a test title says which course it is in", () => {
-  assert.equal(courseOf("SAT Paper Test 2").id, "paper-sat");
-  assert.equal(courseOf("SAT Computer Test 4").id, "computer-sat");
+test("every test, paper or computer, belongs to the one SAT course", () => {
+  assert.equal(courseOf("SAT Paper Test 2").id, "sat");
+  assert.equal(courseOf("SAT Computer Test 4").id, "sat");
 });
 
-test("results are split by course and averaged", () => {
+test("results are averaged across the SAT course", () => {
   const h = [row("SAT Paper Test 1", 20, 27, "2026-11-09"), row("SAT Paper Test 2", 10, 27, "2026-11-09"), row("SAT Computer Test 1", 50, 100, "2026-11-09")];
-  assert.equal(historyOf(h, COURSES[0]).length, 2);
+  assert.equal(historyOf(h, COURSES[0]).length, 3);
   const s = summary(h, COURSES[0]);
-  assert.equal(s.sittings, 2);
+  assert.equal(s.sittings, 3);
   assert.equal(s.best, 74);
   assert.equal(summary([], COURSES[0]).average, null);
 });
@@ -68,4 +68,27 @@ test("XP counts right answers and sittings, quizzes and cards", () => {
   const total = rows.reduce((n, r) => n + r.xp, 0);
   assert.equal(total, 10 * XP.perRight + XP.sitting + XP.right + XP.tried + XP.card);
   assert.ok(xpByDay(rows).get("2026-11-09") === 10 * XP.perRight + XP.sitting);
+});
+
+import { SUBJECTS, courseFor, QUALS } from "../src/catalog.js";
+import fs from "node:fs";
+const ICON_IDS = [...fs.readFileSync(new URL("../src/SubjectIcons.jsx", import.meta.url), "utf8").matchAll(/^  ([a-z]+): /gm)].map((m) => m[1]);
+
+test("every IGCSE subject has a board, topics and a drawn icon", () => {
+  assert.ok(SUBJECTS.length >= 25);
+  assert.equal(new Set(SUBJECTS.map((s) => s.id)).size, SUBJECTS.length);
+  for (const s of SUBJECTS) {
+    assert.ok(Object.keys(s.boards).length && s.topics.length, s.id);
+    assert.ok(ICON_IDS.includes(s.icon), `${s.id} icon`);
+  }
+  assert.deepEqual(QUALS.map((q) => q.id), ["sat", "igcse"]);
+});
+
+test("a stored choice becomes a full course, with the double award code for a double science", () => {
+  assert.equal(courseFor({ id: "igcse-biology", board: "cie", tier: "Triple" }).code, "0610");
+  assert.equal(courseFor({ id: "igcse-biology", board: "cie", tier: "Double" }).code, "0654");
+  assert.equal(courseFor({ id: "igcse-chemistry", board: "edexcel", tier: "Double" }).code, "4SD0");
+  assert.equal(courseFor({ id: "igcse-esl", board: "edexcel" }).board, "cie"); // only Cambridge offers it here
+  assert.equal(courseFor({ id: "paper-sat" }).id, "sat");
+  assert.equal(courseFor({ id: "nope" }), null);
 });

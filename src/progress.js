@@ -6,7 +6,7 @@ import { dayOf } from "./courses.js";
 const read = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } };
 
-export const KEYS = { goal: "testiddle-goal", quiz: "testiddle-quiz", cards: "testiddle-cards", hidden: "testiddle-hidden", avatar: "testiddle-avatar", tour: "testiddle-seen" };
+export const KEYS = { mine: "testiddle-mine", goal: "testiddle-goal", quiz: "testiddle-quiz", cards: "testiddle-cards", hidden: "testiddle-hidden", avatar: "testiddle-avatar", tour: "testiddle-seen" };
 export const GOALS = [["Chilled", 100, 10], ["Intermediate", 150, 20], ["Advanced", 250, 40], ["Intense", 500, 60]];
 export const XP = { right: 10, tried: 3, card: 3, perRight: 2, sitting: 20 };
 const CAP = 3000;
@@ -102,3 +102,13 @@ export function longestRunOf(rows) {
   }
   return best;
 }
+
+/** The courses someone has added: [{ id, board, tier, date }]. Everyone starts with the SAT. */
+export function myCourses() {
+  const v = read(KEYS.mine, null);
+  if (Array.isArray(v)) return v.filter((x) => x && typeof x.id === "string");
+  // before IGCSE courses there were two SAT courses that could be hidden; both are now one
+  const hidden = read(KEYS.hidden, []);
+  return Array.isArray(hidden) && hidden.includes("paper-sat") && hidden.includes("computer-sat") ? [] : [{ id: "sat" }];
+}
+export function setMyCourses(list) { write(KEYS.mine, list); changed(); }

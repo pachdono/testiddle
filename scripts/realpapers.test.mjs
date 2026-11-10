@@ -43,10 +43,9 @@ test("the SAT is the only paper left, and its sections have sizes", () => {
 test("each course has a group of numbered tests to match it", async () => {
   const { PPQ } = await import("../src/ppq.js");
   const { COURSES } = await import("../src/courses.js");
-  for (const c of COURSES) {
-    const g = PPQ.sat.groups.find((x) => x.name === c.group);
-    assert.ok(g && g.count === c.count, c.id);
-  }
+  const sat = COURSES[0];
+  const total = sat.groups.reduce((n, name) => n + PPQ.sat.groups.find((x) => x.name === name).count, 0);
+  assert.equal(total, sat.count);
 });
 
 import { ownPaper, markOwn, OWN_SECTIONS } from "../src/realpapers.js";

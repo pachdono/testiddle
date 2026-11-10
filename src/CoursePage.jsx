@@ -17,23 +17,23 @@ const readDecks = () => { try { const d = JSON.parse(localStorage.getItem(DECKS_
 const writeDecks = (d) => { try { localStorage.setItem(DECKS_KEY, JSON.stringify(d)); } catch { /* private mode */ } };
 const pct = (h) => Math.round((h.right / Math.max(1, h.total)) * 100);
 
-function TestRow({ entry, course, last, onOpen }) {
+function TestRow({ entry, last, onOpen }) {
   const done = last[entry.title];
   return (
     <button className="cg-row" onClick={() => onOpen(entry)}>
       <span className="cg-rownum" aria-hidden="true">{entry.digitalId || entry.ownId?.split("-").pop()}</span>
-      <span className="cg-rowtext"><b>{entry.title}</b><span className="small muted">{entry.minutes} min · {entry.questions} questions · {course.marks ? "Auto-marked, mark scheme included" : "Adaptive, with calculator and score estimate"}</span></span>
+      <span className="cg-rowtext"><b>{entry.title}</b><span className="small muted">{entry.minutes} min · {entry.questions} questions · {entry.ownId ? "Printed, auto-marked, mark scheme included" : "On screen, adaptive, with calculator and score estimate"}</span></span>
       {done ? <span className="cg-pill good">{pct(done)}% last time</span> : <span className="cg-pill">Not started</span>}
       <i className="cg-chev" aria-hidden="true">&rsaquo;</i>
     </button>
   );
 }
 
-function PastPapers({ course, entries, last, onOpen }) {
+function PastPapers({ entries, last, onOpen }) {
   const [by, setBy] = useState("test");
   const [open, setOpen] = useState({ [entries[0]?.slug]: true });
   const modules = [["rw1", "Reading and Writing, Module 1"], ["rw2", "Reading and Writing, Module 2"], ["math1", "Math, Module 1"], ["math2", "Math, Module 2"]];
-  const links = (e) => course.marks
+  const links = (e) => e.ownId
     ? <span className="cg-pair"><a href={`${base}papers/${e.ownId}.pdf`} target="_blank" rel="noopener noreferrer">Paper</a><a href={`${base}papers/${e.ownId}-markscheme.pdf`} target="_blank" rel="noopener noreferrer">Mark scheme</a><button onClick={() => onOpen(e)}>Sit it here</button></span>
     : <span className="cg-pair"><button onClick={() => onOpen(e)}>Open test</button></span>;
   return (
@@ -42,11 +42,11 @@ function PastPapers({ course, entries, last, onOpen }) {
       {by === "test" ? <section className="cg-card cg-years">{entries.map((e) => (
         <div key={e.slug} className={"cg-year" + (open[e.slug] ? " open" : "")}>
           <button className="cg-yearhead" onClick={() => setOpen({ ...open, [e.slug]: !open[e.slug] })}><span className="cg-round">{open[e.slug] ? "▴" : "▾"}</span><b>{e.title}</b>{last[e.title] && <span className="cg-pill good">{pct(last[e.title])}% last time</span>}</button>
-          {open[e.slug] && <div className="cg-yearrows"><div className="cg-yearrow"><span>{course.marks ? "Full paper, all four modules" : "Full adaptive test, two sections"}</span>{links(e)}</div>
-            {course.marks && modules.map(([id, name]) => <div key={id} className="cg-yearrow"><span className="muted">{name}</span><span className="cg-pair"><button onClick={() => onOpen(e)}>Sit this module</button></span></div>)}</div>}
+          {open[e.slug] && <div className="cg-yearrows"><div className="cg-yearrow"><span>{e.ownId ? "Full paper, all four modules" : "Full adaptive test, two sections"}</span>{links(e)}</div>
+            {e.ownId && modules.map(([id, name]) => <div key={id} className="cg-yearrow"><span className="muted">{name}</span><span className="cg-pair"><button onClick={() => onOpen(e)}>Sit this module</button></span></div>)}</div>}
         </div>))}</section>
-        : <section className="cg-card cg-years">{(course.marks ? modules : [["rw", "Reading and Writing"], ["math", "Math"]]).map(([id, name]) => (
-          <div key={id} className="cg-year open"><div className="cg-yearhead"><b>{name}</b></div><div className="cg-yearrows">{entries.map((e) => <div key={e.slug} className="cg-yearrow"><span>{e.title}</span>{links(e)}</div>)}</div></div>))}</section>}
+        : <section className="cg-card cg-years">{[["paper", "Paper tests: four modules each, written on the PDF"], ["computer", "Computer tests: two adaptive sections each"]].map(([id, name]) => (
+          <div key={id} className="cg-year open"><div className="cg-yearhead"><b>{name}</b></div><div className="cg-yearrows">{entries.filter((e) => (id === "paper") === Boolean(e.ownId)).map((e) => <div key={e.slug} className="cg-yearrow"><span>{e.title}</span>{links(e)}</div>)}</div></div>))}</section>}
     </div>
   );
 }
@@ -185,13 +185,13 @@ export default function CoursePage({ course, entries, history, onOpen, onClear, 
       {tab === "cards" && <FlashcardsIndex openDeck={(cards, title) => setDeck({ cards, title })} build={openWizard} />}
       {tab === "sheets" && <CheatSheets />}
       {tab === "exam" && <ExamTab openExam={setExam} />}
-      {tab === "papers" && <PastPapers course={course} entries={entries} last={last} onOpen={onOpen} />}
+      {tab === "papers" && <PastPapers entries={entries} last={last} onOpen={onOpen} />}
       {tab === "terms" && <TermsTab />}
-      {tab === "tests" && <div className="cg-list">{entries.map((e) => <TestRow key={e.slug} entry={e} course={course} last={last} onOpen={onOpen} />)}</div>}
+      {tab === "tests" && <div className="cg-stack tight">{[["Paper tests", true], ["Computer tests", false]].map(([label, own]) => <div key={label} className="cg-list"><span className="cg-chipsm">{label}</span>{entries.filter((e) => Boolean(e.ownId) === own).map((e) => <TestRow key={e.slug} entry={e} last={last} onOpen={onOpen} />)}</div>)}</div>}
 
       {tab === "marks" && (
         <div className="cg-list">
-          {entries.map((e) => (
+          {entries.filter((e) => e.ownId).map((e) => (
             <div key={e.slug} className="cg-row static">
               <span className="cg-rownum" aria-hidden="true">{e.ownId.split("-").pop()}</span>
               <span className="cg-rowtext"><b>{e.title}</b><span className="small muted">Answers and an explanation for every question</span></span>

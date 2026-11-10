@@ -3,22 +3,27 @@
 import { useEffect, useRef, useState } from "react";
 import { DuckAvatar, CHARACTERS } from "./DuckAvatars.jsx";
 import { Mascot } from "./Mascot.jsx";
-import { onboarding, CourseIcon } from "./Onboarding.jsx";
-import { COURSES, HISTORY_KEY, summary } from "./courses.js";
-import { GOALS, activity, cardRatings, getAvatar, getGoal, hiddenCourses, longestRunOf, quizLog, setAvatar, setGoal, setHidden, streakWith, xpSeries } from "./progress.js";
+import { onboarding } from "./Onboarding.jsx";
+import { HISTORY_KEY, summary } from "./courses.js";
+import { courseFor } from "./catalog.js";
+import { SubjectIcon } from "./SubjectIcons.jsx";
+import { QualList, SubjectList } from "./Picker.jsx";
+import { GOALS, activity, cardRatings, getAvatar, getGoal, longestRunOf, myCourses, setMyCourses, quizLog, setAvatar, setGoal, streakWith, xpSeries } from "./progress.js";
 import { CARDS } from "./content.js";
 import { QUESTION_COUNT, doneFrom } from "./bank.js";
+
+export const topicsDone = (id) => { try { const v = JSON.parse(localStorage.getItem(`testiddle-topics:${id}`)); return Array.isArray(v) ? v : []; } catch { return []; } };
 
 export function readHistory() {
   try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY)); return Array.isArray(h) ? h : []; } catch { return []; }
 }
 
 /** The courses the student has added, in order. */
-export const visibleCourses = () => COURSES.filter((c) => !hiddenCourses().includes(c.id));
+export const visibleCourses = () => myCourses().map(courseFor).filter(Boolean).filter((c, i, all) => all.findIndex((x) => x.id === c.id) === i);
 
 // A course's picture: a printed page or a screen, in the course's colour.
 export function CourseMark({ course, size = 44 }) {
-  return <span className="cg-mark illus" style={{ width: size, height: size }} aria-hidden="true"><CourseIcon id={course.mark} size={size} /></span>;
+  return <span className="cg-mark illus" style={{ width: size, height: size }} aria-hidden="true"><SubjectIcon id={course.icon} size={size} /></span>;
 }
 
 function useAway(open, setOpen) {
@@ -198,20 +203,23 @@ function AvatarPicker({ onClose }) {
 }
 
 export function ManageCourses({ onClose }) {
-  const [hidden, setH] = useState(hiddenCourses());
-  const toggle = (id) => { const next = hidden.includes(id) ? hidden.filter((x) => x !== id) : [...hidden, id]; setH(next); setHidden(next); };
-  const mine = COURSES.filter((c) => !hidden.includes(c.id)), more = COURSES.filter((c) => hidden.includes(c.id));
+  const [picked, setPickedRaw] = useState(() => Object.fromEntries(myCourses().map((x) => [x.id === "paper-sat" || x.id === "computer-sat" ? "sat" : x.id, { ...x, id: x.id === "paper-sat" || x.id === "computer-sat" ? "sat" : x.id }])));
+  const [qual, setQual] = useState(null);
+  const setPicked = (p) => { setPickedRaw(p); setMyCourses(Object.values(p)); };
+  const mine = Object.values(picked).map(courseFor).filter(Boolean);
   return (
-    <Modal title="Manage courses" onClose={onClose}>
-      <h2>Manage courses</h2>
-      <section className="cg-card cg-manage"><span className="cg-tag dark">Your courses ({mine.length})</span>
-        {mine.length === 0 && <div className="cg-empty">No courses yet.</div>}
-        {mine.map((c) => <div key={c.id} className="cg-managerow"><CourseMark course={c} size={36} /><span className="cg-two-line"><b>{c.name}</b><small className="muted">{c.tag}</small></span><button className="cg-link" onClick={() => toggle(c.id)}>Remove</button></div>)}
-      </section>
-      <section className="cg-card cg-manage"><span className="cg-tag dark">Add something new</span>
-        {more.length === 0 && <div className="cg-empty">You have added every course.</div>}
-        {more.map((c) => <div key={c.id} className="cg-managerow"><CourseMark course={c} size={36} /><span className="cg-two-line"><b>{c.name}</b><small className="muted">{c.tag}</small></span><button className="cg-addbtn" aria-label={`Add ${c.name}`} onClick={() => toggle(c.id)}>+</button></div>)}
-      </section>
+    <Modal title="Manage courses" onClose={onClose} wide>
+      {qual ? <>
+        <div className="ob-q left"><button className="ob-back" aria-label="Back" onClick={() => setQual(null)}>&larr;</button><h2>{qual === "sat" ? "SAT" : "IGCSE"}</h2></div>
+        <SubjectList qual={qual} picked={picked} setPicked={setPicked} />
+      </> : <>
+        <h2>Manage courses</h2>
+        <section className="cg-card cg-manage"><span className="cg-tag dark">Your courses ({mine.length})</span>
+          {mine.length === 0 && <div className="cg-empty">No courses yet. Add one below.</div>}
+          {mine.map((c) => <div key={c.id} className="cg-managerow"><CourseMark course={c} size={40} /><span className="cg-two-line"><b>{c.name}</b><small className="muted">{c.tag}{c.tier ? `, ${c.tier}` : ""}</small></span><button className="cg-link" onClick={() => setQual(c.qual)}>Edit</button><button className="cg-link" onClick={() => { const n = { ...picked }; delete n[c.id]; setPicked(n); }}>Remove</button></div>)}
+        </section>
+        <section className="cg-card ob-pick"><span className="cg-tag dark">Add something new</span><QualList picked={picked} onPick={setQual} /></section>
+      </>}
     </Modal>
   );
 }
@@ -246,13 +254,24 @@ export function Dashboard({ nav, history, user, courses, manage }) {
       <div className="cg-sectionhead"><span className="cg-label">{courses.length} {courses.length === 1 ? "course" : "courses"}</span><span className="cg-dash" /><button className="cg-btn" onClick={manage}>Manage courses</button></div>
 
       <section className="cg-card cg-table" aria-label="Your courses">
-        <div className="cg-th"><span className="cg-sort"><Menu label="Course sort order" icon><button onClick={() => setOrder("added")}>Date added{order === "added" ? " ✓" : ""}</button><button onClick={() => setOrder("az")}>A to Z{order === "az" ? " ✓" : ""}</button><button onClick={() => setOrder("za")}>Z to A{order === "za" ? " ✓" : ""}</button></Menu>Course</span><span>Tests / avg score</span><span>Questions / avg score</span><span>Flashcards / confidence</span><span /></div>
+        <div className="cg-th"><span className="cg-sort"><Menu label="Course sort order" icon><button onClick={() => setOrder("added")}>Date added{order === "added" ? " ✓" : ""}</button><button onClick={() => setOrder("az")}>A to Z{order === "az" ? " ✓" : ""}</button><button onClick={() => setOrder("za")}>Z to A{order === "za" ? " ✓" : ""}</button></Menu>Course</span><span>Tests or topics</span><span>Questions / avg score</span><span>Flashcards / confidence</span><span /></div>
         {courses.length === 0 && <div className="cg-empty">No courses yet. Press Manage courses to add one.</div>}
         {sorted.map((c) => {
           const s = summary(history, c);
+          if (c.kind === "igcse") {
+            const done = topicsDone(c.id).length;
+            return (
+              <button key={c.id} className="cg-tr" onClick={() => nav(`/course/${c.id}`)}>
+                <span className="cg-course"><CourseMark course={c} /><span><b>{c.name}</b><span className="small muted">{c.tag}{c.tier ? `, ${c.tier}` : ""}</span></span></span>
+                <span>{done} / {c.topics.length} <small className="muted">topics</small></span>
+                <span>~</span><span>~</span>
+                <i className="cg-chev" aria-hidden="true">&rsaquo;</i>
+              </button>
+            );
+          }
           return (
             <button key={c.id} className="cg-tr" onClick={() => nav(`/course/${c.id}`)}>
-              <span className="cg-course"><CourseMark course={c} /><span><b>{c.name}</b><span className="small muted">{c.count} full length tests{ob.courses?.[c.id] && ob.courses[c.id] !== "Not sure yet" ? `, sitting in ${ob.courses[c.id]}` : ""}</span></span></span>
+              <span className="cg-course"><CourseMark course={c} /><span><b>{c.name}</b><span className="small muted">{c.count} full length tests{c.date && c.date !== "Not sure yet" ? `, sitting in ${c.date}` : ""}</span></span></span>
               <span>{s.sittings} <small className="muted">{s.average === null ? "~" : `${s.average}%`}</small></span>
               <span>{answered} / {QUESTION_COUNT} <small className="muted">{answered ? `${Math.round((right / answered) * 100)}%` : "~"}</small></span>
               <span>{rated.length} / {CARDS.length} <small className="muted">{conf === null ? "~" : `${conf}%`}</small></span>

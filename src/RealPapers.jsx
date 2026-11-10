@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PageHead } from "./ui.jsx";
 import { REAL_PAPERS, OWN_SECTIONS, ownPaper, parseKey, markSheet, markOwn } from "./realpapers.js";
 import { PPQ } from "./ppq.js";
-import { COURSES, courseOf, dayOf } from "./courses.js";
+import { COURSES, dayOf } from "./courses.js";
 import CoursePage from "./CoursePage.jsx";
 import Review from "./Review.jsx";
 import PdfStudio from "./PdfStudio.jsx";
@@ -79,7 +79,7 @@ export default function RealPapers({ path, nav, ...rest }) {
   }
   const sat = REAL_PAPERS.find((p) => p.id === "sat");
   const entry = detail === "sat" && slug ? findNumbered(sat, slug) : null;
-  const course = entry ? courseOf(entry.title) : COURSES.find((c) => path === `/course/${c.id}`);
+  const course = COURSES[0]; // every test belongs to the one SAT course
   const back = () => nav(`/course/${course?.id || COURSES[0].id}`);
   if (entry?.digitalId) return <DigitalSat n={entry.digitalId} title={entry.title} onBack={back} />;
   if (entry) return <PaperPage entry={entry} paper={sat} pdf={pdf} onPdf={takePdf} onClearPdf={() => { if (pdf?.url) URL.revokeObjectURL(pdf.url); setPdf(null); }} onStart={start} onBack={back} />;
@@ -118,8 +118,7 @@ function findNumbered(paper, slug) {
 // The numbered tests of one course, as the entries a page opens.
 function entriesOf(paper, course) {
   const cfg = PPQ[paper.id];
-  const g = cfg.groups.find((x) => x.name === course.group);
-  return Array.from({ length: g.count }, (_, i) => numberedEntry(paper, cfg, g, i + 1));
+  return course.groups.flatMap((name) => { const g = cfg.groups.find((x) => x.name === name); return Array.from({ length: g.count }, (_, i) => numberedEntry(paper, cfg, g, i + 1)); });
 }
 
 /* ---------- one paper's page ---------- */

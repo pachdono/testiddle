@@ -683,3 +683,14 @@ button.cg-btn.primary { border-color: var(--ink); }
 }
 .cg-mark.illus { background: none; border-radius: 50%; }
 .cg-banner .cg-mark.illus { background: var(--surface); }
+.ig-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ig-chips .cg-chipsm { cursor: pointer; background: var(--surface); font: inherit; font-size: 13px; font-weight: 600; }
+.ig-tier { position: relative; }
+.ig-menu { top: calc(100% + 6px); min-width: 140px; }
+.ig-topics { padding: 30px 12px 10px; display: flex; flex-direction: column; }
+.ig-topic { display: flex; align-items: center; gap: 14px; padding: 13px 14px; border-radius: 12px; cursor: pointer; }
+.ig-topic:hover { background: var(--hover); }
+.ig-topic input { width: 20px; height: 20px; accent-color: #3fa46a; }
+.ig-num { width: 28px; height: 28px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--hover); font-size: 13px; font-weight: 700; }
+.ig-topic.done span:last-child { color: var(--ink-3); text-decoration: line-through; }
+.ig-topic.done .ig-num { background: #3fa46a; color: #fff; }
