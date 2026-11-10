@@ -81,9 +81,21 @@ function FlashcardsIndex({ openDeck, build }) {
   );
 }
 
+/** Saves a poster as a PNG, drawn at twice the size so it stays sharp when printed. */
+async function savePng(node, name) {
+  const { toPng } = await import("html-to-image");
+  const url = await toPng(node, { pixelRatio: 2, backgroundColor: "#fffef9", cacheBust: true });
+  const a = document.createElement("a");
+  a.href = url; a.download = `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-cheat-sheet.png`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
 function CheatSheets() {
   const [open, setOpen] = useState(null);
   const [big, setBig] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const posterRef = useRef(null);
+  const save = async () => { if (!posterRef.current) return; setSaving(true); try { await savePng(posterRef.current.querySelector(".poster"), sheet.title); } catch { window.alert("The picture could not be made. Try Print instead and choose Save as PDF."); } setSaving(false); };
   const i = SHEETS.findIndex((s) => s.id === open);
   const sheet = SHEETS[i];
   if (sheet) {
@@ -92,10 +104,12 @@ function CheatSheets() {
       <div className="cg-stack tight">
         <div className="cg-spread"><button className="cg-link" onClick={() => setOpen(null)}>&larr; See all cheat sheets</button><button className="cg-link" onClick={() => setOpen(next.id)}>Next cheat sheet &rarr;</button></div>
         <section className="cg-card cg-sheetview"><span className="cg-tag dark">Cheat sheet</span>
-          <div className="cg-sheetleft"><div className="cg-spread"><small className="muted">A ONE PAGE SUMMARY OF {sheet.title.toUpperCase()}</small><button className="cg-link" onClick={() => setBig(true)}>{"\u26f6"} Expand</button></div><div className="cg-sheet"><SheetPoster sheet={sheet} /></div></div>
-          <aside className="cg-sheetside"><h2>{sheet.title}</h2><p className="muted">{sheet.desc}</p><small className="muted">Illustrated by the Testiddle team</small><button className="cg-btn primary" onClick={() => window.print()}>Print or save as PDF</button></aside>
+          <div className="cg-sheetleft"><div className="cg-spread"><small className="muted">A ONE PAGE SUMMARY OF {sheet.title.toUpperCase()}</small><button className="cg-link" onClick={() => setBig(true)}>{"\u26f6"} Expand</button></div><div className="cg-sheet" ref={posterRef}><SheetPoster sheet={sheet} /></div></div>
+          <aside className="cg-sheetside"><h2>{sheet.title}</h2><p className="muted">{sheet.desc}</p><small className="muted">Illustrated by the Testiddle team</small>
+            <button className="cg-btn primary" disabled={saving} onClick={save}>{saving ? "Saving" : "\u2913 Save as PNG"}</button>
+            <button className="cg-btn" onClick={() => window.print()}>{"\u2399"} Print</button></aside>
         </section>
-        {big && <div className="cg-scrim dark" onMouseDown={(e) => { if (e.target === e.currentTarget) setBig(false); }} role="dialog" aria-modal="true" aria-label={sheet.title}><button className="cg-x fixed" onClick={() => setBig(false)} aria-label="Close">&times;</button><div className="cg-paper cg-sheet"><SheetPoster sheet={sheet} /></div></div>}
+        {big && <div className="cg-scrim dark" onMouseDown={(e) => { if (e.target === e.currentTarget) setBig(false); }} role="dialog" aria-modal="true" aria-label={sheet.title}><button className="cg-x fixed" onClick={() => setBig(false)} aria-label="Close">&times;</button><div className="cg-bigbar"><button className="cg-btn primary" disabled={saving} onClick={save}>{saving ? "Saving" : "\u2913 Save as PNG"}</button><button className="cg-btn" onClick={() => window.print()}>{"\u2399"} Print</button></div><div className="cg-paper cg-sheet"><SheetPoster sheet={sheet} /></div></div>}
       </div>
     );
   }
