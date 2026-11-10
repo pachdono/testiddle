@@ -5,7 +5,7 @@ import { CARDS, SHEETS, TERMS } from "./content.js";
 import { QUESTION_COUNT, doneFrom, isRight, loadBank, pickQuiz, skillsOf } from "./bank.js";
 import { cardRatings, logQuiz, quizLog, rateCard } from "./progress.js";
 import { Modal } from "./Courses.jsx";
-import { Critter, CritterFor } from "./Critters.jsx";
+import { CritterFor } from "./Critters.jsx";
 
 const Html = ({ html, className = "" }) => <div className={"dq-html " + className} dangerouslySetInnerHTML={{ __html: html }} />;
 
@@ -24,7 +24,7 @@ export function QuizTab({ onXp, startOpen = false, onExam, onCards, openSkill })
   if (wizard && bank) return <Wizard bank={bank} done={done} onExam={onExam} onCards={onCards} onClose={() => { setWizard(false); setLog(quizLog()); onXp?.(); }} />;
   return (
     <div className="cg-stack">
-      <section className="cg-card cg-quizhero"><Critter who="tiddle" where="top" at="78%" />
+      <section className="cg-card cg-quizhero">
         <span className="cg-tag">Quiz</span>
         <div><b className="cg-bigger">{answered}</b><span className="muted"> of {QUESTION_COUNT} questions answered</span><div className="small muted">{answered ? `${Math.round((right / answered) * 100)}% right so far` : "Test yourself on any skill."}</div></div>
         <button className="cg-btn primary" disabled={!bank} onClick={() => setWizard(true)}>{failed ? "Could not load" : bank ? "Create a quiz" : "Loading"}</button>
@@ -63,7 +63,7 @@ export function Wizard({ bank, done, onClose, onExam, onCards }) {
     <div className="cg-wizard">
       <header><button className="cg-wx" aria-label={step === 1 ? "Close" : "Back"} onClick={() => (step === 1 ? onClose() : setStep(step - 1))}>{step === 1 ? "×" : "←"}</button><h2>{step === 1 ? "Create a revision session" : step === 2 ? "Select your skills" : activity === "exam" ? "Customise your paper" : "Customise your quiz"}</h2><span className="cg-step">Step {step} of 3</span></header>
       <div className="cg-wbody">
-        {step === 1 && <section className="cg-card cg-pick"><Critter who="inky" where="side" at="50%" /><span className="cg-tag">Select an activity</span>
+        {step === 1 && <section className="cg-card cg-pick"><span className="cg-tag">Select an activity</span>
           <button onClick={() => { setActivity("quiz"); setStep(2); }}><i className="blue">?</i><span><b>Quiz</b><small className="muted">Test your knowledge with a quiz of questions.</small></span><em>&rsaquo;</em></button>
           {onCards && <button onClick={() => { setActivity("cards"); setStep(2); }}><i className="green">{"\u2750"}</i><span><b className="green">Flashcards</b><small className="muted">Review the key ideas of each skill with a flashcard deck.</small></span><em>&rsaquo;</em></button>}
           {onExam && <button onClick={() => { setActivity("exam"); setStep(2); }}><i className="amber">{"\u2630"}</i><span><b className="amber">Exam</b><small className="muted">Practise answering exam questions, marked one by one.</small></span><em>&rsaquo;</em></button>}
@@ -74,7 +74,7 @@ export function Wizard({ bank, done, onClose, onExam, onCards }) {
             {skills.filter((s) => s.subject === subject).map((s) => <label key={s.skill}><input type="checkbox" checked={picked.has(key(s))} onChange={() => toggle(s)} /><span>{s.skill}</span><small className="muted">{s.count} questions</small></label>)}
           </section>)}
         </>}
-        {step === 3 && <section className="cg-card cg-mix"><Critter who="sprout" where="corner" at="92%" /><span className="cg-tag">Your quiz mix</span>
+        {step === 3 && <section className="cg-card cg-mix"><span className="cg-tag">Your quiz mix</span>
           <div className="cg-spread"><b>{n} questions</b><span className="small muted">Max: {max}</span></div>
           <input type="range" min={Math.min(5, max)} max={max} value={n} onChange={(e) => setCount(Number(e.target.value))} aria-label="Number of questions" />
           <p className="small">This quiz will include <b className="good">{mix.length - fresh - wrong} previously correct</b>, <b className="bad">{wrong} previously incorrect</b>, and <b>{fresh} new questions</b>.</p>
@@ -98,7 +98,7 @@ function Runner({ questions, onClose }) {
 
   if (finished) {
     return (<div className="cg-wizard"><header><button className="cg-wx" aria-label="Close" onClick={onClose}>&times;</button><h2>Quiz finished</h2></header>
-      <div className="cg-wbody"><section className="cg-card cg-summary"><Critter who="tiddle" where="top" at="50%" /><span className="cg-tag">Result</span><b className="cg-bigger">{score} / {questions.length}</b><span className="muted">{Math.round((score / Math.max(1, questions.length)) * 100)}% right</span><button className="cg-btn primary" onClick={onClose}>Done</button></section></div></div>);
+      <div className="cg-wbody"><section className="cg-card cg-summary"><span className="cg-tag">Result</span><b className="cg-bigger">{score} / {questions.length}</b><span className="muted">{Math.round((score / Math.max(1, questions.length)) * 100)}% right</span><button className="cg-btn primary" onClick={onClose}>Done</button></section></div></div>);
   }
   const check = () => { if (!String(pick).trim()) return; setChecked(true); const ok = isRight(q, pick); if (ok) setScore((s) => s + 1); logQuiz(q.id, ok); };
   const next = () => { if (i + 1 >= questions.length) setFinished(true); else { setI(i + 1); setPick(""); setChecked(false); } };

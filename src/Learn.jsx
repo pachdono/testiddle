@@ -188,13 +188,13 @@ function Feedbacks({ id }) {
   return <span className="cg-fb"><button aria-label="Good question" className={v === "up" ? "on" : ""} onClick={() => set("up")}>{"\u{1F44D}"}</button><button aria-label="Poor question" className={v === "down" ? "on" : ""} onClick={() => set("down")}>{"\u{1F44E}"}</button><button aria-label="Flag a problem" className={v === "flag" ? "on" : ""} onClick={() => set("flag")}>{"⚠"}</button></span>;
 }
 
-function QuestionCard({ q, n, total, state, onAnswer, button = "Check" }) {
+function QuestionCard({ q, n, total, state, onAnswer, button = "Check", critter = false }) {
   const [pick, setPick] = useState(state?.given ?? "");
   const done = state != null;
   const right = done && state.ok;
   return (
     <section className="cg-card cg-qcard">
-      <CritterFor n={n} />
+      {critter && <CritterFor n={n} />}
       <div className="cg-spread"><small className="muted">{n} of {total}</small><Feedbacks id={q.id} /></div>
       {q.passage && <Html html={q.passage} className="cg-passage" />}
       {q.figure && <div className="ds-fig" dangerouslySetInnerHTML={{ __html: q.figure }} />}
@@ -232,7 +232,7 @@ function SkillQuiz({ sub, browse, onStats, onProgress }) {
   if (!bank) return <div className="cg-empty">Loading questions</div>;
   if (!qs.length) return <div className="cg-empty">No questions for this skill yet.</div>;
   const count = Object.keys(answers).length;
-  if (browse) return <div className="cg-qcol">{qs.map((q, n) => <QuestionCard key={q.id} q={q} n={n + 1} total={qs.length} state={answers[q.id]} onAnswer={(g) => answer(q, g)} button="Submit" />)}</div>;
+  if (browse) return <div className="cg-qcol">{qs.map((q, n) => <QuestionCard key={q.id} q={q} n={n + 1} total={qs.length} state={answers[q.id]} onAnswer={(g) => answer(q, g)} button="Submit" critter />)}</div>;
   if (i >= qs.length) {
     const right = Object.values(answers).filter((a) => a.ok).length;
     return <div className="cg-qcol"><section className="cg-card cg-summary"><span className="cg-tag">Finished</span><b className="cg-bigger">{right} / {qs.length}</b><span className="muted">{Math.round((right / qs.length) * 100)}% right on {sub.skill.toLowerCase()}</span><button className="cg-btn primary" onClick={() => { setAnswers({}); setI(0); onProgress(0); onStats({ xp: 0, run: 0 }); }}>Try again</button></section></div>;
@@ -240,7 +240,7 @@ function SkillQuiz({ sub, browse, onStats, onProgress }) {
   const q = qs[i];
   return (
     <div className="cg-qcol">
-      <QuestionCard key={q.id} q={q} n={i + 1} total={qs.length} state={answers[q.id]} onAnswer={(g) => answer(q, g)} />
+      <QuestionCard key={q.id} q={q} n={i + 1} total={qs.length} state={answers[q.id]} onAnswer={(g) => answer(q, g)} critter />
       {answers[q.id] && <div className="cg-actions"><button className="cg-btn primary" onClick={() => setI(i + 1)}>{i + 1 >= qs.length ? "See results" : "Next question"}</button></div>}
       <small className="muted center">{count} answered</small>
     </div>
@@ -264,7 +264,6 @@ export function CardDeck({ cards, browse, onProgress }) {
   );
   const face = (c, i) => (
     <section key={c.id} className="cg-flipwrap">
-      <CritterFor n={i + 2} only={["top", "side"]} />
       <button className={"cg-flip" + (flip[c.id] ? " is-flipped" : "")} onClick={() => turn(c)} aria-label={flip[c.id] ? "Show the front" : "Show the back"}>
         {side(c, i, false)}{side(c, i, true)}
       </button>
@@ -321,7 +320,7 @@ export function ExamView({ sub, picked, title, onClose, report }) {
         <div className="cg-qcol">
           {failed && <div className="cg-empty">The questions could not be loaded. Check your connection.</div>}
           {!failed && !qs.length && <div className="cg-empty">Loading questions</div>}
-          {qs.length > 0 && <section className="cg-card cg-examhead"><Critter who="sprout" where="corner" at="94%" />
+          {qs.length > 0 && <section className="cg-card cg-examhead">
             <div className="cg-spread"><h2>{name}</h2><button className="cg-btn" aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)}>{collapsed ? "▾" : "▴"}</button></div>
             {!collapsed && <><div className="cg-qnums">{qs.map((q, n) => <button key={q.id} className={(n === cur ? "on " : "") + (marks[q.id] ? (marks[q.id].ok ? "right" : "wrong") : "")} onClick={() => { setCur(n); refs.current[n]?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>{n + 1}</button>)}</div>
               <div className="cg-spread"><button className="cg-link" onClick={() => save({})}>{"↺"} Reset {qs.length} questions</button><span className="cg-markbox">Total marks: {got} / {qs.length}</span></div></>}
