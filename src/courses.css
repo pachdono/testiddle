@@ -793,3 +793,22 @@ button.cg-btn.primary { border-color: var(--ink); }
 .cg-topichead { transition: background .15s; }
 .cg-topichead:hover { background: var(--hover); }
 @media (max-width: 640px) { .cg-deckprog { display: none; } }
+
+/* ---------- critters on the notes cards ---------- */
+.critter { position: absolute; z-index: 2; pointer-events: none; line-height: 0; }
+.critter svg { display: block; overflow: visible; filter: drop-shadow(1px 2px 1.5px rgba(40, 60, 80, .12)); }
+.critter-top { top: -64px; left: var(--at); transform: translateX(-50%); }               /* clinging edge at y = 64 */
+.critter-corner { top: -58px; left: var(--at); transform: translateX(-50%); }            /* sitting edge at y = 58 */
+.critter-side { right: -48px; top: var(--at); transform: translateY(-50%); }             /* peeking edge at x = 16 */
+.critter-under { bottom: -96px; left: var(--at); transform: translateX(-50%); }          /* dangling from y = 0 */
+.cg-ncard:has(.critter-under) { margin-bottom: 70px; }
+.critter-top svg { animation: crit-bob 3.2s ease-in-out infinite; transform-origin: 50% 85%; }
+.critter-under svg { animation: crit-swing 3.6s ease-in-out infinite; transform-origin: 50% 0; }
+.critter-side svg { animation: crit-peek 4s ease-in-out infinite; }
+@keyframes crit-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes crit-swing { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes crit-peek { 0%, 70%, 100% { transform: translateX(0); } 80%, 90% { transform: translateX(-4px); } }
+@media (prefers-reduced-motion: reduce) { .critter svg { animation: none; } }
+@media (max-width: 900px) { .critter-side { right: -6px; } .critter-side svg { width: 46px; height: 52px; } }
+.cg-notes { padding-top: 56px; }
+.cg-notes .cg-contents { margin-top: 0; }

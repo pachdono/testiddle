@@ -5,6 +5,7 @@ import { TOPICS, SUBTOPICS } from "./notes.js";
 import { TERMS } from "./content.js";
 import { doneFrom, isRight, loadBank } from "./bank.js";
 import { logQuiz, quizLog, rateCard, cardRatings } from "./progress.js";
+import { Critter, castFor } from "./Critters.jsx";
 
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); window.dispatchEvent(new Event("testiddle:progress")); } catch { /* private mode */ } };
@@ -133,15 +134,18 @@ export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, 
 }
 
 function NotesBody({ sub, compact }) {
+  const cast = castFor(SUBTOPICS.findIndex((x) => x.id === sub.id));
   return (
     <>
       <section className="cg-ncard head">
+        {!compact && <Critter who={cast.head[0]} where={cast.head[1]} at={cast.head[2]} />}
         <span className="cg-chipr">{sub.topic.subject}</span>
         <h1>{sub.code} - {sub.skill}</h1>
         <p className="muted">{sub.intro}</p>
         <span className="cg-chipsm">{"⏱"} {sub.minutes} min</span>
       </section>
       <section className="cg-ncard">
+        {!compact && <Critter who={cast.note[0]} where={cast.note[1]} at={cast.note[2]} />}
         <span className="cg-chipr">Note 1 of 1</span>
         <h2>{sub.skill}</h2>
         {sub.sections.map(([h, lines]) => <div key={h}><h3>{h}</h3><ul>{lines.map((l) => <li key={l}>{l}</li>)}</ul></div>)}
@@ -162,6 +166,7 @@ function NotesPage({ sub, next, onMode, onSub }) {
       <div className="cg-nmain">
         <NotesBody sub={sub} />
         <section className="cg-ncard">
+          {(() => { const k = castFor(SUBTOPICS.findIndex((x) => x.id === sub.id)).keys; return <Critter who={k[0]} where={k[1]} at={k[2]} />; })()}
           <h3>{"☑"} Key points to remember</h3>
           {sub.points.map((p, i) => <label key={p} className="cg-tick"><input type="checkbox" checked={mine.includes(i)} onChange={() => save(mine.includes(i) ? mine.filter((x) => x !== i) : [...mine, i])} /><span>{p}</span></label>)}
           <div className="cg-tickbar"><button className="cg-link" onClick={() => save(sub.points.map((_, i) => i))}>Tick all</button><button className="cg-link" disabled={!mine.length} onClick={() => save([])}>Reset</button></div>
