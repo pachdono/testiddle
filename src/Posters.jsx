@@ -280,7 +280,8 @@ export function SheetPoster({ sheet }) {
         <Mascot size={70} pose={p.pose} />
       </header>
       <p className="poster-tag"><span>★</span>{p.tagline}<span>★</span></p>
-      {fig && <section className="poster-fig">{fig(p.color)}</section>}
+      {fig && <section className="poster-fig">{fig(p.color, sheet.id)}</section>}
+      {IFIG[`${sheet.id}-b`] && <section className="poster-fig">{IFIG[`${sheet.id}-b`](p.color, sheet.id)}</section>}
       <div className="poster-grid">
         {sheet.blocks.map(([h, lines], i) => (
           <section key={h + i} className={"poster-box " + DECOR[i % DECOR.length] + (i === 1 ? " dashed" : "")} style={{ "--r": `${((i % 3) - 1) * 0.5}deg` }}>
@@ -298,5 +299,5 @@ export function SheetPoster({ sheet }) {
 /** A small preview of a sheet's diagram for the list. */
 export function SheetThumb({ sheet }) {
   const p = sheet.meta || POSTER[sheet.id] || POSTER.linear;
-  return <span className="poster-thumb" style={{ "--pc": p.color, "--ps": p.soft }}><span className="poster-thumb-title">{sheet.title}</span>{FIG[sheet.id] ? FIG[sheet.id](p.color) : IFIG[sheet.id] ? IFIG[sheet.id](p.color) : sheet.icon ? <MindMap sheet={sheet} color={p.color} /> : null}</span>;
+  return <span className="poster-thumb" style={{ "--pc": p.color, "--ps": p.soft }}><span className="poster-thumb-title">{sheet.title}</span>{FIG[sheet.id] ? FIG[sheet.id](p.color) : IFIG[sheet.id] ? IFIG[sheet.id](p.color, sheet.id) : sheet.icon ? <MindMap sheet={sheet} color={p.color} /> : null}</span>;
 }
