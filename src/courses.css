@@ -839,3 +839,10 @@ button.cg-btn.primary { border-color: var(--ink); }
 .poster-fig svg svg, .poster-thumb svg svg { width: 104px; height: 104px; }
 .poster.keepcase .poster-box ul, .poster.keepcase .poster-key p, .poster.keepcase .poster-tag { text-transform: none; font-size: 17px; }
 .poster-fig text, .poster-thumb text { text-transform: none; }
+/* Tiddles floating round the landing hero */
+.cg-lhero { position: relative; overflow: hidden; }
+.cg-lhero > :not(.cg-scatter) { position: relative; z-index: 1; }
+.cg-scatter { position: absolute; z-index: 0; transform: rotate(var(--r)); animation: cg-float 6s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .18)); }
+@keyframes cg-float { 0%, 100% { transform: rotate(var(--r)) translateY(0); } 50% { transform: rotate(var(--r)) translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .cg-scatter { animation: none; } }
+@media (max-width: 900px) { .cg-scatter:nth-of-type(n+5) { display: none; } .cg-scatter { opacity: .35; } .cg-scatter .tiddle { width: 60px !important; height: 60px !important; } }

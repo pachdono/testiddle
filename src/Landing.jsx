@@ -10,6 +10,9 @@ const FEATURES = [
   ["exam", "Get test ready", "Sit full length tests on paper or on screen, with an adaptive second module like the real thing.", "Ten full tests"],
 ];
 
+// Tiddle in different costumes, floating round the edge of the hero: pose, size, left, top, tilt.
+const SCATTER = [["stand", 96, "4%", "8%", -10], ["read", 84, "6%", "56%", 8], ["cheer", 104, "84%", "6%", 10], ["think", 80, "86%", "52%", -8], ["cook", 70, "17%", "31%", 6], ["wave", 70, "75%", "31%", -6]];
+
 const TOUR = { q: "Which choice completes the text with the most logical transition?", text: "The first trial showed no effect. ______, the researchers ran a larger second trial.", choices: ["For example", "Nevertheless", "Similarly", "In other words"], answer: 1 };
 
 function Demo() {
@@ -30,7 +33,7 @@ export default function Landing({ onStart }) {
   const go = onStart;
   const [open, setOpen] = useState(null);
   const faq = [
-    ["What is Testiddle?", "Free practice for the digital SAT: full tests, notes, quizzes, flashcards and cheat sheets."],
+    ["What is Testiddle?", "Free revision for the digital SAT and 26 IGCSE subjects: notes, quizzes, flashcards, cheat sheets, and full SAT tests."],
     ["Do I need an account?", "Yes, so your tests and progress are kept. Use your Dwiddle account or make one here."],
     ["Who can use it right now?", "While Testiddle is being tested, testers and staff can sign in. Everyone else can ask to join."],
     ["Are these official College Board tests?", "No. They are original tests in the same format and timing."],
@@ -38,9 +41,10 @@ export default function Landing({ onStart }) {
   return (
     <main className="cg-landing">
       <section className="cg-lhero">
-        <span className="cg-badge">Free SAT practice</span>
-        <h1>Looking for a better way to prepare for the SAT?</h1>
-        <p>Notes for every skill, quizzes with explanations, flashcards, and ten full length tests on paper and on screen.</p>
+        {SCATTER.map(([pose, size, x, y, r], i) => <span key={pose} className="cg-scatter" style={{ left: x, top: y, "--r": `${r}deg`, animationDelay: `${i * -1.3}s` }} aria-hidden="true"><Mascot size={size} pose={pose} /></span>)}
+        <span className="cg-badge">Free SAT and IGCSE revision</span>
+        <h1>Looking for a better way to revise?</h1>
+        <p>Notes, quizzes with explanations, flashcards and cheat sheets for the SAT and 26 IGCSE subjects, plus full length SAT tests on paper and on screen.</p>
         <button className="cg-btn primary big" onClick={go}>Get started, it's free &rarr;</button>
         <div className="cg-lshot"><Demo /><Mascot size={130} pose="wave" /></div>
       </section>

@@ -1,7 +1,7 @@
 import { Component, useEffect, useRef, useState } from "react";
 import { M } from "./MathText.jsx";
 import { createPortal } from "react-dom";
-import { Duck } from "./Duck.jsx";
+import { Mascot } from "./Mascot.jsx";
 
 // The small pieces every page is built from: the icon set, the heading at the
 // top of a page, and the inline spinner. They sit apart from the app itself so
@@ -183,7 +183,7 @@ const TIPS = [
 // 100 because the screen goes away when the work is done.
 // cap: how far it may creep on its own (a step that is only the start of a
 // longer job should not run ahead to the end).
-export function BusyScreen({ title, detail, progress = null, outfit = "dwiddle", count = null, eta = null, cap = 0.95 }) {
+export function BusyScreen({ title, detail, progress = null, count = null, eta = null, cap = 0.95 }) {
   useCover(true);
   const [tip, setTip] = useState(() => Math.floor(Math.random() * TIPS.length));
   const [started] = useState(() => Date.now());
@@ -208,7 +208,7 @@ export function BusyScreen({ title, detail, progress = null, outfit = "dwiddle",
   return createPortal(
     <div className="busy" role="status" aria-live="polite">
       <div className="busy-card">
-        <div className="busy-duck"><Duck size={110} outfit={outfit === "dwiddle" ? undefined : outfit} /></div>
+        <div className="busy-duck"><Mascot size={110} pose="read" /></div>
         <h2>{title}</h2>
         <div className="busy-pct" aria-label={`${Math.floor(pct)} percent`}>{shown >= 0.95 ? pct.toFixed(1) : pct}%</div>
         {count && <div className="busy-count" key={count}>{count}</div>}
@@ -230,7 +230,7 @@ export function BusyScreen({ title, detail, progress = null, outfit = "dwiddle",
 export class Boundary extends Component {
   constructor(props) { super(props); this.state = { error: null }; }
   static getDerivedStateFromError(error) { return { error }; }
-  componentDidCatch(error, info) { console.error("Dwiddle caught an error:", error, info?.componentStack); }
+  componentDidCatch(error, info) { console.error("Testiddle caught an error:", error, info?.componentStack); }
   componentDidUpdate(prev) {
     if (this.state.error && prev.resetKey !== this.props.resetKey) this.setState({ error: null });
   }
@@ -241,8 +241,8 @@ export class Boundary extends Component {
     if (this.props.fallback) return this.props.fallback({ error, retry });
     return (
       <div className="card card-pad crash" role="alert">
-        <Duck size={72} outfit="detective" />
-        <b>{this.props.title || "This part of Dwiddle stopped working"}</b>
+        <Mascot size={72} pose="think" />
+        <b>{this.props.title || "This part of Testiddle stopped working"}</b>
         <p className="small muted">Nothing you saved is lost. Try again, or go somewhere else and come back.</p>
         <div className="row">
           <button className="btn cta" onClick={retry}>Try again</button>
