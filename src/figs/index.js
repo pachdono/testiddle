@@ -16,5 +16,6 @@ import real from "./real.jsx";
 import physics2 from "./physics2.jsx";
 import chem2 from "./chem2.jsx";
 import bio2 from "./bio2.jsx";
+import maths2 from "./maths2.jsx";
 
-export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities, ...moreStem, ...moreHumanities, ...moreLang, ...pe, ...stem2, ...real, ...physics2, ...chem2, ...bio2 };
+export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities, ...moreStem, ...moreHumanities, ...moreLang, ...pe, ...stem2, ...real, ...physics2, ...chem2, ...bio2, ...maths2 };

@@ -154,6 +154,10 @@ export const Pic = ({ name, x, y, size = 40 }) => {
 // Pictures chosen by hand for each box or row of the cheat sheets built from text, in order.
 // null leaves a box without one.
 export const PICKS = {
+  "maths-number-2": ["calculator", "calculator", "calculator", "pie", "key", "globe", "triangle"], "maths-number-3": ["pie", "rising", "rising", "arrow", "coin", "bank", "rising"],
+  "maths-number-4": ["ruler", "rising", "arrow", "scales", "pie", "stopwatch"], "maths-algebra": ["key", "puzzle", "puzzle", "scales", "xy", "calculator"],
+  "maths-algebra-4": ["arrow", "xy", "rising", "arrow", "recycle", "gear", "recycle"], "maths-geometry-3": ["triangle", "pie", "database", "tick", "star"],
+  "maths-transform-2": ["arrow", "arrow", "ruler", "arrow", "pin", "scales"],
   "biology-characteristics-2": ["person", "plane", "egg", "drop", "fish", "bug", "spider"], "biology-organisation-2": ["wind", "leaf", "leaf", "brain", "heart", "dna"],
   "biology-human-nutrition": ["apple", "muscle", "apple", "sun", "bone", "heart", "leaf"], "biology-plant-transport-2": ["thermometer", "cloud", "wind", "sun"],
   "biology-gas-exchange-2": ["muscle", "bone", "lungs", "lungs", "gauge"], "biology-coordination-3": ["rising", "syringe", "database", "tick"],

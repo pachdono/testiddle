@@ -235,6 +235,6 @@ export default {
   "chemistry-atoms-3": metallic,
   "physics-motion-2": forces,
   "physics-electricity-4": magnetism,
-  "maths-algebra-2": graphShapes,
+  "maths-algebra-3": graphShapes,
   "addmaths-calculus-2": integration,
 };

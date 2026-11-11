@@ -7,7 +7,7 @@ const V = "0 0 680 310";
 const at = (cx, cy, r, deg) => [cx + r * Math.cos((deg * Math.PI) / 180), cy - r * Math.sin((deg * Math.PI) / 180)];
 
 export default {
-  "maths-algebra": (c) => {
+  "maths-algebra-2": (c) => {
     const { X, Y, path, Axes } = plot([250, 20, 250, 250], [-4, 5], [-8, 8]);
     const f = (x) => x * x - x - 6;
     return (
@@ -42,7 +42,7 @@ export default {
       </svg>
     );
   },
-  "maths-geometry": (c) => {
+  "maths-geometry-2": (c) => {
     const cx = 170, cy = 160, r = 110, A = at(cx, cy, r, 210), B = at(cx, cy, r, 330), P = at(cx, cy, r, 90);
     return (
       <svg viewBox={V}><Defs c={c} />
@@ -98,7 +98,7 @@ export default {
       </svg>
     );
   },
-  "maths-statistics": (c) => {
+  "maths-statistics-2": (c) => {
     const x = (v) => 40 + v * 10, s = { min: 10, lq: 22, med: 30, uq: 41, max: 58 };
     return (
       <svg viewBox={V}><Defs c={c} />
