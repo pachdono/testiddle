@@ -104,12 +104,12 @@ export default {
       <T x={340} y={292} s={14} anchor="middle">NEUTRALISATION: H⁺ + OH⁻ → H₂O</T>
     </svg>
   ),
-  "chemistry-organic": (c) => {
-    const fr = [["REFINERY GAS", 52], ["GASOLINE", 86], ["NAPHTHA", 120], ["KEROSENE", 154], ["DIESEL OIL", 188], ["FUEL OIL", 222], ["BITUMEN", 262]];
+  "chemistry-organic-2": (c) => {
+    const fr = [["REFINERY GAS", 46], ["GASOLINE", 76], ["NAPHTHA", 106], ["KEROSENE", 136], ["DIESEL OIL", 166], ["FUEL OIL", 196], ["LUBRICATING OIL", 226], ["BITUMEN", 262]];
     return (
       <svg viewBox={V}><Defs c={c} />
         <g filter="url(#ps)"><path d="M200 40 Q200 26 214 26 H286 Q300 26 300 40 V276 H200 Z" fill="url(#pc)" stroke={INK} strokeWidth="1.6" /></g>
-        {fr.slice(0, 6).map(([, y]) => <path key={y} d={`M204 ${y + 10} H296`} stroke="#9aa5b1" strokeWidth="1.2" strokeDasharray="3 3" />)}
+        {fr.slice(0, 7).map(([, y]) => <path key={y} d={`M204 ${y + 10} H296`} stroke="#9aa5b1" strokeWidth="1.2" strokeDasharray="3 3" />)}
         {fr.map(([t, y]) => <g key={t}><path d={`M300 ${y} H330`} stroke={INK} strokeWidth="5" strokeLinecap="round" opacity=".7" /><T x={340} y={y + 5} s={14}>{t}</T></g>)}
         <Arrow from={[146, 262]} to={[196, 262]} color="#c0702a" width={2.2} /><T x={8} y={256} s={14} fill="#c0702a">CRUDE OIL</T><T x={8} y={274} s={13}>HEATED, AS VAPOUR</T>
         <path d="M170 250 V48" stroke="url(#pc)" strokeWidth="10" /><Arrow from={[170, 240]} to={[170, 52]} color={c} width={1.6} />

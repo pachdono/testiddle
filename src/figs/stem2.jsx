@@ -232,7 +232,7 @@ const integration = (c) => {
 export default {
   "biology-reproduction-2": repro,
   "chemistry-atoms-2": bonding,
-  "chemistry-atoms-2-b": metallic,
+  "chemistry-atoms-3": metallic,
   "physics-motion-2": forces,
   "physics-electricity-4": magnetism,
   "maths-algebra-2": graphShapes,

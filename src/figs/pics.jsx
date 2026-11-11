@@ -152,6 +152,12 @@ export const Pic = ({ name, x, y, size = 40 }) => {
 // Pictures chosen by hand for each box or row of the cheat sheets built from text, in order.
 // null leaves a box without one.
 export const PICKS = {
+  "chemistry-states-2": ["wind", "scales"], "chemistry-stoich": ["atom", "atom", "atom", "scales", "scales"], "chemistry-stoich-3": ["calculator", "cloud", "drop", "rising", "pie", "magnifier"],
+  "chemistry-electrochem-2": ["drop", "car"], "chemistry-reactions-2": ["factory", "factory", "drop", "drop"], "chemistry-reactions-3": ["flame", "atom", "rising", "flask", "flask"],
+  "chemistry-acids-2": ["ingot", "cloud", "scales", "cross"], "chemistry-acids-3": ["tick", "tick", "drop", "drop", "cross", "cross"], "chemistry-periodic-2": ["cloud", "drop", "ingot"],
+  "chemistry-metals": ["plane", "bolt", "note", "shield"], "chemistry-environment": ["drop", "sheet", "tick", "shield"], "chemistry-environment-2": ["leaf", "leaf", "flower", "leaf", "fish"],
+  "chemistry-organic": ["flame", "flask", "drop", "flask", "apple"], "chemistry-organic-3": ["database", "flame", "car", "recycle"], "chemistry-organic-4": ["apple", "factory"],
+  "chemistry-analysis-2": ["flask", "flask", "flask", "flask", "flask", "flask", "flask"],
   "physics-motion-3": ["scales", "pie", "gauge", "drop", "thermometer"], "physics-motion-5": ["runner", "mountain", "muscle", "bolt", "gear"],
   "physics-motion-6": ["flame", "atom", "wind", "drop", "wave", "volcano", "sun"], "physics-thermal-3": ["ingot", "drop", "sun"],
   "physics-waves-4": ["tv", "phone", "flame", "eye", "sun", "bone", "warning"], "physics-electricity-6": ["factory", "bolt", "rising", "bolt", "house"],
@@ -203,8 +209,8 @@ export const PICKS = {
   "biology-disease": ["germ", "shield", "cell", "cell", "shield"], "biology-respiration": ["lungs", "muscle"], "biology-excretion": ["egg", "stomach", "heart", "kidney", "drop"],
   "biology-drugs": ["pill", "warning"], "biology-reproduction": ["flower", "wind"], "biology-variation": ["dna", "people", "scales", "shield", "dna"],
   "biology-human-influences": ["drop", "leaf", "cross", "germ", "fish"], "biology-biotech": ["dna", "dna", "puzzle", "cell", "rising"],
-  "chemistry-stoich": ["atom", "calculator", "cloud", "drop", "atom", "scales", "flask"], "chemistry-periodic": ["flame", "flask", "bulb", "gear"],
-  "chemistry-metals": ["flame", "flame", "atom", "gear", "coin"], "chemistry-environment": ["car", "factory", "car", "sun"],
+  "chemistry-stoich-2": ["atom", "calculator", "cloud", "drop", "atom", "scales", "flask"], "chemistry-periodic": ["flame", "flask", "bulb", "gear"],
+  "chemistry-metals-2": ["flame", "flame", "atom", "gear", "coin"], "chemistry-environment-3": ["car", "factory", "car", "sun"],
   "maths-number": ["calculator", "key", "puzzle", "pie", "rising", "ruler", "pie"], "addmaths-functions": ["arrow", "gear", "arrow", "recycle"],
   "addmaths-polynomials": ["calculator", "tick", "puzzle", "key"], "addmaths-simult": ["arrow", "puzzle", "xy", "key"], "addmaths-perms": ["trophy", "people"],
   "addmaths-series": ["ruler", "rising", "sigma"], "cs-transmission": ["database", "envelope", "wifi", "puzzle", "tick"], "cs-software": ["code", "code"],
