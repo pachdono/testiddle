@@ -1,7 +1,7 @@
 // Diagrams for the maths sections added with the full syllabus: angles with parallel lines,
 // turning points, the general triangle, scatter graphs, histograms and formula tables.
 
-import { INK, Label, Defs, plot, T, Arrow } from "../posterKit.jsx";
+import { INK, Label, Defs, plot, T } from "../posterKit.jsx";
 import { table } from "./gen.jsx";
 
 const V = "0 0 680 310";
@@ -82,7 +82,7 @@ const scatter = (c) => {
 
 const histogram = (c) => {
   const bars = [[0, 10, 8], [10, 30, 24], [30, 60, 12], [60, 80, 10]];
-  const { X, Y, Axes } = plot([60, 20, 300, 230], [0, 80], [0, 1.4]);
+  const { X, Y } = plot([60, 20, 300, 230], [0, 80], [0, 1.4]);
   return (
     <svg viewBox={V}><Defs c={c} />
       <path d={`M${X(0)} ${Y(0)} H${X(80) + 10} M${X(0)} ${Y(0)} V${Y(1.4) - 10}`} stroke={INK} strokeWidth="1.5" />
