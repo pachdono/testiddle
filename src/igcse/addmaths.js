@@ -71,7 +71,7 @@ export default {
       ["Solve lg x + lg 5 = 2.", ["x = 20", "x = 95", "x = 10", "x = 2.5"], "A", "lg 5x = 2, so 5x = 100."],
     ]),
     one("lines", "Straight line graphs", "Straight lines and linear law", 6, "Gradients, perpendicular lines, and changing curves into straight lines.", [
-      ["Lines", ["y - y₁ = m(x - x₁) gives a line with gradient m through (x₁, y₁).", "Perpendicular gradients multiply to -1.", "Perpendicular bisector of AB: passes through the midpoint with gradient -1/m."]],
+      ["Lines", ["y - y₁ = m(x - x₁) gives a line with gradient m through (x₁, y₁).", "Perpendicular gradients multiply to -1.", "Edexcel Further Pure: the point dividing AB in the ratio m : n is ((nx₁ + mx₂)/(m + n), (ny₁ + my₂)/(m + n)).", "Area of a triangle or polygon from coordinates: split into simple shapes, or use ½|x₁(y₂ - y₃) + x₂(y₃ - y₁) + x₃(y₁ - y₂)|.", "Perpendicular bisector of AB: passes through the midpoint with gradient -1/m."]],
       ["Linear law", ["Turn y = axⁿ into lg y = n lg x + lg a: plot lg y against lg x.", "Turn y = abˣ into lg y = x lg b + lg a.", "Read the gradient and intercept to find the constants."]],
     ], ["Perpendicular bisector: midpoint and negative reciprocal.", "Take logs to get a straight line.", "Gradient and intercept give the unknown constants."], [
       ["A line through (2, 3) has gradient 4. What is its equation?", ["y = 4x - 5", "y = 4x + 3", "y = 4x - 2", "y = 2x + 3"], "A", "y - 3 = 4(x - 2), so y = 4x - 5."],
@@ -101,7 +101,7 @@ export default {
     ]),
     one("trig", "Trigonometry", "Identities, equations and graphs", 9, "Trig graphs, identities and solving trigonometric equations.", [
       ["Identities", ["tan θ = sin θ / cos θ.", "sin²θ + cos²θ = 1.", "sec θ = 1/cos θ, cosec θ = 1/sin θ, cot θ = 1/tan θ.", "1 + tan²θ = sec²θ and 1 + cot²θ = cosec²θ."]],
-      ["Equations and graphs", ["Find the principal value, then use the symmetry of the graph for others in the range.", "sin is positive in the first and second quadrants; cos in the first and fourth; tan in the first and third (CAST).", "y = a sin bx + c: amplitude a, period 360/b degrees, shifted up by c.", "Multiple angles: for sin 2x = 0.5 with 0° ≤ x ≤ 360°, solve 2x in 0° to 720°: 2x = 30°, 150°, 390°, 510°, so x = 15°, 75°, 195°, 255°.", "Proving identities: start with one side, use sin²θ + cos²θ = 1 and tan θ = sin θ/cos θ, and work to the other side.", "Equations in radians: give answers in radians when the range is in radians (such as 0 ≤ x ≤ 2π)."]],
+      ["Equations and graphs", ["Find the principal value, then use the symmetry of the graph for others in the range.", "sin is positive in the first and second quadrants; cos in the first and fourth; tan in the first and third (CAST).", "y = a sin bx + c: amplitude a, period 360/b degrees, shifted up by c.", "Edexcel Further Pure: compound angles: sin(A ± B) = sin A cos B ± cos A sin B; cos(A ± B) = cos A cos B ∓ sin A sin B; tan(A ± B) = (tan A ± tan B)/(1 ∓ tan A tan B).", "Edexcel Further Pure: double angles: sin 2A = 2 sin A cos A; cos 2A = cos²A - sin²A = 2cos²A - 1 = 1 - 2sin²A; tan 2A = 2 tan A/(1 - tan²A).", "Edexcel Further Pure also uses the sine and cosine rules and 3D problems (angles between lines and planes).", "Multiple angles: for sin 2x = 0.5 with 0° ≤ x ≤ 360°, solve 2x in 0° to 720°: 2x = 30°, 150°, 390°, 510°, so x = 15°, 75°, 195°, 255°.", "Proving identities: start with one side, use sin²θ + cos²θ = 1 and tan θ = sin θ/cos θ, and work to the other side.", "Equations in radians: give answers in radians when the range is in radians (such as 0 ≤ x ≤ 2π)."]],
     ], ["Use CAST for all solutions.", "sin² + cos² = 1.", "Period of sin bx is 360/b degrees."], [
       ["Solve sin x = 0.5 for 0 ≤ x ≤ 360 degrees.", ["30 and 150", "30 and 210", "60 and 120", "30 and 330"], "A", "sin is positive in quadrants 1 and 2: 30 and 180 - 30."],
       ["Simplify 1 - cos²θ.", ["sin θ", "sin²θ", "tan²θ", "cos θ"], "B", "From sin²θ + cos²θ = 1."],
@@ -109,6 +109,8 @@ export default {
       ["What is 1 + tan²θ equal to?", ["sec²θ", "cosec²θ", "cot²θ", "1"], "A", "Divide sin² + cos² = 1 by cos²."],
       ["What is the amplitude of y = 4 cos x + 1?", ["1", "4", "5", "3"], "B", "The amplitude is the coefficient, 4."],
       ["Solve sin 2x = 0.5 for 0° ≤ x ≤ 180°.", ["15° and 75°", "30° and 150°", "15° only", "60° and 120°"], "A", "2x = 30° or 150°."],
+      ["Which is the expansion of cos 2A?", ["2 sin A cos A", "cos²A - sin²A", "2 tan A", "1 + 2 sin²A"], "B", "Also 2cos²A - 1 or 1 - 2sin²A."],
+      ["What is sin(A + B)?", ["sin A + sin B", "sin A cos B + cos A sin B", "cos A cos B - sin A sin B", "sin A sin B"], "B", "A compound angle formula."],
     ]),
     one("perms", "Permutations and combinations", "Arrangements and selections", 6, "Counting orders (permutations) and choices (combinations).", [
       ["Counting", ["n! ways to arrange n different items.", "Permutations ⁿPᵣ = n! / (n - r)!: order matters.", "Combinations ⁿCᵣ = n! / (r!(n - r)!): order does not matter.", "For restrictions, deal with the restricted items first, or treat items that must be together as one block.", "Example: arrangements of 5 books with 2 particular books together: treat them as one block, 4! x 2! = 48.", "Example: choose a team of 4 from 6 boys and 5 girls with exactly 2 girls: ⁵C₂ x ⁶C₂ = 10 x 15 = 150."]],
@@ -121,7 +123,7 @@ export default {
       ["In how many ways can 5 people sit in a row if two of them must sit together?", ["24", "48", "120", "240"], "B", "Treat the two as one block: 4! x 2! = 48."],
     ]),
     one("series", "Series", "Binomial expansion and progressions", 8, "Binomial expansion, arithmetic and geometric progressions.", [
-      ["Binomial", ["(a + b)ⁿ = aⁿ + ⁿC₁aⁿ⁻¹b + ⁿC₂aⁿ⁻²b² + ... + bⁿ.", "Use Pascal's triangle or ⁿCᵣ for the coefficients.", "To find a specific term, write the general term ⁿCᵣ aⁿ⁻ʳ bʳ."]],
+      ["Binomial", ["(a + b)ⁿ = aⁿ + ⁿC₁aⁿ⁻¹b + ⁿC₂aⁿ⁻²b² + ... + bⁿ.", "Use Pascal's triangle or ⁿCᵣ for the coefficients.", "To find a specific term, write the general term ⁿCᵣ aⁿ⁻ʳ bʳ.", "Edexcel Further Pure: for any rational n, (1 + x)ⁿ = 1 + nx + n(n - 1)x²/2! + n(n - 1)(n - 2)x³/3! + ..., valid only for |x| < 1. Example: (1 + x)^½ ≈ 1 + ½x - ⅛x² for small x."]],
       ["Progressions", ["Arithmetic: uₙ = a + (n - 1)d; Sₙ = n/2 (2a + (n - 1)d).", "Geometric: uₙ = arⁿ⁻¹; Sₙ = a(1 - rⁿ)/(1 - r).", "Sum to infinity S∞ = a/(1 - r), only if |r| < 1."]],
     ], ["General binomial term: ⁿCᵣ aⁿ⁻ʳ bʳ.", "AP adds d; GP multiplies by r.", "Sum to infinity needs |r| < 1."], [
       ["What is the coefficient of x² in (1 + x)⁵?", ["5", "10", "20", "25"], "B", "⁵C₂ = 10."],
@@ -129,6 +131,7 @@ export default {
       ["A GP has a = 2, r = 3. What is the 4th term?", ["18", "54", "24", "162"], "B", "2 x 3³ = 54."],
       ["What is the sum to infinity of 8 + 4 + 2 + ...?", ["14", "16", "32", "It does not exist"], "B", "8 / (1 - ½) = 16."],
       ["When does a geometric series have a sum to infinity?", ["When r > 1", "When |r| < 1", "Always", "When r is negative"], "B", "Only when the terms shrink, |r| < 1."],
+      ["For which x is the expansion of (1 + x)^½ valid?", ["All x", "|x| < 1", "x > 1", "x < 0 only"], "B", "Non integer n needs |x| < 1."],
     ]),
     one("vectors", "Vectors in two dimensions", "Vectors", 6, "Position vectors, magnitude, unit vectors and relative velocity.", [
       ["Vectors", ["Write vectors as xi + yj or column vectors.", "Magnitude |xi + yj| = √(x² + y²). A unit vector has magnitude 1: divide a vector by its magnitude.", "AB = OB - OA, using position vectors.", "Velocity problems: position = initial position + t x velocity."]],
@@ -154,7 +157,7 @@ export default {
         ["What is d/dx of tan x?", ["sec x", "sec²x", "-cos x", "cot x"], "B", "A standard result to learn."],
       ]),
       N("Integration and kinematics", 9, "Reversing differentiation, areas under curves and motion in a line.", [
-        ["Integration", ["∫xⁿ dx = xⁿ⁺¹/(n + 1) + c, for n ≠ -1.", "∫eᵏˣ dx = eᵏˣ/k + c; ∫1/x dx = ln x + c; ∫cos x dx = sin x + c; ∫sin x dx = -cos x + c; ∫sec²x dx = tan x + c.", "∫(ax + b)ⁿ dx = (ax + b)ⁿ⁺¹ / (a(n + 1)) + c. ∫1/(ax + b) dx = (1/a) ln(ax + b) + c.", "Integration is the reverse of differentiation; use a given point to find c.", "Definite integrals give the area between a curve and the x axis; areas below the axis come out negative.", "Area between a curve and a line: integrate (top - bottom) between the x values where they meet, or find the area under the curve and add or subtract a triangle or trapezium."]],
+        ["Integration", ["∫xⁿ dx = xⁿ⁺¹/(n + 1) + c, for n ≠ -1.", "∫eᵏˣ dx = eᵏˣ/k + c; ∫1/x dx = ln x + c; ∫cos x dx = sin x + c; ∫sin x dx = -cos x + c; ∫sec²x dx = tan x + c.", "∫(ax + b)ⁿ dx = (ax + b)ⁿ⁺¹ / (a(n + 1)) + c. ∫1/(ax + b) dx = (1/a) ln(ax + b) + c.", "Integration is the reverse of differentiation; use a given point to find c.", "Definite integrals give the area between a curve and the x axis; areas below the axis come out negative.", "Area between a curve and a line: integrate (top - bottom) between the x values where they meet, or find the area under the curve and add or subtract a triangle or trapezium.", "Edexcel Further Pure: volume of revolution about the x axis: V = π∫y² dx between the limits."]],
         ["Kinematics", ["Velocity v = ds/dt; acceleration a = dv/dt.", "Displacement s = ∫v dt; velocity v = ∫a dt.", "The particle is at rest when v = 0."]],
       ], ["Add one to the power, divide by the new power, add c.", "Area below the axis is negative.", "s, v, a: differentiate down, integrate up."], [
         ["Find ∫6x² dx.", ["2x³ + c", "12x + c", "6x³ + c", "3x³ + c"], "A", "6x³/3 = 2x³."],
@@ -163,6 +166,7 @@ export default {
         ["Find ∫cos x dx.", ["sin x + c", "-sin x + c", "cos x + c", "-cos x + c"], "A", "The integral of cos x is sin x."],
         ["Why must you add c to an indefinite integral?", ["To make it bigger", "Because any constant differentiates to zero", "For units", "It is a rule with no reason"], "B", "Many functions have the same derivative, differing only by a constant."],
         ["What is ∫(2x + 1)³ dx?", ["(2x + 1)⁴/8 + c", "(2x + 1)⁴/4 + c", "3(2x + 1)² + c", "(2x + 1)⁴ + c"], "A", "Divide by 2 x 4 = 8."],
+        ["What is the formula for a volume of revolution about the x axis?", ["π∫y dx", "π∫y² dx", "∫y² dx", "2π∫y dx"], "B", "Each slice is a disc of area πy²."],
       ]),
     ] },
   ],
