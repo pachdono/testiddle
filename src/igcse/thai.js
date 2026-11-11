@@ -12,12 +12,14 @@ export default {
       ["Skills", ["Find stated facts precisely, and infer ideas the writer suggests.", "Explain how word choice (การเลือกใช้คำ) creates tone and feeling.", "Use your own words (สำนวนของตนเอง) where the question asks, rather than copying."]],
       ["Key terms", ["Simile (อุปมา): a comparison using words like เหมือน or ดั่ง.", "Metaphor (อุปลักษณ์): saying one thing is another, often with คือ or เป็น.", "Personification (บุคคลวัต): giving human qualities to things that are not human.", "Hyperbole (อติพจน์): deliberate exaggeration for effect.", "Register (ระดับภาษา): how formal or informal the language is.", "Main idea (ใจความสำคัญ): the central point a paragraph or text makes."]],
       ["Language features", ["Figurative language (ภาพพจน์): simile (อุปมา), metaphor (อุปลักษณ์), personification (บุคคลวัต).", "Formal and informal register (ระดับภาษา) show the writer's attitude and audience.", "Royal and polite vocabulary (ราชาศัพท์, คำสุภาพ) can signal respect and formality."]],
+      ["Language terms (ภาษาไทย)", ["อุปมา: simile, comparing with words like เหมือน, ดุจ, ราวกับ.", "อุปลักษณ์: metaphor, saying one thing is another (เป็น, คือ).", "บุคคลวัต: personification, giving human actions to things.", "อติพจน์: hyperbole, exaggeration for effect.", "ระดับภาษา: register; ภาษาทางการ (formal) versus ภาษาไม่เป็นทางการ (informal). Choose according to audience and purpose.", "คำราชาศัพท์ and polite particles (ครับ, ค่ะ) show respect and formality."]],
     ], ["Stated versus implied meaning.", "Explain the effect of word choice.", "Register shows audience and attitude."], [
       ["What is อุปมา?", ["Metaphor", "Simile", "Personification", "Alliteration"], "B", "อุปมา is a comparison using words like เหมือน (like)."],
       ["What does inference mean?", ["Copying the text", "Working out meaning that is suggested, not stated", "Counting words", "Summarising"], "B", "Inference reads between the lines."],
       ["What is บุคคลวัต?", ["Simile", "Personification", "Hyperbole", "Rhyme"], "B", "Giving human qualities to non human things."],
       ["Why does register (ระดับภาษา) matter?", ["It shows the writer's attitude and intended audience", "It is about handwriting", "It only matters in speech", "It does not matter"], "A", "Formal or informal language reveals purpose and audience."],
       ["When asked to use your own words, you should:", ["Copy the sentence", "Rephrase the meaning", "Write a quotation", "Leave it blank"], "B", "Rephrasing shows understanding."],
+      ["Which term means simile?", ["อุปลักษณ์", "อุปมา", "บุคคลวัต", "อติพจน์"], "B", "อุปมา uses comparison words such as เหมือน."],
     ]),
     one("summary", "Summary", "Summary writing", 6, "Selecting and condensing the main points in Thai.", [
       ["Method", ["Read the task and identify exactly what to summarise.", "Pick out main points (ใจความสำคัญ), leaving out examples and repetition.", "Write in continuous prose, in your own words, within the word limit.", "Do not add opinions."]],
@@ -31,12 +33,14 @@ export default {
     one("directed", "Directed writing", "Directed writing", 7, "Writing for a given purpose and audience using ideas from the texts.", [
       ["The task", ["You may write a letter (จดหมาย), article (บทความ), speech (สุนทรพจน์) or report.", "Use and develop the ideas from the reading material.", "Match register to the audience: formal Thai for official readers."]],
       ["Conventions", ["A formal letter has the address, date, greeting (เรียน), body and closing (ขอแสดงความนับถือ).", "Speeches address the audience directly and use persuasive devices.", "Organise points in clear paragraphs with linking words."]],
+      ["Formats", ["Formal letter: sender's address, date, เรื่อง (subject), เรียน (to), body, ขอแสดงความนับถือ (yours faithfully), signature.", "Report, speech, article and notice: use headings or a clear opening, formal register and well organised paragraphs.", "Use information from the passage, developing it for the stated audience and purpose; do not just copy."]],
     ], ["Use and develop the given ideas.", "Formal register for official audiences.", "Follow letter conventions."], [
       ["Which greeting is used in a formal Thai letter?", ["สวัสดีจ้ะ", "เรียน", "ไง", "หวัดดี"], "B", "เรียน is the formal salutation."],
       ["What closing goes at the end of a formal letter?", ["บาย", "ขอแสดงความนับถือ", "แล้วเจอกัน", "รักนะ"], "B", "It means 'yours respectfully'."],
       ["What is สุนทรพจน์?", ["An article", "A speech", "A diary", "A report"], "B", "สุนทรพจน์ is a speech."],
       ["What should you do with ideas from the reading texts?", ["Ignore them", "Use and develop them", "Copy them word for word", "Only quote them"], "B", "Development is rewarded."],
       ["Who decides the register you use?", ["The audience and purpose", "Your mood", "The length", "The examiner's name"], "A", "Register fits the reader and the task."],
+      ["How does a formal Thai letter usually end?", ["ด้วยรัก", "ขอแสดงความนับถือ", "แล้วเจอกัน", "สวัสดี"], "B", "The standard formal closing."],
     ]),
     one("composition", "Composition", "Composition", 7, "Descriptive and narrative writing in Thai.", [
       ["Description", ["Use the senses and precise vocabulary to build atmosphere.", "Figurative language used with control, not overused.", "Vary sentence length and structure."]],
