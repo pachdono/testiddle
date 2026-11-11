@@ -38,39 +38,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-:root[data-theme="dark"] {
-  --bg: #121215;
-  --panel: #0e0e11;
-  --surface: #17171b;
-  --sunken: #1b1b20;
-  --hover: #202026;
-  --active: #26262d;
-  --line: #26262c;
-  --line-soft: #1f1f25;
-  --ink: #eeeef2;
-  --ink-2: #b1b1ba;
-  --ink-3: #8e8e96;
-  --accent: #8ba0ff;
-  --accent-ink: #101014;
-  --accent-soft: #1d2140;
-  --good: #55cb9d;
-  --good-soft: #13322a;
-  --good-line: #245a47;
-  --warn: #e0a06d;
-  --warn-soft: #33231a;
-  --warn-line: #5c4030;
-  --btn: #eeeef2;
-  --btn-ink: #121215;
-  --dash: #33333b;
-  --hl-def: #26375e;
-  --hl-key: #4d3f16;
-  --hl-exam: #4f2b2b;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 4px 16px rgba(0, 0, 0, 0.22);
-  --shadow-lift: 0 2px 8px rgba(0, 0, 0, 0.35), 0 16px 40px rgba(0, 0, 0, 0.32);
-
-  color-scheme: dark;
-}
-
 * { box-sizing: border-box; }
 
 html, body, #root { height: 100%; }
@@ -741,13 +708,6 @@ textarea:focus, input[type="text"]:focus, select:focus {
   transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
 }
 
-:root[data-theme="dark"] .notes {
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 10px 30px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
 /* A hairline of accent along the top edge, which appears only on focus. It
    reads as the surface coming alive rather than as a border being recoloured. */
 .notes::before {
@@ -927,10 +887,6 @@ textarea:focus, input[type="text"]:focus, select:focus {
   -webkit-backface-visibility: hidden;
   text-align: center;
   transition: border-color 0.15s ease;
-}
-
-:root[data-theme="dark"] .flip-face {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
 }
 
 .flip-face.back {
@@ -1366,7 +1322,6 @@ kbd {
 /* ---------- task charts ---------- */
 
 :root { --chart-1: #3b5bfd; --chart-2: #d97a2b; }
-:root[data-theme="dark"] { --chart-1: #8ba0ff; --chart-2: #e8a765; }
 
 .chart {
   margin: 18px 0 0;
@@ -2101,8 +2056,7 @@ kbd {
 
   /* Print black on white whatever the screen theme is, so it does not come
      out as a page of dark ink. */
-  :root,
-  :root[data-theme="dark"] {
+  :root {
     --bg: #fff;
     --surface: #fff;
     --panel: #fff;
@@ -2981,12 +2935,10 @@ kbd {
   opacity: 0; pointer-events: none;
   transition: opacity 0.45s ease;
 }
-:root[data-theme="dark"] .ins-home { background: linear-gradient(170deg, #23263a, #14161f); }
 .ins-home.on { opacity: 1; }
 .ins-apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 14px; }
 .ins-app { width: 44px; height: 44px; border-radius: 12px; display: block; }
 .ins-app.ghost { background: rgba(255, 255, 255, 0.4); }
-:root[data-theme="dark"] .ins-app.ghost { background: rgba(255, 255, 255, 0.08); }
 .ins-app.real { animation: ins-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .ins-app.real img { border-radius: 12px; display: block; }
 /* Positioned against its own icon rather than guessed at from the grid, which
@@ -3001,7 +2953,6 @@ kbd {
   color: #1b2340;
   white-space: nowrap;
 }
-:root[data-theme="dark"] .ins-app-name { color: #cfd4e8; }
 
 @keyframes ins-pop { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
@@ -5610,7 +5561,6 @@ kbd {
 }
 .th-mini i { display: block; width: 44%; height: 7px; border-radius: 4px; }
 .th-mini span { font-size: 17px; font-weight: 600; line-height: 1; color: rgba(0, 0, 0, 0.72); }
-:root[data-theme="dark"] .th-mini span { color: rgba(255, 255, 255, 0.82); }
 .th-mark { position: absolute; right: 8px; bottom: 8px; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15)); }
 .th-name { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; color: var(--accent); }
 .th-name b { color: var(--ink); font-size: 14px; }
@@ -6162,8 +6112,6 @@ kbd {
   50% { transform: translate(5%, 6%) scale(1.06); }
   100% { transform: translate(-4%, -3%) scale(0.97); }
 }
-:root[data-theme="dark"] .glass-stage .blob { opacity: 0.2; }
-:root[data-theme="dark"] .glass-stage .b3 { opacity: 0.12; }
 
 .notes.glass {
   border-radius: 22px;
@@ -6177,14 +6125,6 @@ kbd {
     inset 0 0 0 1px rgba(255, 255, 255, 0.18),
     0 22px 50px -14px rgba(30, 40, 90, 0.22),
     0 2px 6px rgba(30, 40, 90, 0.06);
-}
-:root[data-theme="dark"] .notes.glass {
-  border-color: rgba(255, 255, 255, 0.14);
-  background: linear-gradient(150deg, color-mix(in srgb, var(--surface) 82%, transparent), color-mix(in srgb, var(--surface) 64%, transparent));
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.18),
-    inset 0 -10px 30px rgba(255, 255, 255, 0.03),
-    0 22px 50px -14px rgba(0, 0, 0, 0.5);
 }
 /* The bright curve of light along the top, like the rim of a lens. */
 .notes.glass::after {
@@ -6206,14 +6146,10 @@ kbd {
     0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent),
     0 26px 60px -14px color-mix(in srgb, var(--accent) 35%, transparent);
 }
-:root[data-theme="dark"] .notes.glass:focus-within { border-color: rgba(255, 255, 255, 0.28); }
 .notes.glass .notes-head { background: transparent; border-bottom-color: rgba(255, 255, 255, 0.45); }
-:root[data-theme="dark"] .notes.glass .notes-head { border-bottom-color: rgba(255, 255, 255, 0.08); }
 .notes.glass .notes-area, .notes.glass textarea { background: transparent; }
 .notes.glass .notes-foot { background: transparent; border-top-color: rgba(255, 255, 255, 0.45); }
-:root[data-theme="dark"] .notes.glass .notes-foot { border-top-color: rgba(255, 255, 255, 0.08); }
 .notes.glass .notes-icon { background: rgba(255, 255, 255, 0.55); border-color: rgba(255, 255, 255, 0.8); }
-:root[data-theme="dark"] .notes.glass .notes-icon { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.12); }
 
 /* The smaller inputs share the look: the YouTube box and the chat. */
 .yt-in, .dc-input textarea {
@@ -6225,11 +6161,6 @@ kbd {
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 8px 24px -10px rgba(30, 40, 90, 0.2);
 }
 .dc-input textarea { border-radius: 20px !important; }
-:root[data-theme="dark"] .yt-in, :root[data-theme="dark"] .dc-input textarea {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  background: linear-gradient(150deg, color-mix(in srgb, var(--surface) 88%, transparent), color-mix(in srgb, var(--surface) 70%, transparent)) !important;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 8px 24px -10px rgba(0, 0, 0, 0.5);
-}
 .yt-in:focus-within, .dc-input textarea:focus { box-shadow: inset 0 1px 1px rgba(255, 255, 255, 1), 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
 @media (prefers-reduced-motion: reduce) { .glass-stage .blob { animation: none; } }
 .perm-scrim { z-index: 200; }
@@ -6351,7 +6282,6 @@ kbd {
 /* ---------- highlights and notes in passages ---------- */
 
 mark.ann { background: #ffe066; color: inherit; border-radius: 3px; padding: 0 1px; box-shadow: 0 0 0 1px rgba(200, 160, 0, 0.18); }
-:root[data-theme="dark"] mark.ann { background: #7a6310; color: #fff; }
 mark.ann.has-note { cursor: pointer; background: #ffd43b; }
 .ann-tab { display: inline-grid; place-items: center; margin-left: 2px; width: 14px; height: 14px; border-radius: 4px;
   background: #e8a200; color: #fff; vertical-align: super; line-height: 0; }
@@ -7382,7 +7312,6 @@ a.btn { text-decoration: none; }
   color: var(--ink);
   animation: fade 0.18s ease both;
 }
-:root[data-theme="dark"] :is(.vd, .sv-drawn) { --vd-blue: #5b9df5; --vd-green: #4cc27d; --vd-purple: #a78bfa; --vd-orange: #f5a524; --vd-red: #f47175; }
 :is(.vd, .sv-drawn) .c-ink { --c: var(--vd-ink); }
 :is(.vd, .sv-drawn) .c-blue { --c: var(--vd-blue); }
 :is(.vd, .sv-drawn) .c-green { --c: var(--vd-green); }
@@ -7682,8 +7611,6 @@ a.btn { text-decoration: none; }
    on a dark tray and pale ink on a light one. */
 .nb-penicon .tip { stroke: var(--ink-3); stroke-width: 0.6; stroke-opacity: 0.5; }
 .nb-sizestroke { box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink-3) 45%, transparent); }
-:root[data-theme="dark"] .nb-penpop .nb-pop-colors .nb-color { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22); }
-:root[data-theme="dark"] .nb-penpop .nb-pop-colors .nb-color.on { box-shadow: 0 0 0 2.5px var(--surface), 0 0 0 4.5px var(--ink); }
 .nb-penpop .nb-pop-casepen { height: 52px; width: 32px; align-items: end; overflow: visible; padding-bottom: 2px; }
 .nb-penpop .nb-pop-casepen .nb-penicon { transform: none; }
 .nb-penpop .nb-pop-case > div { align-items: flex-end; row-gap: 12px; padding-top: 6px; }
@@ -7944,7 +7871,6 @@ a.btn { text-decoration: none; }
 .tb-swim.back { animation-direction: reverse; }
 @keyframes tb-swim { from { transform: translateX(-80px); } to { transform: translateX(1540px); } }
 .tb-ray { opacity: 0.08; animation: tb-ray 9s ease-in-out infinite alternate; }
-:root[data-theme="dark"] .tb-ray { opacity: 0.04; }
 @keyframes tb-ray { 50% { opacity: 0.16; } }
 
 .tb-fall { position: absolute; inset: 0; }

@@ -8,7 +8,6 @@ import { myLevel, setMyLevel } from "./level.js";
 import { useEffect, useState } from "react";
 import { supabase, configured, enabledProviders, syncNow, getProfile, saveProfile } from "./supabase.js";
 import { setHandle } from "./social.js";
-import { ProfileCard, setMyProfile } from "./Profile.jsx";
 
 // Google supplies a profile picture; an email link sign in does not. Either
 // way the caller gets something to show.
@@ -322,108 +321,8 @@ export function ProfileGate({ user }) {
       <div className="gate profile-gate" role="dialog" aria-modal="true" aria-labelledby="pf-title">
         <h2 id="pf-title">Finish setting up your account</h2>
         <p className="gate-sub">A few details so your account is yours. Only you and the Dwiddle team can see them.</p>
-        <ProfileForm user={user} initial={{ first_name: first, last_name: rest.join(" "), display_name: first }} submitLabel="Continue" onSaved={(x) => { setMyProfile(x); setNeed(false); }} />
+        <ProfileForm user={user} initial={{ first_name: first, last_name: rest.join(" "), display_name: first }} submitLabel="Continue" onSaved={() => setNeed(false)} />
       </div>
     </div>
-  );
-}
-
-function YourDetails({ user }) {
-  const [p, setP] = useState(undefined);
-  const [editing, setEditing] = useState(false);
-  useEffect(() => { let live = true; getProfile(user.id).then((x) => live && setP(x)); return () => { live = false; }; }, [user]);
-  if (p === undefined) return null;
-  if (editing || p === null) {
-    return <div className="card-pad" style={{ paddingTop: 0 }}>
-      <ProfileForm user={user} initial={p} onSaved={(x) => { setP(x); setMyProfile(x); setEditing(false); }} onCancel={p ? () => setEditing(false) : undefined} />
-    </div>;
-  }
-  return (
-    <div className="set-row">
-      <div className="sec-main">
-        <div className="list-title">{p.first_name} {p.last_name}</div>
-        <div className="small muted">Born {new Date(p.birth_date + "T00:00").toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}{p.country ? ` · ${p.country}` : ""}</div>
-      </div>
-      <button className="btn ghost" onClick={() => setEditing(true)}>Edit details</button>
-    </div>
-  );
-}
-
-export function Account({ user, syncedAt, signOut }) {
-  if (!configured) {
-    return (
-      <div className="card card-pad note-card">
-        <b className="small">Accounts are not switched on</b>
-        <p className="small" style={{ margin: "6px 0 0", color: "var(--ink-2)" }}>
-          Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY and redeploy to turn on sign in and
-          syncing. Until then your progress is saved in this browser only.
-        </p>
-      </div>
-    );
-  }
-
-  if (user) {
-    return (
-      <div className="card">
-        <div className="card-head"><h3>Account</h3></div>
-        <div className="set-row">
-          <div className="row" style={{ flex: 1, minWidth: 0 }}>
-            <Avatar user={user} size={34} />
-            <div className="sec-main">
-              <div className="list-title">{user.email}</div>
-            <div className="small muted">
-              {syncedAt
-                ? `Progress synced at ${syncedAt.toLocaleTimeString()}. It will follow you to any device you sign in on.`
-                : "Syncing your progress."}
-              </div>
-            </div>
-          </div>
-          <button className="btn ghost" onClick={signOut}>Sign out</button>
-        </div>
-        <YourDetails user={user} />
-        <div className="card-head" style={{ borderTop: "1px solid var(--line-soft)" }}><h3>Profile</h3></div>
-        <ProfileCard user={user} />
-      </div>
-    );
-  }
-
-  return (
-    <div className="card card-pad">
-      <b className="small">Sign in</b>
-      <p className="small muted" style={{ margin: "4px 0 14px" }}>
-        Sync your progress across devices.
-      </p>
-      <SignInPanel />
-    </div>
-  );
-}
-
-
-// The circle beside a name: a real picture when the provider gave us one,
-// otherwise initials. A broken image URL falls back rather than showing a
-// broken image icon.
-function Avatar({ user, size = 26, initials }) {
-  const [failed, setFailed] = useState(false);
-  const src = failed ? null : avatarUrl(user);
-
-  if (src) {
-    return (
-      <img
-        className="avatar avatar-img"
-        src={src}
-        alt={user?.email ? `Profile picture for ${user.email}` : "Profile picture"}
-        width={size}
-        height={size}
-        style={{ width: size, height: size }}
-        referrerPolicy="no-referrer"
-        onError={() => setFailed(true)}
-      />
-    );
-  }
-
-  return (
-    <span className="avatar" style={{ width: size, height: size, flexBasis: size }}>
-      {initials}
-    </span>
   );
 }

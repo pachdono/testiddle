@@ -45,41 +45,6 @@
   color-scheme: light;
 }
 
-:root[data-theme="dark"] {
-  --bg: #1b2621;
-  --panel: #16201c;
-  --surface: #243430;
-  --sunken: #1f2d28;
-  --hover: #2b3d37;
-  --active: #33473f;
-  --line: #34483f;
-  --line-soft: #2a3c35;
-  --ink: #f0efe3;
-  --ink-2: #c7cfc0;
-  --ink-3: #a1ada0;
-  --accent: #7fd9bd;
-  --accent-soft: #1f4036;
-  --accent-ink: #10241c;
-  --good: #86dcc0;
-  --good-soft: #1f4036;
-  --good-line: #2f6a56;
-  --warn: #f0a878;
-  --warn-soft: #3a261a;
-  --warn-line: #6a4528;
-  --btn: #7fd9bd;
-  --btn-ink: #10241c;
-  --dash: #3f554a;
-  --hl-key: #6b5a1c;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.25);
-  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.35), 0 16px 34px rgba(0, 0, 0, 0.4);
-  --ti-wood: #5b4430;
-  --ti-wood-2: #4a3626;
-  --ti-wood-3: #3b2a1c;
-  --ti-board: #2f5f50;
-  --ti-board-2: #264f43;
-  color-scheme: dark;
-}
-
 body { background: var(--bg); }
 
 .ti-shell { min-height: 100vh; display: flex; flex-direction: column; color: var(--ink); background: var(--bg); }
@@ -88,7 +53,6 @@ body { background: var(--bg); }
 
 /* a highlighter stroke behind the small badges */
 .cg-main .pill { background: color-mix(in srgb, #fbe7a6 78%, var(--surface)); color: #3b3210; border-color: transparent; }
-:root[data-theme="dark"] .cg-main .pill { background: color-mix(in srgb, #fbe7a6 26%, var(--surface)); color: #fdf0c4; }
 
 .ti-foot a, .ti-linkbtn { color: var(--ink-2); font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; cursor: pointer; }
 

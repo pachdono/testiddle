@@ -743,7 +743,6 @@ button.cg-btn.primary { border-color: var(--ink); }
 .poster-thumb { flex: none; width: 150px; height: 104px; display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 1px solid var(--pc); border-radius: 6px; background: #fffef9; box-shadow: 2px 2px 0 var(--ps); overflow: hidden; }
 .poster-thumb-title { font-family: "Patrick Hand", cursive; text-transform: uppercase; font-size: 10px; color: var(--pc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .poster-thumb svg { width: 100%; height: auto; }
-:root[data-theme="dark"] .poster { filter: none; }
 @media (max-width: 700px) { .poster { padding: 18px 12px; } .poster-grid { grid-template-columns: 1fr; } .poster-head h2 { font-size: 26px; } .poster-head .tiddle { display: none; } }
 @media print { .poster { box-shadow: none; } }
 .poster-head { flex-wrap: nowrap; }
