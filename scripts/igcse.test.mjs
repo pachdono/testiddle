@@ -78,7 +78,9 @@ test("Extended lines are marked cleanly, and Core still leaves every page with n
   for (const p of packs) {
     const shaped = shape(p);
     for (const s of shaped.subs) for (const [, lines] of s.sections) for (const l of lines) assert.ok(!l.includes(EXT) || l.startsWith(EXT), l);
-    for (const s of forLevel(shaped, "Core").subs) {
+    const core = forLevel(shaped, "Core");
+    for (const t of shaped.topics) assert.ok(core.subs.some((s) => s.topic.id === t.id), `${p.id} ${t.id} has nothing at Core`);
+    for (const s of core.subs) {
       assert.ok(s.sections.length >= 1, `${s.id} has no Core notes`);
       assert.ok(s.sections.every(([, lines]) => lines.every((l) => !l.startsWith(EXT))), s.id);
     }

@@ -13,5 +13,6 @@ import moreLang from "./more-lang.jsx";
 import pe from "./pe.jsx";
 import stem2 from "./stem2.jsx";
 import real from "./real.jsx";
+import physics2 from "./physics2.jsx";
 
-export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities, ...moreStem, ...moreHumanities, ...moreLang, ...pe, ...stem2, ...real };
+export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities, ...moreStem, ...moreHumanities, ...moreLang, ...pe, ...stem2, ...real, ...physics2 };

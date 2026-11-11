@@ -24,7 +24,7 @@ export default {
       </svg>
     );
   },
-  "physics-thermal": (c) => {
+  "physics-thermal-2": (c) => {
     const { X, Y, Axes } = plot([60, 30, 290, 220], [0, 10], [-20, 120]);
     const pts = [[0, -20], [1, 0], [3, 0], [6, 100], [8.6, 100], [10, 118]];
     const d = pts.map(([x, y], i) => `${i ? "L" : "M"}${X(x)} ${Y(y)}`).join(" ");
@@ -82,7 +82,7 @@ export default {
       <T x={400} y={272} s={13}>PARALLEL: SAME VOLTAGE ACROSS EACH BRANCH</T>
     </svg>
   ),
-  "physics-nuclear": (c) => {
+  "physics-nuclear-2": (c) => {
     const { X, Y, path, Axes } = plot([60, 30, 250, 220], [0, 8], [0, 900]);
     const A = (t) => 800 * 0.5 ** (t / 2);
     return (
@@ -101,7 +101,7 @@ export default {
       </svg>
     );
   },
-  "physics-space": (c) => (
+  "physics-space-2": (c) => (
     <svg viewBox={V}><Defs c={c} />
       <Box x={20} y={30} w={110} color={c}>NEBULA</Box><Box x={160} y={30} w={110} color={c}>PROTOSTAR</Box><Box x={300} y={30} w={150} color="#c0902a" fill="#fff8e0">MAIN SEQUENCE</Box>
       <Arrow from={[132, 52]} to={[156, 52]} color={c} width={2} /><Arrow from={[272, 52]} to={[296, 52]} color={c} width={2} />

@@ -89,7 +89,11 @@ export function withoutTopics(pack, ids = []) {
 
 export function forLevel(pack, level, board = "cie") {
   const map = (f) => ({ ...pack, subs: pack.subs.map((s) => ({ ...s, sections: s.sections.map(([h, lines]) => [h, f(lines)]).filter(([, lines]) => lines.length) })) });
-  if (level === "Core") return map((lines) => lines.filter((l) => !isExt(l)));
+  if (level === "Core") {
+    // a subtopic that is all Extended (such as momentum) is left out of Core altogether
+    const core = map((lines) => lines.filter((l) => !isExt(l)));
+    return { ...core, subs: core.subs.filter((s) => s.sections.length) };
+  }
   if (board !== "edexcel") return pack;
   // Edexcel has no Core and Extended: Higher maths keeps the lines marked Higher; the sciences show them plainly.
   return map((lines) => lines.map((l) => (isExt(l) ? (level === "Extended" ? `[H] ${plain(l)}` : plain(l)) : l)));

@@ -152,6 +152,9 @@ export const Pic = ({ name, x, y, size = 40 }) => {
 // Pictures chosen by hand for each box or row of the cheat sheets built from text, in order.
 // null leaves a box without one.
 export const PICKS = {
+  "physics-motion-3": ["scales", "pie", "gauge", "drop", "thermometer"], "physics-motion-5": ["runner", "mountain", "muscle", "bolt", "gear"],
+  "physics-motion-6": ["flame", "atom", "wind", "drop", "wave", "volcano", "sun"], "physics-thermal-3": ["ingot", "drop", "sun"],
+  "physics-waves-4": ["tv", "phone", "flame", "eye", "sun", "bone", "warning"], "physics-electricity-6": ["factory", "bolt", "rising", "bolt", "house"],
   "ict-systems": ["memory", "chip"], "ict-io": ["pen", "book", "bank", "wifi", "barcode"], "ict-storage": ["disk", "disc", "chip"],
   "ict-effects": ["hand", "eye", "person", "brain"], "ict-applications": ["computer", "chart", "gear", "bank", "syringe", "shop", "planet"],
   "ict-lifecycle": ["magnifier", "pen", "code", "gear", "book", "tick"], "ict-safety": ["envelope", "phone", "mic", "pin", "lock"],
