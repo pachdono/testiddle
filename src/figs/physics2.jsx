@@ -2,7 +2,7 @@
 // reflection, a lens ray diagram, the three pin plug, series and parallel circuits, the motor
 // effect, momentum, sound, nuclide notation, the Solar System and formula tables.
 
-import { INK, Label, Defs, T, Arrow, HAND, Face } from "../posterKit.jsx";
+import { INK, Label, Defs, T, Arrow, HAND, Face, Ball } from "../posterKit.jsx";
 import { table, compare, flow } from "./gen.jsx";
 import chemistry from "./chemistry.jsx";
 
@@ -19,7 +19,7 @@ const Normal = ({ x, y, len = 60, horizontal = false }) => <path d={horizontal ?
 const refraction = (c) => {
   // glass block: ray in at 50° to the normal, refracted at 31° (n = 1.5), out parallel to the incoming ray
   const top = 90, bot = 190, x1 = 120, d = (deg) => Math.tan((deg * Math.PI) / 180);
-  const inA = [x1 - 70 * d(50), top - 70], x2 = x1 + (bot - top) * d(31), out = [x2 + 34 * d(50), bot + 34];
+  const inA = [x1 - 70 * d(50), top - 70], x2 = x1 + (bot - top) * d(31), out = [x2 + 22 * d(50), bot + 22];
   return (
     <svg viewBox={V}><Defs c={c} />
       <T x={170} y={24} s={15} anchor="middle" fill={c}>REFRACTION IN A GLASS BLOCK</T>
@@ -108,12 +108,15 @@ const circuits = (c) => (
     <T x={170} y={274} s={13} anchor="middle">P.D. SHARED: 3 V + 3 V = 6 V</T>
     <T x={170} y={292} s={13} anchor="middle">R = R₁ + R₂ = 6 Ω</T>
     <path d="M342 14 V296" stroke="#e3e7ec" strokeWidth="1.4" />
-    <path d="M440 60 H499 M511 60 H580 M440 60 V200 H580 V60" fill="none" stroke={INK} strokeWidth="2" />
-    <Cell x={504} y={60} /><T x={504} y={44} s={12} anchor="middle">6 V</T>
-    <Lamp x={440} y={130} /><Lamp x={580} y={130} /><Meter x={510} y={200} k="A" />
-    <T x={510} y={226} s={12} anchor="middle">4 A</T>
-    <T x={420} y={134} s={12} anchor="end">3 Ω</T><T x={600} y={134} s={12}>3 Ω</T>
-    <T x={460} y={170} s={11}>2 A</T><T x={560} y={170} s={11} anchor="end">2 A</T>
+    <path d="M400 60 H499 M511 60 H620 M400 200 H620 M400 60 V200 M500 60 V200 M620 60 V200" fill="none" stroke={INK} strokeWidth="2" />
+    <rect x="392" y="100" width="16" height="60" fill="#fff" /><path d="M400 100 V160" stroke="#fff" strokeWidth="4" />
+    <path d="M400 60 V112 M400 148 V200" stroke={INK} strokeWidth="2" /><g transform="rotate(90 400 130)"><Cell x={400} y={130} /></g>
+    <T x={384} y={134} s={12} anchor="end">6 V</T>
+    <rect x="440" y="52" width="8" height="16" fill="#fff" /><Meter x={450} y={60} k="A" /><T x={450} y={44} s={12} anchor="middle">4 A</T>
+    <path d="M499 60 H511" stroke={INK} strokeWidth="2" />
+    <Lamp x={500} y={130} /><Lamp x={620} y={130} />
+    <T x={516} y={134} s={12}>3 Ω</T><T x={636} y={134} s={12}>3 Ω</T>
+    <T x={506} y={180} s={11}>2 A</T><T x={626} y={180} s={11}>2 A</T>
     <T x={510} y={256} s={13} anchor="middle">SAME P.D. ACROSS EACH BRANCH: 6 V</T>
     <T x={510} y={274} s={13} anchor="middle">CURRENT SPLITS: 2 A + 2 A = 4 A</T>
     <T x={510} y={292} s={13} anchor="middle">1/R = 1/R₁ + 1/R₂, SO R = 1.5 Ω</T>
@@ -168,8 +171,8 @@ const sound = (c) => {
       {xs.map((x, i) => [70, 90, 110, 130].map((y) => <circle key={`${i}${y}`} cx={x} cy={y + ((i * 7 + y) % 5) - 2} r="2.6" fill="#2f7fd0" />))}
       <Arrow from={[40, 160]} to={[640, 160]} color={INK} width={1.6} /><T x={640} y={180} s={12} anchor="end">DIRECTION OF TRAVEL</T>
       <path d="M8 100 h20 m-20 0 l6 -5 m-6 5 l6 5 M28 100 l-6 -5 m6 5 l-6 5" stroke="#d0496d" strokeWidth="1.4" fill="none" />
-      <T x={128} y={58} s={13} anchor="middle" fill="#d0496d">COMPRESSION</T><T x={227} y={58} s={13} anchor="middle" fill="#2f7fd0">RAREFACTION</T>
-      <path d="M90 166 V172 H290 V166" fill="none" stroke={INK} /><T x={190} y={190} s={13} anchor="middle">ONE WAVELENGTH</T>
+      <T x={136} y={58} s={13} anchor="middle" fill="#d0496d">COMPRESSION</T><T x={227} y={58} s={13} anchor="middle" fill="#2f7fd0">RAREFACTION</T>
+      <path d="M136 166 V172 H328 V166" fill="none" stroke={INK} /><T x={232} y={190} s={13} anchor="middle">ONE WAVELENGTH (COMPRESSION TO COMPRESSION)</T>
       <Label x={20} y={206} w={200} color={c} title="speed in air" lines={["about 330 to 350 m/s", "faster in liquids, solids"]} />
       <Label x={240} y={206} w={200} color="#c0702a" title="pitch and loudness" lines={["pitch: frequency", "loudness: amplitude"]} />
       <Label x={460} y={206} w={200} color="#7a5cd6" title="hearing" lines={["20 Hz to 20 000 Hz", "ultrasound: above that"]} />
@@ -185,9 +188,12 @@ const nuclide = (c) => (
     <Label x={210} y={20} w={250} color="#d0496d" title="nucleon number A" lines={["protons + neutrons = 14"]} />
     <Label x={210} y={102} w={250} color="#2f7fd0" title="proton number Z" lines={["protons = 6 (sets the element)"]} />
     <T x={70} y={196} s={15}>NEUTRONS = A - Z = 14 - 6 = 8</T>
-    {[[0, 0, "p"], [12, -10, "n"], [-12, -8, "p"], [6, 12, "n"], [-8, 12, "p"], [18, 6, "n"]].map(([dx, dy, k], i) => <circle key={i} cx={560 + dx} cy={70 + dy} r="10" fill={k === "p" ? "#e8546b" : "#b8c2cc"} stroke={INK} />)}
-    <ellipse cx="560" cy="70" rx="80" ry="34" fill="none" stroke="#9aa6b2" /><ellipse cx="560" cy="70" rx="44" ry="58" fill="none" stroke="#9aa6b2" />
-    <circle cx="640" cy="70" r="5" fill="#2f7fd0" /><circle cx="560" cy="12" r="5" fill="#2f7fd0" />
+    {/* carbon-14: 6 protons and 8 neutrons in the nucleus; 6 electrons arranged 2, 4 */}
+    <circle cx="560" cy="70" r="28" fill="none" stroke="#9aa6b2" /><circle cx="560" cy="70" r="48" fill="none" stroke="#9aa6b2" />
+    {[[0, 0, "n"], [11, 0, "p"], [-11, 0, "n"], [5.5, 9.5, "n"], [-5.5, 9.5, "p"], [5.5, -9.5, "p"], [-5.5, -9.5, "n"], [16.5, 9.5, "n"], [-16.5, -9.5, "p"], [0, 19, "n"], [0, -19, "n"], [16.5, -9.5, "p"], [-16.5, 9.5, "n"], [11, 19, "p"]].map(([dx, dy, k], i) => <Ball key={i} x={560 + dx * 0.62} y={70 + dy * 0.62} r={6} fill={k === "p" ? "#e8546b" : "#b8c2cc"} sw={0.8} shadow={false} />)}
+    {[0, 180].map((a) => <circle key={`i${a}`} cx={560 + 28 * Math.cos((a * Math.PI) / 180)} cy={70 + 28 * Math.sin((a * Math.PI) / 180)} r="3.6" fill="#2f7fd0" />)}
+    {[45, 135, 225, 315].map((a) => <circle key={`o${a}`} cx={560 + 48 * Math.cos((a * Math.PI) / 180)} cy={70 + 48 * Math.sin((a * Math.PI) / 180)} r="3.6" fill="#2f7fd0" />)}
+    <T x={622} y={40} s={11} fill="#e8546b">6 p</T><T x={622} y={54} s={11} fill="#7d8896">8 n</T><T x={622} y={68} s={11} fill="#2f7fd0">6 e (2, 4)</T>
     <T x={560} y={150} s={12} anchor="middle">NUCLEUS: TINY, DENSE, POSITIVE</T>
     <rect x="70" y="214" width="560" height="74" rx="10" fill="#fff" stroke="#e3e7ec" />
     <T x={350} y={236} s={14} anchor="middle" fill={c}>ISOTOPES: SAME PROTONS, DIFFERENT NEUTRONS</T>
@@ -211,17 +217,17 @@ const solarSystem = (c) => {
   giants.forEach(([n, r, col], i) => { x += (i ? 24 : 0) + r + (n === "Saturn" || n === "Uranus" ? 14 : 0); place.push([n, r, col, x]); x += r; });
   return (
     <svg viewBox={V}><Defs c={c} />
-      <circle cx="-120" cy={cy} r="180" fill="#ffcf4a" stroke="#f2a53a" strokeWidth="3" />
+      <defs><radialGradient id="sunglow" cx="0.92" cy="0.4" r="0.6"><stop offset="0" stopColor="#fff2b0" /><stop offset=".6" stopColor="#ffcf4a" /><stop offset="1" stopColor="#f2a53a" /></radialGradient></defs><circle cx="-120" cy={cy} r="180" fill="url(#sunglow)" stroke="#f2a53a" strokeWidth="3" />
       <Face x={22} y={cy - 6} r={34} skin="#ffcf4a" mood="chill" blush />
       <T x={28} y={cy + 44} s={15} anchor="middle" fill="#8a5a10">SUN</T>
       {Array.from({ length: 26 }, (_, i) => <circle key={i} cx={belt + 6 * Math.sin(i * 1.7)} cy={cy - 60 + i * 4.8} r={1 + (i % 3) * 0.6} fill="#9aa6b2" />)}
       <T x={belt} y={cy - 70} s={11} anchor="middle">ASTEROID BELT</T>
       {place.map(([n, r, col, px], i) => (
         <g key={n}>
-          {n === "Saturn" && <path d={`M${px - r - 14} ${cy} A${r + 14} 6 0 0 1 ${px + r + 14} ${cy}`} fill="none" stroke="#b89a4a" strokeWidth="2.4" transform={`rotate(-12 ${px} ${cy})`} />}
-          <g filter="url(#ps)"><circle cx={px} cy={cy} r={r} fill={col} stroke={INK} strokeWidth="1" /></g>
+          {n === "Saturn" && <path d={`M${px - r - 14} ${cy} A${r + 14} 8 0 0 1 ${px + r + 14} ${cy}`} fill="none" stroke="#b89a4a" strokeWidth="3.2" transform={`rotate(-16 ${px} ${cy})`} />}
+          <Ball x={px} y={cy} r={r} fill={col} sw={1} />
           {n === "Jupiter" && <><path d={`M${px - 30} ${cy + 9} Q${px} ${cy + 13} ${px + 30} ${cy + 9}`} stroke="#b9763e" strokeWidth="3" fill="none" opacity=".6" /><ellipse cx={px + 14} cy={cy + 18} rx="6" ry="3.4" fill="#c0603a" opacity=".7" /></>}
-          {n === "Saturn" && <path d={`M${px - r - 14} ${cy} A${r + 14} 6 0 0 0 ${px + r + 14} ${cy}`} fill="none" stroke="#b89a4a" strokeWidth="2.4" transform={`rotate(-12 ${px} ${cy})`} />}
+          {n === "Saturn" && <path d={`M${px - r - 14} ${cy} A${r + 14} 8 0 0 0 ${px + r + 14} ${cy}`} fill="none" stroke="#c9ab5a" strokeWidth="3.2" transform={`rotate(-16 ${px} ${cy})`} />}
           {n === "Earth" && <path d={`M${px - 5} ${cy - 6} q4 -3 7 1 q-2 4 -6 3 Z M${px + 2} ${cy + 3} q4 0 4 4 q-4 1 -5 -2 Z`} fill="#6cc070" />}
           <Face x={px} y={n === "Saturn" ? cy - r * 0.18 : cy} r={r} skin={col} mood={MOODS[n]} blush={n === "Earth" || n === "Saturn"} />
           <T x={px} y={cy + Math.max(r, 12) + 18 + (i < 4 && i % 2 ? 16 : 0)} s={12} anchor="middle">{n.toUpperCase()}</T>

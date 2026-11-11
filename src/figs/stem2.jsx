@@ -2,7 +2,7 @@
 // and gametes, dot and cross bonding, moments and Hooke's law, magnetic fields and transformers,
 // graph shapes, and integration with kinematics.
 
-import { INK, Label, Defs, plot, T, Arrow, Box, HAND } from "../posterKit.jsx";
+import { INK, Label, Defs, plot, T, Arrow, Box, HAND, Ball } from "../posterKit.jsx";
 
 const V = "0 0 680 310";
 
@@ -69,7 +69,7 @@ const repro = (c) => {
       <Tag x={488} y={44} at={[484, 62]} anchor="start">midpiece: mitochondria</Tag>
       <Tag x={596} y={104} at={[620, 70]} anchor="start">flagellum</Tag>
       <g filter="url(#ps)"><circle cx="468" cy="222" r="56" fill="#fff" stroke="#c0702a" strokeWidth="1.2" strokeDasharray="4 3" /></g>
-      <circle cx="468" cy="222" r="46" fill="#fff3d6" stroke={INK} strokeWidth="1.3" />
+      <Ball x={468} y={222} r={46} fill="#fff1cc" sw={1.3} shadow={false} />
       {[[446, 204], [490, 236], [452, 246], [492, 206], [478, 252], [440, 226]].map(([x, y]) => <circle key={`${x}${y}`} cx={x} cy={y} r="2.2" fill="#e0b25a" />)}
       <circle cx="472" cy="220" r="13" fill="#d9ccf5" stroke={INK} strokeWidth="1.2" />
       <T x={600} y={160} s={15} anchor="middle" fill={c}>EGG CELL</T>
@@ -114,7 +114,7 @@ const bonding = (c) => (
 const metallic = (c) => (
   <svg viewBox={V}><Defs c={c} />
     <rect x="40" y="40" width="330" height="220" rx="14" fill="#eef6ff" stroke={INK} strokeWidth="1.2" />
-    {Array.from({ length: 4 }, (_, r) => Array.from({ length: 6 }, (_, k) => <g key={`${r}${k}`}><circle cx={72 + k * 53} cy={72 + r * 52} r="18" fill="#ffd2a8" stroke={INK} strokeWidth="1.2" /><T x={72 + k * 53} y={78 + r * 52} s={17} anchor="middle">+</T></g>))}
+    {Array.from({ length: 4 }, (_, r) => Array.from({ length: 6 }, (_, k) => <g key={`${r}${k}`}><Ball x={72 + k * 53} y={72 + r * 52} r={18} fill="#ffc994" sw={1.2} shadow={false} /><T x={72 + k * 53} y={78 + r * 52} s={17} anchor="middle">+</T></g>))}
     {Array.from({ length: 3 }, (_, r) => Array.from({ length: 5 }, (_, k) => [98.5 + k * 53, 98 + r * 52])).flat().concat([[72, 46], [178, 46], [284, 46], [125, 254], [231, 254], [54, 150], [356, 202]]).map(([x, y]) => <circle key={`${x}${y}`} cx={x} cy={y} r="3.4" fill="#2f7fd0" />)}
     <Label x={400} y={20} w={270} color="#c0702a" title="positive metal ions" lines={["in a regular lattice"]} />
     <Label x={400} y={96} w={270} color="#2f7fd0" title="delocalised electrons" lines={["a sea of electrons free to move"]} />

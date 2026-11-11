@@ -108,8 +108,11 @@ export const Face = ({ x, y, r, skin = "#f2c9a0", mood = "chill", look = 0.3, bl
     <g>
       <ellipse cx={cx} cy={ey} rx={rx} ry={ry} fill="#fff" stroke={ink} strokeWidth={sw} />
       <circle cx={cx + rx * look * 0.6} cy={ey + ry * (0.15 + lookY)} r={rx * 0.5} fill={ink} />
-      {lid > 0 && <path d={`M${cx - rx - sw} ${ey - ry - sw} H${cx + rx + sw} V${ey - ry + 2 * ry * lid} Q${cx} ${ey - ry + 2 * ry * lid + ry * 0.25} ${cx - rx - sw} ${ey - ry + 2 * ry * lid} Z`} fill={skin} />}
-      {lid > 0 && <path d={`M${cx - rx} ${ey - ry + 2 * ry * lid} Q${cx} ${ey - ry + 2 * ry * lid + ry * 0.25} ${cx + rx} ${ey - ry + 2 * ry * lid}`} {...line} />}
+      {lid > 0 && (() => {
+        // the lid covers only the top of the eye: the part of the ellipse above the lid line
+        const ly = ey - ry + 2 * ry * lid, hw = rx * Math.sqrt(Math.max(0, 1 - ((ly - ey) / ry) ** 2));
+        return <g><path d={`M${cx - hw} ${ly} A${rx} ${ry} 0 ${ly > ey ? 1 : 0} 1 ${cx + hw} ${ly} Z`} fill={tint(skin, 0.15)} /><path d={`M${cx - hw - sw * 0.6} ${ly} H${cx + hw + sw * 0.6}`} {...line} /><ellipse cx={cx} cy={ey} rx={rx} ry={ry} fill="none" stroke={ink} strokeWidth={sw} /></g>;
+      })()}
     </g>
   );
   const cross = (cx) => <g><circle cx={cx} cy={ey} r={ry} fill="#fff" stroke={ink} strokeWidth={sw} /><path d={`M${cx - rx * 0.55} ${ey - rx * 0.55} L${cx + rx * 0.55} ${ey + rx * 0.55} M${cx + rx * 0.55} ${ey - rx * 0.55} L${cx - rx * 0.55} ${ey + rx * 0.55}`} {...line} /></g>;
@@ -132,4 +135,51 @@ export const Face = ({ x, y, r, skin = "#f2c9a0", mood = "chill", look = 0.3, bl
       {blush && <><ellipse cx={L - rx * 0.4} cy={my - w * 0.2} rx={rx * 0.9} ry={rx * 0.45} fill="#f28b9b" opacity=".4" /><ellipse cx={Rr + rx * 0.4} cy={my - w * 0.2} rx={rx * 0.9} ry={rx * 0.45} fill="#f28b9b" opacity=".4" /></>}
     </g>
   );
+};
+
+/** A lighter tint of a colour, for highlights. */
+export const tint = (hex, f = 0.45) => {
+  if (!/^#[0-9a-f]{6}$/i.test(hex || "")) return "#ffffff";
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => Math.round(v + (255 - v) * f));
+  return `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+};
+export const darken = (hex, f = 0.25) => shade(hex, f);
+
+let uid = 0;
+const nextId = (p) => `${p}${++uid}`;
+
+/** A shaded sphere: lit from the top left, darker towards the bottom right, with a highlight,
+ * a rim and a soft shadow on the ground beneath. Use it for anything really round. */
+export const Ball = ({ x, y, r, fill, stroke = INK, sw = 1.2, shadow = true, children }) => {
+  const id = nextId("ball");
+  return (
+    <g>
+      <defs><radialGradient id={id} cx="34%" cy="30%" r="78%"><stop offset="0" stopColor={tint(fill, 0.55)} /><stop offset=".5" stopColor={fill} /><stop offset="1" stopColor={darken(fill, 0.28)} /></radialGradient></defs>
+      {shadow && <ellipse cx={x + r * 0.15} cy={y + r * 1.04} rx={r * 0.8} ry={r * 0.16} fill="#3b4654" opacity=".12" />}
+      <circle cx={x} cy={y} r={r} fill={`url(#${id})`} stroke={stroke} strokeWidth={sw} />
+      <ellipse cx={x - r * 0.38} cy={y - r * 0.42} rx={r * 0.22} ry={r * 0.13} fill="#fff" opacity=".7" transform={`rotate(-35 ${x - r * 0.38} ${y - r * 0.42})`} />
+      {children}
+    </g>
+  );
+};
+
+/** A box seen from slightly above and to the right: front face, lighter top, darker side. The
+ * front face is x, y, w, h; d is the depth drawn at about 30°. Children draw on the front face. */
+export const Block = ({ x, y, w, h, d = 14, fill, stroke = INK, sw = 1.2, rx = 4, children }) => {
+  const dx = d * 0.87, dy = d * 0.5;
+  return (
+    <g strokeLinejoin="round">
+      <path d={`M${x} ${y} L${x + dx} ${y - dy} H${x + w + dx} L${x + w} ${y} Z`} fill={tint(fill, 0.35)} stroke={stroke} strokeWidth={sw} />
+      <path d={`M${x + w} ${y} L${x + w + dx} ${y - dy} V${y + h - dy} L${x + w} ${y + h} Z`} fill={darken(fill, 0.18)} stroke={stroke} strokeWidth={sw} />
+      <rect x={x} y={y} width={w} height={h} rx={rx} fill={fill} stroke={stroke} strokeWidth={sw} />
+      {children}
+    </g>
+  );
+};
+
+/** A gradient that makes a flat shape look like a cylinder (lit from the left). Returns the
+ * fill string and the <defs> element to place before use. */
+export const cylinderFill = (fill) => {
+  const id = nextId("cyl");
+  return [`url(#${id})`, <defs key={id}><linearGradient id={id} x1="0" x2="1"><stop offset="0" stopColor={darken(fill, 0.12)} /><stop offset=".3" stopColor={tint(fill, 0.4)} /><stop offset=".65" stopColor={fill} /><stop offset="1" stopColor={darken(fill, 0.25)} /></linearGradient></defs>];
 };

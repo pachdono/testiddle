@@ -9,17 +9,18 @@ export default {
   "biology-organisation": (c) => (
     <svg viewBox={V}><Defs c={c} />
       <T x={150} y={34} s={18} fill={c} anchor="middle">ANIMAL CELL</T><T x={530} y={34} s={18} fill={c} anchor="middle">PLANT CELL</T>
-      <g filter="url(#ps)"><ellipse cx="150" cy="165" rx="112" ry="88" fill="#fde9ee" stroke={INK} strokeWidth="1.6" /></g>
-      <circle cx="132" cy="150" r="27" fill="#d9ccf5" stroke={INK} strokeWidth="1.3" /><circle cx="138" cy="146" r="7" fill="#b9a6ea" />
-      <g fill="#ffd2a8" stroke={INK} strokeWidth="1.1"><ellipse cx="205" cy="125" rx="20" ry="10" transform="rotate(-20 205 125)" /><ellipse cx="185" cy="212" rx="20" ry="10" transform="rotate(15 185 212)" /></g>
+      <defs><radialGradient id="acell" cx="38%" cy="34%" r="75%"><stop offset="0" stopColor="#fff6f8" /><stop offset=".6" stopColor="#fde4ea" /><stop offset="1" stopColor="#f2c2cd" /></radialGradient><radialGradient id="nuc" cx="35%" cy="30%" r="75%"><stop offset="0" stopColor="#efe8fd" /><stop offset=".6" stopColor="#d4c6f5" /><stop offset="1" stopColor="#ad97e6" /></radialGradient><radialGradient id="mito" cx="35%" cy="30%" r="80%"><stop offset="0" stopColor="#ffe6cc" /><stop offset="1" stopColor="#f4ad6c" /></radialGradient><radialGradient id="chl" cx="35%" cy="30%" r="80%"><stop offset="0" stopColor="#c7ecac" /><stop offset="1" stopColor="#6fbf48" /></radialGradient><radialGradient id="vac" cx="35%" cy="30%" r="85%"><stop offset="0" stopColor="#f2f9ff" /><stop offset="1" stopColor="#bcdcf7" /></radialGradient></defs>
+      <ellipse cx="156" cy="258" rx="96" ry="9" fill="#3b4654" opacity=".1" /><g filter="url(#ps)"><ellipse cx="150" cy="165" rx="112" ry="88" fill="url(#acell)" stroke={INK} strokeWidth="1.6" /></g>
+      <circle cx="132" cy="150" r="27" fill="url(#nuc)" stroke={INK} strokeWidth="1.3" /><circle cx="138" cy="146" r="7" fill="#9d85e0" /><ellipse cx="122" cy="138" rx="7" ry="4" fill="#fff" opacity=".6" transform="rotate(-30 122 138)" />
+      <g fill="url(#mito)" stroke={INK} strokeWidth="1.1"><ellipse cx="205" cy="125" rx="20" ry="10" transform="rotate(-20 205 125)" /><ellipse cx="185" cy="212" rx="20" ry="10" transform="rotate(15 185 212)" /></g>
       <path d="M190 128 q5 -7 10 0 q5 7 10 0 M171 213 q5 -7 10 0 q5 7 10 0" stroke={INK} strokeWidth=".9" fill="none" />
       {dots(14, 70, 110, 160, 110, 2).map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.8" fill="#7b8794" />)}
-      <g filter="url(#ps)"><rect x="420" y="62" width="220" height="208" rx="14" fill="#eef8e6" stroke="#5aa02f" strokeWidth="5" /></g>
+      <path d="M420 62 L436 50 H654 L640 62 Z" fill="#c9e8b0" stroke="#5aa02f" strokeWidth="3" strokeLinejoin="round" /><path d="M640 62 L654 50 V258 L640 270 Z" fill="#9fcf7e" stroke="#5aa02f" strokeWidth="3" strokeLinejoin="round" /><g filter="url(#ps)"><rect x="420" y="62" width="220" height="208" rx="14" fill="#eef8e6" stroke="#5aa02f" strokeWidth="5" /></g>
       <rect x="428" y="70" width="204" height="192" rx="10" fill="none" stroke={INK} strokeWidth="1.2" />
-      <rect x="478" y="104" width="130" height="122" rx="22" fill="#dcefff" stroke={INK} strokeWidth="1.2" /><T x={543} y={170} s={15} anchor="middle">VACUOLE</T>
-      <g fill="#8fd16b" stroke="#3f7a22" strokeWidth="1"><ellipse cx="452" cy="92" rx="13" ry="7" /><ellipse cx="452" cy="242" rx="13" ry="7" /><ellipse cx="612" cy="244" rx="13" ry="7" /><ellipse cx="616" cy="88" rx="13" ry="7" /></g>
-      <circle cx="452" cy="168" r="17" fill="#d9ccf5" stroke={INK} strokeWidth="1.2" />
-      <ellipse cx="456" cy="128" rx="14" ry="7" fill="#ffd2a8" stroke={INK} strokeWidth="1" />
+      <rect x="478" y="104" width="130" height="122" rx="22" fill="url(#vac)" stroke={INK} strokeWidth="1.2" /><ellipse cx="510" cy="122" rx="18" ry="6" fill="#fff" opacity=".7" /><T x={543} y={170} s={15} anchor="middle">VACUOLE</T>
+      <g fill="url(#chl)" stroke="#3f7a22" strokeWidth="1"><ellipse cx="452" cy="92" rx="13" ry="7" /><ellipse cx="452" cy="242" rx="13" ry="7" /><ellipse cx="612" cy="244" rx="13" ry="7" /><ellipse cx="616" cy="88" rx="13" ry="7" /></g>
+      <circle cx="452" cy="168" r="17" fill="url(#nuc)" stroke={INK} strokeWidth="1.2" />
+      <ellipse cx="456" cy="128" rx="14" ry="7" fill="url(#mito)" stroke={INK} strokeWidth="1" />
       <Label x={274} y={46} w={124} color={c} title="nucleus" /><Link from={[274, 66]} to={[150, 148]} color={c} bend={12} /><Link from={[398, 66]} to={[452, 156]} color={c} bend={-12} />
       <Label x={274} y={110} w={124} color={c} title="mitochondria" /><Link from={[274, 130]} to={[214, 125]} color={c} /><Link from={[398, 130]} to={[442, 128]} color={c} />
       <Label x={274} y={174} w={124} color={c} title="membrane" /><Link from={[274, 194]} to={[258, 180]} color={c} /><Link from={[398, 194]} to={[428, 200]} color={c} />

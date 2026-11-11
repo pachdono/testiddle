@@ -1,7 +1,7 @@
 // Diagrams for the chemistry sections added with the full syllabus: diamond and graphite, the
 // blast furnace, addition polymerisation, and tables of ions, conditions and tests.
 
-import { INK, Label, Defs, T, Arrow, HAND } from "../posterKit.jsx";
+import { INK, Label, Defs, T, Arrow, HAND, Ball } from "../posterKit.jsx";
 import { table, compare, flow, hub } from "./gen.jsx";
 
 const V = "0 0 680 310";
@@ -36,8 +36,8 @@ const giant = (c) => {
       <T x={160} y={24} s={15} anchor="middle" fill={c}>DIAMOND</T>
       {outer.map((p, i) => TETRA.filter((_, j) => j !== i).map((w, j) => { const q = at(w.map((n) => -n), L * 0.6, p); return <path key={`${i}${j}`} d={`M${p[0]} ${p[1]} L${q[0]} ${q[1]}`} stroke="#9aa6b2" strokeWidth="2" strokeDasharray="4 3" />; }))}
       {outer.map((p, i) => <path key={i} d={`M${O[0]} ${O[1]} L${p[0]} ${p[1]}`} stroke={INK} strokeWidth="3" />)}
-      {outer.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r="10" fill="#b8c2cc" stroke={INK} strokeWidth="1.2" />)}
-      <circle cx={O[0]} cy={O[1]} r="12" fill="#7d8896" stroke={INK} strokeWidth="1.4" />
+      {outer.map((p, i) => <Ball key={i} x={p[0]} y={p[1]} r={10} fill="#b8c2cc" sw={1.2} shadow={false} />)}
+      <Ball x={O[0]} y={O[1]} r={12} fill="#7d8896" sw={1.4} shadow={false} />
       <T x={O[0]} y={O[1] + 5} s={12} anchor="middle" fill="#fff">C</T>
       <T x={250} y={96} s={12}>TETRAHEDRAL</T>
       <T x={250} y={112} s={12}>DASHES: NETWORK</T>

@@ -2,7 +2,7 @@
 // factors, a villus, blood vessels, antibody responses, the eye, phototropism, the menstrual
 // cycle, variation charts, the carbon cycle, population growth, a fermenter and tables.
 
-import { INK, Label, Defs, plot, T, Arrow, Box, Face } from "../posterKit.jsx";
+import { INK, Label, Defs, plot, T, Arrow, Box, Face, Ball, Block, cylinderFill } from "../posterKit.jsx";
 import { table, compare, flow, hub } from "./gen.jsx";
 
 const V = "0 0 680 310";
@@ -11,21 +11,21 @@ const WALL = "#5aa02f", CYTO = "#eaf6dd", VAC = "#bfe0f7", RBC = "#e8546b";
 /** A plant cell: wall, cytoplasm (inset by shrink) and vacuole. */
 const plantCell = (x, y, shrink, vac) => (
   <g>
-    <rect x={x} y={y} width="110" height="80" rx="8" fill="#fff" stroke={WALL} strokeWidth="4" />
+    <Block x={x} y={y} w={110} h={80} d={16} fill="#eef7e4" stroke={WALL} sw={3} rx={6} />
     <rect x={x + 3 + shrink} y={y + 3 + shrink} width={104 - 2 * shrink} height={74 - 2 * shrink} rx={6 + shrink} fill={CYTO} stroke={INK} strokeWidth="1" />
-    <ellipse cx={x + 55} cy={y + 40} rx={vac[0]} ry={vac[1]} fill={VAC} stroke={INK} strokeWidth=".8" />
+    <ellipse cx={x + 55} cy={y + 40} rx={vac[0]} ry={vac[1]} fill={VAC} stroke={INK} strokeWidth=".8" /><ellipse cx={x + 55 - vac[0] * 0.4} cy={y + 40 - vac[1] * 0.45} rx={vac[0] * 0.3} ry={vac[1] * 0.18} fill="#fff" opacity=".6" />
     <circle cx={x + 18 + shrink} cy={y + 18 + shrink} r="6" fill="#cdb8f2" stroke={INK} strokeWidth=".8" />
   </g>
 );
 const osmosis = (c) => (
   <svg viewBox={V}><Defs c={c} />
     {[["IN WATER", "turgid: vacuole full,", "membrane pushes on wall", 0, [44, 30]], ["SLIGHTLY STRONGER", "flaccid: less water,", "cell is soft", 0, [30, 20]], ["CONCENTRATED", "plasmolysed: membrane", "pulls away from the wall", 16, [16, 10]]].map(([t, a, b, sh, v], i) => (
-      <g key={t}><T x={95 + i * 230} y={22} s={14} anchor="middle" fill={c}>{t}</T>{plantCell(40 + i * 230, 32, sh, v)}<T x={95 + i * 230} y={132} s={12} anchor="middle">{a}</T><T x={95 + i * 230} y={147} s={12} anchor="middle">{b}</T></g>
+      <g key={t}><T x={95 + i * 230} y={22} s={14} anchor="middle" fill={c}>{t}</T>{plantCell(36 + i * 230, 40, sh, v)}<T x={95 + i * 230} y={138} s={12} anchor="middle">{a}</T><T x={95 + i * 230} y={152} s={12} anchor="middle">{b}</T></g>
     ))}
     <path d="M20 166 H660" stroke="#e3e7ec" strokeWidth="1.4" />
     <T x={340} y={186} s={14} anchor="middle" fill={c}>RED BLOOD CELLS (NO CELL WALL)</T>
-    <g><circle cx={95} cy={232} r="30" fill={RBC} opacity=".8" stroke={INK} /><Face x={95} y={232} r={28} skin="#ef8b98" mood="surprised" /><path d="M70 214 l-8 -6 M120 214 l8 -6 M95 200 v-8" stroke={INK} /><T x={95} y={288} s={12} anchor="middle">IN WATER: SWELLS, BURSTS</T></g>
-    <g><ellipse cx={325} cy={232} rx="30" ry="24" fill={RBC} opacity=".8" stroke={INK} /><ellipse cx={325} cy={238} rx="12" ry="5" fill="#f6a3b0" /><Face x={325} y={228} r={22} skin="#ef8b98" mood="chill" /><T x={325} y={288} s={12} anchor="middle">SAME CONCENTRATION: NORMAL</T></g>
+    <g><Ball x={95} y={232} r={30} fill="#ef8b98" sw={1} /><Face x={95} y={232} r={28} skin="#ef8b98" mood="surprised" /><path d="M70 214 l-8 -6 M120 214 l8 -6 M95 200 v-8" stroke={INK} /><T x={95} y={288} s={12} anchor="middle">IN WATER: SWELLS, BURSTS</T></g>
+    <g><ellipse cx={327} cy={258} rx="24" ry="4" fill="#3b4654" opacity=".12" /><ellipse cx={325} cy={232} rx="30" ry="22" fill="#ef8b98" stroke={INK} /><ellipse cx={325} cy={236} rx="15" ry="8" fill="#d9707f" opacity=".55" /><ellipse cx={316} cy={222} rx="7" ry="3" fill="#fff" opacity=".55" /><Face x={325} y={228} r={22} skin="#ef8b98" mood="chill" /><T x={325} y={288} s={12} anchor="middle">SAME CONCENTRATION: NORMAL</T></g>
     <g><path d="M555 210 l8 6 l8 -6 l6 10 l10 2 l-4 10 l6 8 l-10 4 l-2 10 l-10 -4 l-8 6 l-6 -8 l-10 -2 l2 -10 l-8 -8 l8 -6 l-2 -10 l10 0 Z" fill={RBC} opacity=".8" stroke={INK} /><Face x={565} y={232} r={17} skin="#ef8b98" mood="worried" /><T x={565} y={288} s={12} anchor="middle">CONCENTRATED: SHRINKS</T></g>
     <T x={340} y={306} s={12} anchor="middle">WATER MOVES FROM HIGH TO LOW WATER POTENTIAL, THROUGH THE PARTIALLY PERMEABLE MEMBRANE</T>
   </svg>
@@ -73,19 +73,33 @@ const villus = (c) => (
   </svg>
 );
 
-const vessels = (c) => {
-  const ring = (cx, R, r, col) => <g><circle cx={cx} cy={130} r={R} fill={col} stroke={INK} strokeWidth="1.4" /><circle cx={cx} cy={130} r={r} fill="#fde8ec" stroke={INK} strokeWidth="1" /></g>;
+/** A blood vessel drawn as a short 3D tube, angled, with its cut end facing us so the wall shows. */
+const tube = (cx, cy, R, wall, wallCol, lumenCol, len, extra) => {
+  const [body, defs] = cylinderFill(wallCol), rx = R * 0.42;
   return (
-    <svg viewBox={V}><Defs c={c} />
-      <T x={110} y={28} s={15} anchor="middle" fill="#d0496d">ARTERY</T><T x={340} y={28} s={15} anchor="middle" fill="#2f7fd0">VEIN</T><T x={570} y={28} s={15} anchor="middle" fill={c}>CAPILLARY</T>
-      {ring(110, 70, 24, "#f2a3a3")}<circle cx={110} cy={130} r="52" fill="none" stroke="#c0607a" strokeDasharray="3 3" />
-      <path d="M340 60 Q414 66 410 130 Q414 196 340 200 Q266 196 270 130 Q266 66 340 60 Z" fill="#a9c9ea" stroke={INK} strokeWidth="1.4" /><path d="M340 72 Q400 78 398 130 Q400 184 340 188 Q280 184 282 130 Q280 78 340 72 Z" fill="#fde8ec" stroke={INK} />
-      <circle cx="570" cy="130" r="22" fill="#fde8ec" stroke={INK} strokeWidth="2" /><ellipse cx="570" cy="130" rx="10" ry="6" fill="#e8546b" />
-      {[["thick, muscular, elastic wall", "narrow lumen", "high pressure, away from heart"], ["thin wall, wide lumen", "valves stop backflow", "low pressure, back to heart"], ["wall one cell thick", "exchange with cells", "red cells pass in single file"]].map((l, i) => l.map((t, k) => <T key={t} x={110 + i * 230} y={232 + k * 18} s={13} anchor="middle">{t.toUpperCase()}</T>))}
-      <T x={340} y={300} s={12} anchor="middle">NOT TO SCALE: A CAPILLARY IS ABOUT THE WIDTH OF ONE RED BLOOD CELL</T>
-    </svg>
+    <g>
+      {defs}
+      <ellipse cx={cx - len * 0.45} cy={cy + R + 16} rx={len * 0.6} ry={6} fill="#3b4654" opacity=".1" />
+      <path d={`M${cx} ${cy - R} H${cx - len} A${rx} ${R} 0 0 0 ${cx - len} ${cy + R} H${cx}`} fill={body} stroke={INK} strokeWidth="1.4" transform={`rotate(-12 ${cx} ${cy})`} />
+      <g transform={`rotate(-12 ${cx} ${cy})`}>
+        <ellipse cx={cx} cy={cy} rx={rx} ry={R} fill={wallCol} stroke={INK} strokeWidth="1.4" />
+        <ellipse cx={cx} cy={cy} rx={rx * (1 - wall / R)} ry={R - wall} fill={lumenCol} stroke={INK} strokeWidth="1" />
+        <ellipse cx={cx - rx * 0.25} cy={cy - R * 0.55} rx={rx * 0.18} ry={R * 0.16} fill="#fff" opacity=".5" />
+        {extra}
+      </g>
+    </g>
   );
 };
+const vessels = (c) => (
+  <svg viewBox={V}><Defs c={c} />
+    <T x={110} y={28} s={15} anchor="middle" fill="#d0496d">ARTERY</T><T x={340} y={28} s={15} anchor="middle" fill="#2f7fd0">VEIN</T><T x={570} y={28} s={15} anchor="middle" fill={c}>CAPILLARY</T>
+    {tube(160, 130, 52, 22, "#f2a3a3", "#fde8ec", 110, <ellipse cx={160} cy={130} rx={6} ry={13} fill="none" stroke="#c0607a" strokeDasharray="3 2" />)}
+    {tube(392, 130, 56, 7, "#a9c9ea", "#fde8ec", 110, <g fill="#a9c9ea" stroke={INK} strokeWidth="1"><path d="M388 84 Q378 112 392 128 Q384 104 394 84 Z" /><path d="M388 176 Q378 148 392 132 Q384 156 394 176 Z" /></g>)}
+    {tube(600, 130, 14, 2.4, "#f6c7cf", "#fff4f6", 70, <ellipse cx={600} cy={130} rx={3.2} ry={6} fill="#e8546b" />)}
+    {[["thick, muscular, elastic wall", "narrow lumen", "high pressure, away from heart"], ["thin wall, wide lumen", "valves stop backflow", "low pressure, back to heart"], ["wall one cell thick", "exchange with cells", "red cells pass in single file"]].map((l, i) => l.map((t, k) => <T key={t} x={110 + i * 230} y={232 + k * 18} s={13} anchor="middle">{t.toUpperCase()}</T>))}
+    <T x={340} y={300} s={12} anchor="middle">NOT TO SCALE: A CAPILLARY IS ABOUT THE WIDTH OF ONE RED BLOOD CELL</T>
+  </svg>
+);
 
 const antibodies = (c) => {
   const { X, Y, path } = plot([60, 30, 350, 220], [0, 60], [0, 10]);
@@ -122,7 +136,7 @@ const eye = (c) => {
   const tag = (x, y, t, to, end) => <g key={t}><T x={x} y={y} s={12.5} anchor={end ? "end" : "start"}>{t}</T><path d={`M${end ? x + 4 : x - 4} ${y - 4} L${to[0]} ${to[1]}`} stroke={INK} strokeWidth=".8" opacity=".6" /><circle cx={to[0]} cy={to[1]} r="2.2" fill={INK} /></g>;
   return (
     <svg viewBox={V}><Defs c={c} />
-      <g filter="url(#ps)"><circle cx={cx} cy={cy} r={R} fill="#fbfbf7" stroke={INK} strokeWidth="2.2" /></g>
+      <Ball x={cx} y={cy} r={R} fill="#f6f4ec" sw={2.2} shadow={false} />
       <path d={`M${jt[0]} ${jt[1]} Q${apex - 30} ${cy} ${jb[0]} ${jb[1]}`} fill="#e3f3fc" stroke={INK} strokeWidth="1.8" />
       <path d={`M${ra[0]} ${ra[1]} A${R - 4} ${R - 4} 0 1 1 ${rb[0]} ${rb[1]}`} fill="none" stroke="#e8768a" strokeWidth="5" opacity=".85" />
       <path d={`M${nerve[0] - 2} ${nerve[1]} L${nerveOut[0]} ${nerveOut[1]}`} fill="none" stroke={INK} strokeWidth="18" strokeLinecap="round" /><path d={`M${nerve[0] - 2} ${nerve[1]} L${nerveOut[0]} ${nerveOut[1]}`} fill="none" stroke="#f2d5a0" strokeWidth="15" strokeLinecap="round" />
@@ -157,7 +171,7 @@ const tropism = (c) => (
     <path d="M150 200 Q150 120 190 80 Q205 66 214 60" fill="none" stroke="#3f9d5a" strokeWidth="9" strokeLinecap="round" />
     <path d="M214 60 l12 -6 l-2 12 Z" fill="#3f9d5a" />
     <path d="M150 200 Q148 240 150 284" fill="none" stroke="#f2e6c8" strokeWidth="6" strokeLinecap="round" />
-    {[[140, 150], [146, 128], [158, 106], [138, 172], [170, 92]].map(([x, y]) => <circle key={x + y} cx={x} cy={y} r="3.4" fill="#d0496d" />)}
+    {/* on the shaded (left) side of the stem, following its curve */}{[[148, 170], [151, 150], [155, 130], [162, 110], [170, 95]].map(([x, y]) => <circle key={x + y} cx={x} cy={y} r="3" fill="#d0496d" stroke="#fff" strokeWidth=".8" />)}
     <circle cx="330" cy="60" r="20" fill="#ffe27a" stroke="#f2a53a" strokeWidth="2" />
     {[[300, 64], [300, 90], [300, 112]].map(([x, y]) => <Arrow key={y} from={[x, y]} to={[x - 60, y + 4]} color="#f2a53a" width={2} />)}
     <T x={330} y={30} s={13} anchor="middle" fill="#c0902a">LIGHT</T>
