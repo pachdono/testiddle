@@ -127,11 +127,11 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
       {extra && tab === "exam" && <ExamTab topics={pack.topics} subs={pack.subs} openExam={setExam} />}
       {extra && tab === "terms" && <TermsTab terms={extra.terms} groups={extra.groups} />}
       {extra && tab === "tests" && <div className="cg-list">{pack.topics.map((t, i) => {
-        const qs = pack.subs.filter((s) => s.topic.id === t.id).flatMap((s) => s.questions);
+        const qs = [...pack.subs.filter((s) => s.topic.id === t.id).flatMap((s) => s.questions), ...(t.written || [])];
         const got = qs.filter((q) => answered[q.id]).length, seen = qs.filter((q) => q.id in answered).length;
         return <button key={t.id} className="cg-row" onClick={() => setExam({ sub: { id: `${pack.id}-test-${t.id}`, skill: t.name }, picked: qs, title: `Topic test: ${t.name}` })}>
           <span className="cg-rownum" aria-hidden="true">{i + 1}</span>
-          <span className="cg-rowtext"><b>{t.name}</b><span className="small muted">{qs.length} questions, marked one by one</span></span>
+          <span className="cg-rowtext"><b>{t.name}</b><span className="small muted">{qs.length} questions{t.written?.length ? `, including ${t.written.length} written` : ""}, marked one by one</span></span>
           {seen ? <span className="cg-pill good">{Math.round((got / seen) * 100)}% right</span> : <span className="cg-pill">Not started</span>}
           <i className="cg-chev" aria-hidden="true">&rsaquo;</i>
         </button>;

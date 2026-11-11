@@ -1,0 +1,20 @@
+// Exam style written questions for IGCSE Geography, one per topic, with mark schemes.
+export default {
+  "pop-dyn": [["Explain why the death rate falls in stage 2 of the demographic transition model.", ["Better healthcare and medicine", "Cleaner water and sanitation", "Improved food supply", "Vaccination reduces disease"], 3]],
+  migration: [["Describe two push factors and two pull factors for rural to urban migration.", ["Push: lack of jobs in the countryside", "Push: drought, crop failure or poor services", "Pull: more jobs in cities", "Pull: better schools, healthcare or services"], 4]],
+  structure: [["Describe the problems of an ageing population.", ["Higher cost of pensions", "More pressure on healthcare", "Fewer workers paying taxes", "Higher dependency ratio"], 3]],
+  settlements: [["Describe the problems caused by rapid urban growth in a low income country.", ["Squatter settlements with poor housing", "Lack of clean water and sanitation", "Traffic congestion and pollution", "Not enough jobs, so informal work"], 4]],
+  tectonics: [["Explain why volcanoes form at destructive plate boundaries.", ["Oceanic plate is denser and is subducted", "It melts as it sinks into the mantle", "Magma rises through the continental crust", "Erupts as explosive volcanoes"], 4]],
+  rivers: [["Explain how an ox bow lake forms.", ["Erosion on the outer bends of a meander", "Deposition on the inner bends", "The neck of the meander narrows", "During a flood the river cuts through the neck", "Deposition seals off the old loop"], 4]],
+  coasts: [["Describe how a stack forms from a headland.", ["Waves erode cracks by hydraulic action and abrasion", "Cracks widen into a cave", "The cave erodes through to form an arch", "The arch roof collapses, leaving a stack"], 4]],
+  weather: [["Describe how a Stevenson screen is designed to give accurate temperature readings.", ["Painted white to reflect sunlight", "Louvred sides to let air flow", "Raised about 1.2 m off the ground", "Placed away from buildings"], 3]],
+  climate: [["Describe two ways plants in tropical rainforests are adapted.", ["Drip tips shed heavy rain", "Buttress roots support tall trees", "Lianas climb to reach light", "Thin bark because no cold season"], 2]],
+  development: [["Explain why the Human Development Index is a better measure than GDP per head alone.", ["HDI combines income, health (life expectancy) and education", "GDP only measures wealth", "Average income can hide inequality", "HDI shows quality of life more fully"], 3]],
+  food: [["Explain two causes of food shortages in low income countries.", ["Drought or floods destroy crops", "Pests and disease", "War and conflict", "Poverty: farmers cannot afford seeds, fertiliser or irrigation"], 4]],
+  industry: [["Explain why high tech industries locate in science parks.", ["Near universities for research and graduates", "Good road and airport links", "Attractive environment for skilled workers", "Close to other high tech firms to share ideas"], 3]],
+  tourism: [["Describe the advantages and disadvantages of tourism for a country.", ["Advantage: jobs and income", "Advantage: foreign currency and better infrastructure", "Disadvantage: seasonal, low paid jobs or leakage", "Disadvantage: environmental damage or loss of culture"], 4]],
+  energy: [["Give the advantages and disadvantages of wind power.", ["Renewable, will not run out", "No greenhouse gases when running", "Intermittent: depends on wind", "Visual and noise pollution, may harm birds"], 4]],
+  water: [["Describe two ways of increasing water supply in a dry country.", ["Dams and reservoirs", "Desalination of seawater", "Wells to reach aquifers", "Water transfer schemes"], 2]],
+  risks: [["Explain how burning fossil fuels contributes to climate change.", ["Releases carbon dioxide", "A greenhouse gas", "Traps more heat (enhanced greenhouse effect)", "Raises global temperatures"], 3]],
+  skills: [["On a 1:25 000 map, two places are 8 cm apart. What is the real distance?", ["1 cm = 250 m", "8 x 250 = 2000 m", "2 km"], 3]],
+};

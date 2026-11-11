@@ -1,0 +1,13 @@
+// Exam style written questions for IGCSE Computer Science, one per topic, with mark schemes.
+export default {
+  "data-rep": [["Convert the denary number 75 into 8 bit binary and into hexadecimal.", ["Binary 01001011", "Hexadecimal 4B"], 2]],
+  transmission: [["Explain how a parity check detects an error in transmitted data.", ["Sender and receiver agree odd or even parity", "A parity bit is added so the number of 1s matches", "Receiver counts the 1s in each byte", "If the count is wrong, an error is detected"], 3]],
+  hardware: [["Describe the role of the program counter (PC) and memory address register (MAR) in the fetch stage.", ["PC holds the address of the next instruction", "The address is copied from the PC to the MAR", "The PC is incremented", "The instruction at that address is fetched into the MDR"], 4]],
+  software: [["Give two differences between a compiler and an interpreter.", ["Compiler translates the whole program at once; interpreter one line at a time", "Compiler produces an executable file; interpreter does not", "Compiler reports errors at the end; interpreter stops at the first error"], 2]],
+  internet: [["Explain the difference between phishing and pharming.", ["Phishing: fake emails or messages", "Trick the user into giving personal details", "Pharming: malicious code redirects the user to a fake website", "Even when the correct address is typed"], 4]],
+  emerging: [["Describe how an automated greenhouse keeps the temperature correct.", ["A temperature sensor takes readings", "The microprocessor compares readings with a preset value", "If too low, an actuator turns a heater on; if too high, a window or fan opens", "This repeats continuously"], 4]],
+  algorithms: [["A program accepts marks from 0 to 100. Give one example each of normal, boundary and erroneous (abnormal) test data.", ["Normal: a value inside the range, such as 56", "Boundary: 0 or 100 (or -1 or 101 as the rejected side)", "Erroneous: a value of the wrong type or out of range, such as 'abc' or 150"], 3]],
+  programming: [["Write pseudocode that asks for 10 numbers and outputs their total and average.", ["Total set to 0 before the loop", "A FOR loop that runs 10 times with INPUT", "Total updated inside the loop", "Average = Total ÷ 10 and both are output"], 4]],
+  databases: [["Write an SQL statement to show the Name and Age of all students older than 15, sorted by Name.", ["SELECT Name, Age", "FROM Students", "WHERE Age > 15", "ORDER BY Name"], 4]],
+  logic: [["Complete the truth table for X = (A AND B) OR NOT C for the input A = 1, B = 0, C = 0, and explain your answer.", ["A AND B = 0", "NOT C = 1", "X = 1"], 3]],
+};

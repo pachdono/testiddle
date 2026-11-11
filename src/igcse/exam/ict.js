@@ -1,0 +1,21 @@
+// Exam style written questions for IGCSE ICT, one per topic, with mark schemes.
+export default {
+  systems: [["Give two differences between RAM and ROM.", ["RAM is volatile; ROM is non volatile", "RAM can be written to; ROM is read only", "RAM holds programs and data in use; ROM holds start up instructions"], 2]],
+  io: [["Name the most suitable input device for marking multiple choice answer sheets and explain why.", ["Optical mark reader (OMR)", "Reads marks quickly and accurately", "Many sheets can be processed automatically"], 3]],
+  storage: [["Explain why magnetic tape is used to back up a large company's data.", ["Very large capacity", "Low cost per gigabyte", "Serial access is acceptable for backups"], 3]],
+  networks: [["Describe two advantages and one disadvantage of storing files in the cloud.", ["Access from any device with internet", "Easy to share and collaborate", "Automatic backups", "Disadvantage: needs an internet connection, or security and privacy concerns"], 3]],
+  effects: [["Describe two health problems from long computer use and how to prevent each.", ["Names a problem, such as repetitive strain injury", "Gives a matching prevention, such as wrist rests and breaks", "Names a second problem, such as eye strain or back pain", "Gives a matching prevention, such as anti glare screens or adjustable chairs"], 4]],
+  applications: [["Explain why a computer model is used to test a new bridge design.", ["Safer than testing a real bridge", "Cheaper", "Many scenarios can be tested quickly", "Variables can be changed easily"], 3]],
+  lifecycle: [["Describe parallel running and give one advantage and one disadvantage.", ["Old and new systems run together", "Advantage: if the new system fails, the old one is still working", "Disadvantage: expensive and double the work"], 3]],
+  safety: [["Explain how phishing works and two ways to avoid it.", ["Fake email that looks genuine", "Asks for personal details or links to a fake site", "Do not click links in unexpected emails", "Check the sender's address and use spam filters"], 4]],
+  audience: [["Explain why a presentation for young children needs a different design from one for adults.", ["Simpler language", "Larger fonts", "More images and colour", "Shorter text"], 3]],
+  files: [["Explain why a file might be saved in .csv format.", ["Generic format", "Can be opened by many different programs", "Data separated by commas, suitable for spreadsheets and databases"], 2]],
+  images: [["Explain what maintaining the aspect ratio means when resizing an image and why it matters.", ["Width and height change in proportion", "So the image is not stretched or distorted"], 2]],
+  styles: [["Explain why a company uses a corporate house style.", ["Consistency across all documents", "Instantly recognisable brand", "Looks professional", "Saves time making new documents"], 3]],
+  graphs: [["Choose a chart for showing how a town's population changed over 20 years and justify it.", ["Line graph", "Shows change over time clearly"], 2]],
+  documents: [["Describe the steps of a mail merge.", ["Create a master document", "Link a data source", "Insert merge fields", "Preview and merge to create personalised documents"], 4]],
+  db: [["Explain the difference between a primary key and a foreign key.", ["A primary key uniquely identifies each record in a table", "A foreign key is a field linking to a primary key in another table", "Used to create relationships"], 3]],
+  presentations: [["Explain why a master slide is used.", ["Applies the same layout and style to every slide", "Consistency", "Saves time"], 2]],
+  spreadsheets: [["Explain the difference between a relative and an absolute cell reference, with an example.", ["Relative changes when the formula is copied, such as A1", "Absolute stays the same when copied", "Uses $ signs, such as $A$1"], 3]],
+  web: [["Explain the purpose of the content, presentation and behaviour layers of a web page.", ["Content: HTML holds the structure and content", "Presentation: CSS controls the appearance", "Behaviour: scripts make the page interactive"], 3]],
+};

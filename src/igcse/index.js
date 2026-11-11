@@ -32,6 +32,9 @@ const LOADERS = {
 
 export const PACK_IDS = Object.keys(LOADERS);
 
+/** Written exam questions live beside each pack, in exam/<id>.js. */
+const examFor = (id) => import(`./exam/${id}.js`).catch(() => null);
+
 export const hasPack = (subjectId) => subjectId in LOADERS;
 
 /** The same shuffle every time for the same question, so the right answer is not always in one place. */
@@ -43,14 +46,19 @@ function mix(id, choices, answer) {
   return { choices: order.map((i) => choices[i]), answer: "ABCD"[order.indexOf("ABCD".indexOf(answer))] };
 }
 
+/** Turns written questions for a topic into question objects. marks below the number of points means any that many score. */
+function written(packId, topic, list = []) {
+  return list.map(([q, points, marks], k) => ({ id: `${packId}-${topic.id}-w${k + 1}`, kind: "written", q, points, marks: marks || points.length, anyOf: Boolean(marks && marks < points.length), skill: topic.name, subject: topic.name }));
+}
+
 /** Turns a pack into the same topic and subtopic shape the SAT notes use. */
-export function shape(pack) {
+export function shape(pack, exam = {}) {
   let n = 0;
-  const topics = pack.topics.map((t) => ({ ...t, subject: pack.name }));
+  const topics = pack.topics.map((t) => ({ ...t, subject: pack.name, written: written(pack.id, t, exam[t.id]) }));
   const subs = topics.flatMap((t, i) => t.subs.map((s, j) => {
     const id = `${pack.id}-${t.id}-${j + 1}`;
     return {
-      ...s, id, code: `${i + 1}.${j + 1}`, topic: t, topicNo: i + 1, n: n++,
+      ...s, id, code: `${i + 1}.${j + 1}`, topic: t, topicNo: i + 1, n: n++, written: t.written,
       questions: (s.questions || []).map(([q, choices, answer, why], k) => ({ id: `${id}-q${k + 1}`, kind: "mc", q, ...mix(`${id}-q${k + 1}`, choices, answer), why, skill: s.skill, subject: t.name })),
     };
   }));
@@ -60,7 +68,10 @@ export function shape(pack) {
 const cache = {};
 export async function loadPack(subjectId) {
   if (!LOADERS[subjectId]) return null;
-  if (!cache[subjectId]) cache[subjectId] = shape((await LOADERS[subjectId]()).default);
+  if (!cache[subjectId]) {
+    const [mod, exam] = await Promise.all([LOADERS[subjectId](), examFor(subjectId)]);
+    cache[subjectId] = shape(mod.default, exam?.default || {});
+  }
   return cache[subjectId];
 }
 

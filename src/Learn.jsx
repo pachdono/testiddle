@@ -297,10 +297,35 @@ function SkillCards({ sub, browse, onProgress }) {
 
 /* ---------- exam practice ---------- */
 
+/** A written exam question: answer in your own words, then mark it against the mark scheme. */
+function WrittenCard({ q, n, total, state, onMark }) {
+  const [text, setText] = useState(state?.given ?? "");
+  const [shown, setShown] = useState(state != null);
+  const [ticks, setTicks] = useState(() => state?.ticks || []);
+  const done = state != null;
+  const score = Math.min(q.marks, ticks.length);
+  const toggle = (i) => setTicks((x) => (x.includes(i) ? x.filter((k) => k !== i) : [...x, i]));
+  return (
+    <section className="cg-card cg-qcard">
+      <div className="cg-spread"><small className="muted">{n} of {total}</small><span className="cg-chipsm">{q.marks} mark{q.marks === 1 ? "" : "s"}</span></div>
+      <Html html={q.q} />
+      <textarea className="cg-written" value={text} disabled={done} rows={5} placeholder="Write your answer here" onChange={(e) => setText(e.target.value)} aria-label="Your answer" />
+      {!shown
+        ? <div className="cg-qfoot"><span className="small muted">Answer first, then check it against the mark scheme.</span><button className="cg-btn primary" onClick={() => setShown(true)}>Show mark scheme</button></div>
+        : <div className="cg-scheme">
+          <b>Mark scheme</b>{q.anyOf && <small className="muted"> any {q.marks} of these</small>}
+          <p className="small muted">Tick each point your answer makes.</p>
+          {q.points.map((pt, i) => <label key={pt} className="cg-tick"><input type="checkbox" checked={ticks.includes(i)} disabled={done} onChange={() => toggle(i)} /><span>{pt}</span></label>)}
+          <div className="cg-qfoot"><span className="cg-markbox">{score} / {q.marks}</span>{!done && <button className="cg-btn primary" onClick={() => onMark(text, score, ticks)}>Save my mark</button>}</div>
+        </div>}
+    </section>
+  );
+}
+
 export function ExamTab({ openExam, topics, subs }) {
   const saved = read(EXAM_KEY, {});
   return (
-    <TopicList search={false} topics={topics} subs={subs} progressOf={(s) => { const r = saved[s.id]; return r ? Object.keys(r).length / (s.questions?.length || 8) : 0; }} onOpen={(s) => openExam(s.questions ? { sub: s, picked: s.questions } : { sub: s })} />
+    <TopicList search={false} topics={topics} subs={subs} progressOf={(s) => { const r = saved[s.id]; return r ? Object.keys(r).length / ((s.questions?.length || 8) + (s.written?.length || 0)) : 0; }} onOpen={(s) => openExam(s.questions ? { sub: s, picked: [...s.questions, ...(s.written || [])] } : { sub: s })} />
   );
 }
 
@@ -315,12 +340,16 @@ export function ExamView({ sub, picked, title, onClose, report }) {
   const refs = useRef([]);
   const save = (m) => { setMarks(m); if (sub) { const all = read(EXAM_KEY, {}); all[key] = m; write(EXAM_KEY, all); } };
   const mark = (q, given) => { const ok = isRight(q, given); logQuiz(q.id, ok); save({ ...marks, [q.id]: { given, ok } }); };
+  const markWritten = (q, given, score, ticks) => save({ ...marks, [q.id]: { given, score, ticks, ok: score === q.marks } });
+  const worth = (q) => q.marks || 1;
+  const scored = (q) => { const m = marks[q.id]; return m ? (m.score ?? (m.ok ? 1 : 0)) : 0; };
   useEffect(() => { const f = (e) => { if (e.key === "Escape") onClose(); }; document.addEventListener("keydown", f); return () => document.removeEventListener("keydown", f); }, [onClose]);
-  const got = Object.values(marks).filter((m) => m.ok).length;
+  const got = qs.reduce((n, q) => n + scored(q), 0);
+  const out = qs.reduce((n, q) => n + worth(q), 0);
   const name = title || sub?.skill;
   return (
     <div className="cg-reader">
-      <header className="cg-rtop"><button className="cg-wx" aria-label="Back to the course" onClick={onClose}>&larr;</button><b className="cg-switcher plain">{name}</b><span className="cg-rprogress"><i style={{ width: `${qs.length ? (Object.keys(marks).filter((id) => qs.some((q) => q.id === id)).length / qs.length) * 100 : 0}%` }} /></span><span className="small">Total:</span><span className="cg-markbox">{got} / {qs.length}</span><button className="cg-wx" aria-label="Report an issue" onClick={() => report(`Issue with exam practice: ${name}`)}>{"⋮"}</button></header>
+      <header className="cg-rtop"><button className="cg-wx" aria-label="Back to the course" onClick={onClose}>&larr;</button><b className="cg-switcher plain">{name}</b><span className="cg-rprogress"><i style={{ width: `${qs.length ? (Object.keys(marks).filter((id) => qs.some((q) => q.id === id)).length / qs.length) * 100 : 0}%` }} /></span><span className="small">Total:</span><span className="cg-markbox">{got} / {out}</span><button className="cg-wx" aria-label="Report an issue" onClick={() => report(`Issue with exam practice: ${name}`)}>{"⋮"}</button></header>
       <div className="cg-rbody">
         <div className="cg-qcol">
           {failed && <div className="cg-empty">The questions could not be loaded. Check your connection.</div>}
@@ -328,9 +357,9 @@ export function ExamView({ sub, picked, title, onClose, report }) {
           {qs.length > 0 && <section className="cg-card cg-examhead">
             <div className="cg-spread"><h2>{name}</h2><button className="cg-btn" aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)}>{collapsed ? "▾" : "▴"}</button></div>
             {!collapsed && <><div className="cg-qnums">{qs.map((q, n) => <button key={q.id} className={(n === cur ? "on " : "") + (marks[q.id] ? (marks[q.id].ok ? "right" : "wrong") : "")} onClick={() => { setCur(n); refs.current[n]?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>{n + 1}</button>)}</div>
-              <div className="cg-spread"><button className="cg-link" onClick={() => save({})}>{"↺"} Reset {qs.length} questions</button><span className="cg-markbox">Total marks: {got} / {qs.length}</span></div></>}
+              <div className="cg-spread"><button className="cg-link" onClick={() => save({})}>{"↺"} Reset {qs.length} questions</button><span className="cg-markbox">Total marks: {got} / {out}</span></div></>}
           </section>}
-          {qs.map((q, n) => <div key={q.id + JSON.stringify(marks[q.id] || "")} ref={(el) => { refs.current[n] = el; }}><span className="cg-qlabel">Question {n + 1}</span><QuestionCard q={q} n={n + 1} total={qs.length} state={marks[q.id]} onAnswer={(g) => mark(q, g)} button="Mark" /></div>)}
+          {qs.map((q, n) => <div key={q.id + JSON.stringify(marks[q.id] || "")} ref={(el) => { refs.current[n] = el; }}><span className="cg-qlabel">Question {n + 1}</span>{q.kind === "written" ? <WrittenCard q={q} n={n + 1} total={qs.length} state={marks[q.id]} onMark={(g, s, k) => markWritten(q, g, s, k)} /> : <QuestionCard q={q} n={n + 1} total={qs.length} state={marks[q.id]} onAnswer={(g) => mark(q, g)} button="Mark" />}</div>)}
         </div>
       </div>
     </div>

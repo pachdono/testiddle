@@ -1,0 +1,11 @@
+// Exam style written questions for IGCSE History, one per topic, with mark schemes.
+export default {
+  treaties: [["Why did Germans hate the Treaty of Versailles? Explain two reasons.", ["War guilt clause blamed Germany", "Huge reparations damaged the economy", "Army cut to 100 000, no air force", "Land lost, such as Alsace-Lorraine", "Seen as a diktat: Germany had no say"], 4]],
+  league: [["Why did the League of Nations fail to stop Italy invading Abyssinia?", ["Sanctions did not include oil", "Britain and France did not close the Suez Canal", "The Hoare-Laval Pact secretly offered Italy land", "The League had no army and acted slowly"], 4]],
+  collapse: [["Why did Britain follow a policy of appeasement in the 1930s?", ["Fear of another war after 1914 to 1918", "Britain was not ready and needed time to rearm", "Many felt Versailles was too harsh on Germany", "Fear of communism: Germany as a barrier"], 4]],
+  "cold-war": [["Explain why the USA introduced the Marshall Plan.", ["To rebuild European economies after the war", "Poverty made communism more attractive", "To contain the spread of communism", "To create trading partners for the USA"], 3]],
+  containment: [["How did the Cuban Missile Crisis end?", ["Kennedy set up a naval blockade", "Khrushchev agreed to remove the missiles", "The USA promised not to invade Cuba", "The USA secretly agreed to remove missiles from Turkey"], 4]],
+  "eastern-europe": [["Why was the Berlin Wall built in 1961?", ["Millions of East Germans were escaping to the West through Berlin", "Many were skilled and young, a loss to East Germany", "It was embarrassing for communism", "To stop the escape route"], 3]],
+  depth: [["How did Hitler consolidate his power in 1933 to 1934?", ["Reichstag Fire used to arrest communists", "Enabling Act let him make laws without the Reichstag", "Trade unions banned and other parties banned", "Night of the Long Knives removed the SA leaders", "Became Führer after Hindenburg died"], 4]],
+  sources: [["How would you judge whether a political cartoon is a reliable source?", ["Consider who drew it and their viewpoint", "Consider when and where it was published", "Consider its purpose and audience", "Check its message against your own knowledge"], 4]],
+};

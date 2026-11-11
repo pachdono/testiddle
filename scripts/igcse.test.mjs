@@ -84,3 +84,20 @@ test("Extended lines are marked cleanly, and Core still leaves every page with n
     }
   }
 });
+
+test("every topic has a written exam question with a sound mark scheme", async () => {
+  for (const p of packs) {
+    const exam = (await import(`../src/igcse/exam/${p.id}.js`)).default;
+    assert.deepEqual(Object.keys(exam).sort(), p.topics.map((t) => t.id).sort(), `${p.id} exam topics`);
+    const shaped = shape(p, exam);
+    for (const t of shaped.topics) {
+      assert.ok(t.written.length >= 1, `${p.id} ${t.id}`);
+      for (const q of t.written) {
+        assert.ok(q.q.length > 15 && q.points.length >= 1, q.id);
+        assert.ok(q.marks >= 1 && q.marks <= q.points.length, `${q.id} marks ${q.marks} of ${q.points.length}`);
+      }
+    }
+    assert.ok(shaped.subs.every((s) => s.written === shaped.topics.find((t) => t.id === s.topic.id).written));
+    assert.ok(!/[–—]/.test(readFileSync(new URL(`../src/igcse/exam/${p.id}.js`, import.meta.url), "utf8")), `${p.id} dashes`);
+  }
+});
