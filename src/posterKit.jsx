@@ -87,3 +87,20 @@ export const Box = ({ x, y, w, h = 44, color = INK, fill = "#fff", children, s =
   <g filter="url(#ps)"><rect x={x} y={y} width={w} height={h} rx="9" fill={fill} stroke={color} strokeWidth="1.4" />
     <text x={x + w / 2} y={y + h / 2 + s / 3} textAnchor="middle" fontFamily={HAND} fontSize={s} fill={color}>{children}</text></g>
 );
+
+/** A small, friendly face for diagrams (planets, cells): two eyes, a smile and a little blush,
+ * sized to fit a round shape of radius r centred at x, y. Keep it subtle: it should never hide
+ * anything the diagram needs to show. */
+export const Face = ({ x, y, r, mood = "smile" }) => {
+  const e = Math.max(1, r * 0.13), dx = r * 0.32, ey = y - r * 0.08, my = y + r * 0.22, w = r * 0.26;
+  return (
+    <g pointerEvents="none">
+      <circle cx={x - dx} cy={ey} r={e} fill="#2b2f36" />
+      <circle cx={x + dx} cy={ey} r={e} fill="#2b2f36" />
+      {r >= 9 && <><circle cx={x - dx + e * 0.35} cy={ey - e * 0.35} r={e * 0.35} fill="#fff" /><circle cx={x + dx + e * 0.35} cy={ey - e * 0.35} r={e * 0.35} fill="#fff" /></>}
+      {mood === "smile" && <path d={`M${x - w} ${my} Q${x} ${my + w * 0.9} ${x + w} ${my}`} fill="none" stroke="#2b2f36" strokeWidth={Math.max(0.8, r * 0.07)} strokeLinecap="round" />}
+      {mood === "worried" && <path d={`M${x - w} ${my + w * 0.5} Q${x} ${my - w * 0.3} ${x + w} ${my + w * 0.5}`} fill="none" stroke="#2b2f36" strokeWidth={Math.max(0.8, r * 0.07)} strokeLinecap="round" />}
+      {r >= 9 && <><ellipse cx={x - dx - e * 0.6} cy={my - e * 0.3} rx={e * 1.1} ry={e * 0.6} fill="#f28b9b" opacity=".45" /><ellipse cx={x + dx + e * 0.6} cy={my - e * 0.3} rx={e * 1.1} ry={e * 0.6} fill="#f28b9b" opacity=".45" /></>}
+    </g>
+  );
+};

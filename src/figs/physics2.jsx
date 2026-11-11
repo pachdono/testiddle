@@ -2,7 +2,7 @@
 // reflection, a lens ray diagram, the three pin plug, series and parallel circuits, the motor
 // effect, momentum, sound, nuclide notation, the Solar System and formula tables.
 
-import { INK, Label, Defs, T, Arrow, HAND } from "../posterKit.jsx";
+import { INK, Label, Defs, T, Arrow, HAND, Face } from "../posterKit.jsx";
 import { table, compare, flow } from "./gen.jsx";
 import chemistry from "./chemistry.jsx";
 
@@ -197,21 +197,38 @@ const nuclide = (c) => (
 );
 
 const solarSystem = (c) => {
-  const planets = [["Mercury", 4, "#b8a99a"], ["Venus", 7, "#e8c27a"], ["Earth", 7.5, "#4f9de0"], ["Mars", 5, "#d0704a"], ["Jupiter", 26, "#d9a066"], ["Saturn", 22, "#e8d08a"], ["Uranus", 13, "#8fd6e0"], ["Neptune", 12.5, "#5b7ee0"]];
-  let x = 96;
+  // Widths in proportion within each group (Earth = 1: Mercury 0.38, Venus 0.95, Mars 0.53;
+  // Jupiter = 11.2: Saturn 9.45, Uranus 4.0, Neptune 3.9). The giants use a smaller scale.
+  const rocky = [["Mercury", 3.8, "#b8a99a"], ["Venus", 9.5, "#e8c27a"], ["Earth", 10, "#4f9de0"], ["Mars", 5.3, "#d0704a"]];
+  const giants = [["Jupiter", 34, "#d9a066"], ["Saturn", 28.7, "#e8d08a"], ["Uranus", 12.1, "#8fd6e0"], ["Neptune", 11.8, "#5b7ee0"]];
+  const cy = 132, place = [];
+  let x = 100;
+  rocky.forEach(([n, r, col], i) => { x += (i ? 26 : 0) + r; place.push([n, r, col, x]); x += r; });
+  const belt = x + 28;
+  x = belt + 30;
+  giants.forEach(([n, r, col], i) => { x += (i ? 24 : 0) + r + (n === "Saturn" || n === "Uranus" ? 14 : 0); place.push([n, r, col, x]); x += r; });
   return (
     <svg viewBox={V}><Defs c={c} />
-      <circle cx="-120" cy="140" r="180" fill="#ffcf4a" stroke="#f2a53a" strokeWidth="3" />
-      <T x={20} y={150} s={16} fill="#8a5a10">SUN</T>
-      {planets.map(([n, r, col], i) => {
-        x += i === 4 ? 70 : r + 34; const cx = x; x += r;
-        return <g key={n}>{n === "Saturn" && <ellipse cx={cx} cy={140} rx={r + 14} ry={5} fill="none" stroke="#b89a4a" strokeWidth="2" />}<circle cx={cx} cy={140} r={r} fill={col} stroke={INK} strokeWidth="1" /><T x={cx} y={140 + r + 18 + (i % 2) * 16} s={13} anchor="middle">{n.toUpperCase()}</T></g>;
-      })}
-      <path d="M318 100 Q326 140 318 180" fill="none" stroke="#9aa6b2" strokeDasharray="2 4" strokeWidth="3" />
-      <T x={322} y={92} s={11} anchor="middle">ASTEROID BELT</T>
-      <T x={190} y={232} s={13} anchor="middle">ROCKY, SMALL, CLOSE IN</T><T x={510} y={232} s={13} anchor="middle">GAS AND ICE GIANTS, FAR OUT</T>
-      <T x={340} y={262} s={13} anchor="middle">MY VERY EASY METHOD JUST SPEEDS UP NAMING. SIZES ROUGHLY TO SCALE, DISTANCES NOT</T>
-      <T x={340} y={284} s={13} anchor="middle">DAY: 24 H SPIN. YEAR: 365 DAYS. SEASONS: AXIS TILT. [E] ORBITAL SPEED v = 2πr ÷ T</T>
+      <circle cx="-120" cy={cy} r="180" fill="#ffcf4a" stroke="#f2a53a" strokeWidth="3" />
+      <Face x={24} y={cy - 6} r={30} />
+      <T x={28} y={cy + 44} s={15} anchor="middle" fill="#8a5a10">SUN</T>
+      {Array.from({ length: 26 }, (_, i) => <circle key={i} cx={belt + 6 * Math.sin(i * 1.7)} cy={cy - 60 + i * 4.8} r={1 + (i % 3) * 0.6} fill="#9aa6b2" />)}
+      <T x={belt} y={cy - 70} s={11} anchor="middle">ASTEROID BELT</T>
+      {place.map(([n, r, col, px], i) => (
+        <g key={n}>
+          {n === "Saturn" && <path d={`M${px - r - 14} ${cy} A${r + 14} 6 0 0 1 ${px + r + 14} ${cy}`} fill="none" stroke="#b89a4a" strokeWidth="2.4" transform={`rotate(-12 ${px} ${cy})`} />}
+          <g filter="url(#ps)"><circle cx={px} cy={cy} r={r} fill={col} stroke={INK} strokeWidth="1" /></g>
+          {n === "Jupiter" && <><path d={`M${px - 30} ${cy + 9} Q${px} ${cy + 13} ${px + 30} ${cy + 9}`} stroke="#b9763e" strokeWidth="3" fill="none" opacity=".6" /><ellipse cx={px + 14} cy={cy + 18} rx="6" ry="3.4" fill="#c0603a" opacity=".7" /></>}
+          {n === "Saturn" && <path d={`M${px - r - 14} ${cy} A${r + 14} 6 0 0 0 ${px + r + 14} ${cy}`} fill="none" stroke="#b89a4a" strokeWidth="2.4" transform={`rotate(-12 ${px} ${cy})`} />}
+          {n === "Earth" && <path d={`M${px - 5} ${cy - 6} q4 -3 7 1 q-2 4 -6 3 Z M${px + 2} ${cy + 3} q4 0 4 4 q-4 1 -5 -2 Z`} fill="#6cc070" />}
+          {r >= 5 ? <Face x={px} y={cy} r={r} /> : <><circle cx={px - 1.2} cy={cy - 0.5} r=".7" fill="#2b2f36" /><circle cx={px + 1.2} cy={cy - 0.5} r=".7" fill="#2b2f36" /></>}
+          <T x={px} y={cy + Math.max(r, 12) + 18 + (i < 4 && i % 2 ? 16 : 0)} s={12} anchor="middle">{n.toUpperCase()}</T>
+        </g>
+      ))}
+      <T x={168} y={218} s={12} anchor="middle" fill={c}>ROCKY PLANETS</T><T x={470} y={218} s={12} anchor="middle" fill={c}>GAS AND ICE GIANTS</T>
+      <T x={340} y={248} s={12} anchor="middle">NOT TO SCALE: GIANTS DRAWN SMALLER. JUPITER IS ABOUT 11 TIMES EARTH'S WIDTH</T>
+      <T x={340} y={268} s={12} anchor="middle">ORDER FROM THE SUN: MY VERY EASY METHOD JUST SPEEDS UP NAMING</T>
+      <T x={340} y={290} s={12} anchor="middle">DAY: 24 H SPIN. YEAR: 365 DAYS. SEASONS: AXIS TILT. [E] ORBITAL SPEED v = 2πr ÷ T</T>
     </svg>
   );
 };

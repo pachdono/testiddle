@@ -2,7 +2,7 @@
 // factors, a villus, blood vessels, antibody responses, the eye, phototropism, the menstrual
 // cycle, variation charts, the carbon cycle, population growth, a fermenter and tables.
 
-import { INK, Label, Defs, plot, T, Arrow, Box } from "../posterKit.jsx";
+import { INK, Label, Defs, plot, T, Arrow, Box, Face } from "../posterKit.jsx";
 import { table, compare, flow, hub } from "./gen.jsx";
 
 const V = "0 0 680 310";
@@ -24,9 +24,9 @@ const osmosis = (c) => (
     ))}
     <path d="M20 166 H660" stroke="#e3e7ec" strokeWidth="1.4" />
     <T x={340} y={186} s={14} anchor="middle" fill={c}>RED BLOOD CELLS (NO CELL WALL)</T>
-    <g><circle cx={95} cy={232} r="30" fill={RBC} opacity=".8" stroke={INK} /><path d="M70 214 l-8 -6 M120 214 l8 -6 M95 200 v-8" stroke={INK} /><T x={95} y={288} s={12} anchor="middle">IN WATER: SWELLS, BURSTS</T></g>
-    <g><ellipse cx={325} cy={232} rx="30" ry="24" fill={RBC} opacity=".8" stroke={INK} /><ellipse cx={325} cy={232} rx="12" ry="8" fill="#f6a3b0" /><T x={325} y={288} s={12} anchor="middle">SAME CONCENTRATION: NORMAL</T></g>
-    <g><path d="M555 210 l8 6 l8 -6 l6 10 l10 2 l-4 10 l6 8 l-10 4 l-2 10 l-10 -4 l-8 6 l-6 -8 l-10 -2 l2 -10 l-8 -8 l8 -6 l-2 -10 l10 0 Z" fill={RBC} opacity=".8" stroke={INK} /><T x={565} y={288} s={12} anchor="middle">CONCENTRATED: SHRINKS</T></g>
+    <g><circle cx={95} cy={232} r="30" fill={RBC} opacity=".8" stroke={INK} /><Face x={95} y={232} r={22} mood="worried" /><path d="M70 214 l-8 -6 M120 214 l8 -6 M95 200 v-8" stroke={INK} /><T x={95} y={288} s={12} anchor="middle">IN WATER: SWELLS, BURSTS</T></g>
+    <g><ellipse cx={325} cy={232} rx="30" ry="24" fill={RBC} opacity=".8" stroke={INK} /><ellipse cx={325} cy={238} rx="12" ry="5" fill="#f6a3b0" /><Face x={325} y={228} r={17} /><T x={325} y={288} s={12} anchor="middle">SAME CONCENTRATION: NORMAL</T></g>
+    <g><path d="M555 210 l8 6 l8 -6 l6 10 l10 2 l-4 10 l6 8 l-10 4 l-2 10 l-10 -4 l-8 6 l-6 -8 l-10 -2 l2 -10 l-8 -8 l8 -6 l-2 -10 l10 0 Z" fill={RBC} opacity=".8" stroke={INK} /><Face x={565} y={232} r={13} mood="worried" /><T x={565} y={288} s={12} anchor="middle">CONCENTRATED: SHRINKS</T></g>
     <T x={340} y={306} s={12} anchor="middle">WATER MOVES FROM HIGH TO LOW WATER POTENTIAL, THROUGH THE PARTIALLY PERMEABLE MEMBRANE</T>
   </svg>
 );
@@ -108,23 +108,48 @@ const antibodies = (c) => {
   );
 };
 
-const eye = (c) => (
-  <svg viewBox={V}><Defs c={c} />
-    <g filter="url(#ps)"><circle cx="230" cy="155" r="110" fill="#fbfbf7" stroke={INK} strokeWidth="2" /></g>
-    <path d="M230 45 A110 110 0 0 1 230 265" fill="none" stroke="#e8546b" strokeWidth="6" opacity=".7" />
-    <path d="M136 95 Q96 155 136 215" fill="#dff1fb" stroke={INK} strokeWidth="1.6" />
-    <path d="M140 118 L160 122 M140 192 L160 188" stroke="#7a5cd6" strokeWidth="6" />
-    <ellipse cx="178" cy="155" rx="16" ry="34" fill="#dff1fb" stroke={INK} strokeWidth="1.6" />
-    <path d="M170 106 L174 121 M170 204 L174 189" stroke="#9aa6b2" strokeWidth="1.2" />
-    <path d="M160 100 L170 106 M160 210 L170 204" stroke="#c0702a" strokeWidth="5" />
-    <circle cx="338" cy="150" r="5" fill="#f2b632" />
-    <path d="M334 182 L380 196 L380 214 L330 200 Z" fill="#f2d5a0" stroke={INK} />
-    <path d="M60 140 L178 150 L338 150 M60 170 L178 160 L338 150" stroke="#f2b632" strokeWidth="1.4" />
-    {[["cornea: refracts light", 20, [118, 110]], ["iris: controls the pupil", 66, [150, 118]], ["lens: focuses light", 112, [180, 140]], ["[E] ciliary muscle", 160, [164, 102]], ["[E] suspensory ligaments", 206, [172, 196]]].map(([t, y, at]) => <g key={t}><T x={8} y={y} s={13}>{t}</T><path d={`M${8 + t.length * 6.4} ${y - 5} L${at[0]} ${at[1]}`} stroke={INK} strokeWidth=".9" opacity=".7" /></g>)}
-    {[["retina: light receptors", 40, [300, 75]], ["[E] fovea: cones, sharpest", 120, [338, 150]], ["blind spot: no receptors", 200, [334, 190]], ["optic nerve: to the brain", 250, [380, 205]]].map(([t, y, at]) => <g key={t}><T x={420} y={y} s={13}>{t}</T><path d={`M416 ${y - 5} L${at[0]} ${at[1]}`} stroke={INK} strokeWidth=".9" opacity=".7" /></g>)}
-    <T x={230} y={298} s={12} anchor="middle">LIGHT ENTERS FROM THE LEFT</T>
-  </svg>
-);
+/** The human eye in horizontal section, light entering from the left. Every part is placed from
+ * the eyeball's centre and radius so the anatomy stays in proportion. */
+const eye = (c) => {
+  const cx = 300, cy = 152, R = 108, at = (deg, r = R) => [cx + r * Math.cos((deg * Math.PI) / 180), cy + r * Math.sin((deg * Math.PI) / 180)];
+  const [jt, jb] = [at(-145), at(145)]; // where the cornea joins the sclera (top and bottom)
+  const apex = cx - R - 26; // front of the cornea
+  const lens = { x: cx - 74, ry: 34, rx: 13 };
+  const [cmT, cmB] = [at(-132, R - 4), at(132, R - 4)]; // ciliary muscle, just behind the iris root
+  const fovea = at(0, R - 5), nerve = at(22, R), nerveOut = at(22, R + 46);
+  const [ra, rb] = [at(-118, R - 4), at(118, R - 4)];
+  const ray = (y0, s) => `M${apex - 16} ${y0 + (y0 < cy ? 6 : -6)} L${apex + 10} ${cy + s * 15} L${lens.x - lens.rx} ${cy + s * 9} L${lens.x + lens.rx} ${cy + s * 6} L${fovea[0]} ${fovea[1]}`;
+  const tag = (x, y, t, to, end) => <g key={t}><T x={x} y={y} s={12.5} anchor={end ? "end" : "start"}>{t}</T><path d={`M${end ? x + 4 : x - 4} ${y - 4} L${to[0]} ${to[1]}`} stroke={INK} strokeWidth=".8" opacity=".6" /><circle cx={to[0]} cy={to[1]} r="2.2" fill={INK} /></g>;
+  return (
+    <svg viewBox={V}><Defs c={c} />
+      <g filter="url(#ps)"><circle cx={cx} cy={cy} r={R} fill="#fbfbf7" stroke={INK} strokeWidth="2.2" /></g>
+      <path d={`M${jt[0]} ${jt[1]} Q${apex - 30} ${cy} ${jb[0]} ${jb[1]}`} fill="#e3f3fc" stroke={INK} strokeWidth="1.8" />
+      <path d={`M${ra[0]} ${ra[1]} A${R - 4} ${R - 4} 0 1 1 ${rb[0]} ${rb[1]}`} fill="none" stroke="#e8768a" strokeWidth="5" opacity=".85" />
+      <path d={`M${nerve[0] - 2} ${nerve[1]} L${nerveOut[0]} ${nerveOut[1]}`} fill="none" stroke={INK} strokeWidth="18" strokeLinecap="round" /><path d={`M${nerve[0] - 2} ${nerve[1]} L${nerveOut[0]} ${nerveOut[1]}`} fill="none" stroke="#f2d5a0" strokeWidth="15" strokeLinecap="round" />
+      <circle cx={nerve[0] - 2} cy={nerve[1]} r="4" fill="#fbfbf7" stroke={INK} strokeWidth="1" />
+      <path d={`M${jt[0] + 2} ${jt[1] + 4} L${lens.x - 6} ${cy - 13}`} stroke="#7a5cd6" strokeWidth="6" strokeLinecap="round" />
+      <path d={`M${jb[0] + 2} ${jb[1] - 4} L${lens.x - 6} ${cy + 13}`} stroke="#7a5cd6" strokeWidth="6" strokeLinecap="round" />
+      {[-1, 1].map((s) => [0, 1, 2].map((k) => <path key={`${s}${k}`} d={`M${(s < 0 ? cmT : cmB)[0] + 4 + k * 4} ${(s < 0 ? cmT : cmB)[1] - s * 4} L${lens.x - 6 + k * 6} ${cy + s * (lens.ry - 4)}`} stroke="#9aa6b2" strokeWidth="1" />))}
+      <ellipse cx={cmT[0] + 4} cy={cmT[1] + 3} rx="9" ry="6" fill="#d98a4a" stroke={INK} strokeWidth=".8" transform={`rotate(-40 ${cmT[0] + 4} ${cmT[1] + 3})`} />
+      <ellipse cx={cmB[0] + 4} cy={cmB[1] - 3} rx="9" ry="6" fill="#d98a4a" stroke={INK} strokeWidth=".8" transform={`rotate(40 ${cmB[0] + 4} ${cmB[1] - 3})`} />
+      <ellipse cx={lens.x} cy={cy} rx={lens.rx} ry={lens.ry} fill="#cfe9f8" stroke={INK} strokeWidth="1.6" />
+      <path d={ray(132, -1)} fill="none" stroke="#e8a92a" strokeWidth="1.8" /><path d={ray(172, 1)} fill="none" stroke="#e8a92a" strokeWidth="1.8" />
+      <circle cx={fovea[0]} cy={fovea[1]} r="4.5" fill="#e8a92a" stroke="#fff" strokeWidth="1.5" />
+      <ellipse cx={apex + 14} cy={cy - 26} rx="3.5" ry="8" fill="#fff" opacity=".95" transform={`rotate(20 ${apex + 14} ${cy - 26})`} />
+      {tag(150, 26, "[E] ciliary muscle", [cmT[0] + 2, cmT[1] + 2], true)}
+      {tag(150, 58, "[E] suspensory ligaments", [lens.x - 4, cy - 40], true)}
+      {tag(150, 92, "iris: sets pupil size", [lens.x - 9, cy - 32], true)}
+      {tag(150, 136, "cornea: refracts light", [apex + 12, cy - 19], true)}
+      {tag(150, 214, "pupil: the gap in the iris", [lens.x - 8, cy + 2], true)}
+      {tag(150, 260, "lens: fine focusing", [lens.x + 2, cy + 30], true)}
+      {tag(452, 40, "retina: rods and cones", at(-60, R - 4))}
+      {tag(452, 120, "[E] fovea: most cones", fovea)}
+      {tag(452, 196, "blind spot: no receptors", [nerve[0] - 2, nerve[1]])}
+      {tag(452, 250, "optic nerve: to the brain", [nerveOut[0], nerveOut[1]])}
+      <T x={cx} y={300} s={12} anchor="middle">HORIZONTAL SECTION. LIGHT ENTERS FROM THE LEFT AND FOCUSES ON THE FOVEA</T>
+    </svg>
+  );
+};
 
 const tropism = (c) => (
   <svg viewBox={V}><Defs c={c} />
