@@ -3,7 +3,13 @@
 
 const LOADERS = {
   biology: () => import("./biology.js"),
+  chemistry: () => import("./chemistry.js"),
+  physics: () => import("./physics.js"),
+  maths: () => import("./maths.js"),
+  addmaths: () => import("./addmaths.js"),
 };
+
+export const PACK_IDS = Object.keys(LOADERS);
 
 export const hasPack = (subjectId) => subjectId in LOADERS;
 
