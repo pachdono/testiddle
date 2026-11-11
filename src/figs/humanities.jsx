@@ -114,6 +114,7 @@ export default {
   "history-cold-war": timeline([["FEB 1945", "Yalta Conference"], ["JUL 1945", "Potsdam: tension grows"], ["1946", "Iron Curtain speech"], ["1947", "Truman Doctrine"], ["1947", "Marshall Plan"], ["1948", "Berlin Blockade begins"], ["1949", "Airlift wins, NATO formed"]]),
   "history-containment": timeline([["1950", "North Korea invades the South"], ["1953", "Korean armistice"], ["1961", "Bay of Pigs fails"], ["1962", "Cuban Missile Crisis"], ["1964", "Gulf of Tonkin"], ["1968", "Tet Offensive"], ["1973", "US troops leave Vietnam"], ["1975", "Saigon falls"]]),
   "history-eastern-europe": timeline([["1956", "Hungarian rising crushed"], ["1961", "Berlin Wall built"], ["1968", "Prague Spring crushed"], ["1980", "Solidarity in Poland"], ["1985", "Gorbachev's reforms"], ["1989", "Berlin Wall falls"], ["1991", "USSR breaks up"]]),
+  "history-gulf": timeline([["1979", "Saddam takes power; Iranian Revolution"], ["1979", "US embassy hostages taken"], ["1980", "Iraq invades Iran"], ["1988", "UN ceasefire: stalemate"], ["AUG 1990", "Iraq invades Kuwait"], ["JAN 1991", "Operation Desert Storm"], ["FEB 1991", "Kuwait freed"]]),
   "history-depth": timeline([["1919", "Weimar Republic set up"], ["1923", "Hyperinflation, Munich Putsch"], ["1924", "Dawes Plan, recovery"], ["1929", "Depression hits"], ["1933", "Chancellor, Enabling Act"], ["1934", "Night of the Long Knives"], ["1935", "Nuremberg Laws"], ["1938", "Kristallnacht"]]),
   "accounting-fundamentals": (c) => (
     <svg viewBox={V}><Defs c={c} />
