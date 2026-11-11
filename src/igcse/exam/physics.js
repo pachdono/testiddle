@@ -38,10 +38,12 @@ export default {
     ["A sample has a count rate of 640 counts/min, including a background of 40 counts/min. The half life is 2 hours. Calculate the count rate after 6 hours.", ["Corrected count = 640 - 40 = 600", "After 3 half lives: 600 ÷ 8 = 75", "Add background back: 75 + 40 = 115 counts/min"], 3],
     ["Write the equation for the beta decay of carbon-14 (Z = 6) and explain what happens in the nucleus.", ["¹⁴_6 C → ¹⁴_7 N + ⁰_-1 e", "A neutron changes into a proton and an electron", "The electron is emitted as a beta particle"], 3],
     ["Describe the alpha scattering experiment and what it showed about the atom.", ["Alpha particles fired at thin gold foil", "Most passed straight through: atom mostly empty space", "Some deflected, a few bounced back", "Nucleus is small, dense and positive"], 4],
+    ["Explain how a chain reaction is controlled in a nuclear reactor.", ["Uranium-235 absorbs a neutron and splits, releasing 2 or 3 neutrons", "Moderator (graphite or water) slows neutrons so they can be absorbed", "Control rods (boron) absorb neutrons", "Lowering or raising the rods controls the rate of fission"], 4],
   ],
   space: [
     ["Explain why the UK has summer when the northern hemisphere is tilted towards the Sun.", ["The Earth's axis is tilted", "Sunlight hits the northern hemisphere more directly (Sun higher)", "Days are longer, so more energy is received per day"], 3],
     ["Describe the life cycle of a star much more massive than the Sun.", ["Nebula collapses under gravity to a protostar", "Main sequence star (hydrogen fusion)", "Red supergiant", "Supernova, leaving a neutron star or black hole"], 4],
     ["Explain how redshift supports the Big Bang theory.", ["Light from distant galaxies is shifted to longer wavelengths", "So galaxies are moving away from us", "More distant galaxies move faster", "So the universe is expanding from a single point"], 4],
+    ["Describe how the position of a star on a Hertzsprung-Russell diagram relates to its properties, and where the Sun, red giants and white dwarfs appear.", ["Axes: absolute magnitude (or luminosity) against surface temperature, hottest on the left", "Main sequence runs from hot bright (top left) to cool dim (bottom right); the Sun is on it", "Red giants: top right (cool but bright, very large)", "White dwarfs: bottom left (hot but dim, small)"], 4],
   ],
 };
