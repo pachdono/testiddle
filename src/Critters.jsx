@@ -7,26 +7,34 @@ const LINE = "#2e5f74";
 const s = { stroke: LINE, strokeWidth: 1.3, strokeLinejoin: "round", strokeLinecap: "round" };
 const eye = (x, y, r = 4.4, look = 0) => <g><ellipse cx={x} cy={y} rx={r} ry={r * 1.1} fill="#fff" {...s} strokeWidth="1.1" /><circle cx={x + look} cy={y + .6} r={r * .55} fill="#283a4b" /><circle cx={x + look + r * .25} cy={y - r * .2} r={r * .2} fill="#fff" /></g>;
 
-/** Tiddle hanging on to a top edge: the edge runs along y = 64 of the drawing. */
+/** Tiddle hanging on to a top edge, turned three quarters and shaded like the avatars: the edge
+ * runs along y = 64 of the drawing. */
 function TiddleCling() {
   return (
     <svg viewBox="0 0 110 76" width="110" height="76" aria-hidden="true">
-      <defs><clipPath id="tc-clip"><rect x="0" y="0" width="110" height="64" /></clipPath></defs>
+      <defs>
+        <clipPath id="tc-clip"><rect x="0" y="0" width="110" height="64" /></clipPath>
+        <clipPath id="tc-body"><path d="M53 14 C74 13 84 28 83 44 C88 54 86 66 80 74 H28 C22 66 20 54 25 44 C24 28 33 15 53 14 Z" /></clipPath>
+        <linearGradient id="tc-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d6f7ee" /><stop offset=".55" stopColor="#bdeee1" /><stop offset="1" stopColor="#86d2bd" /></linearGradient>
+      </defs>
       <g clipPath="url(#tc-clip)">
-        <path d="M55 14 C75 14 84 28 83 44 C88 54 86 66 80 74 H30 C24 66 22 54 27 44 C26 28 35 14 55 14 Z" fill="#b8ecdf" {...s} />
-        <path d="M77 30 C82 40 82 52 79 62 L74 64 C78 54 78 42 74 34 Z" fill="#8ed6c3" />
-        <path d="M34 26 C37 21 42 18 47 17" stroke="#fff" strokeWidth="2" fill="none" opacity=".7" strokeLinecap="round" />
+        <path d="M53 14 C74 13 84 28 83 44 C88 54 86 66 80 74 H28 C22 66 20 54 25 44 C24 28 33 15 53 14 Z" fill="url(#tc-grad)" />
+        <g clipPath="url(#tc-body)"><ellipse cx="90" cy="46" rx="16" ry="40" fill="#86d2bd" /><ellipse cx="96" cy="48" rx="9" ry="38" fill="#6cbfa8" opacity=".55" /></g>
+        <path d="M53 14 C74 13 84 28 83 44 C88 54 86 66 80 74 H28 C22 66 20 54 25 44 C24 28 33 15 53 14 Z" fill="none" {...s} />
+        <path d="M31 27 C34 21 40 17 46 16" stroke="#fff" strokeWidth="2.2" fill="none" opacity=".85" strokeLinecap="round" />
       </g>
-      {eye(46, 38, 6.2, 0)}{eye(64, 38, 6.2, 0)}
-      <ellipse cx="37" cy="48" rx="4" ry="2.2" fill="#f7aec0" opacity=".85" /><ellipse cx="73" cy="48" rx="4" ry="2.2" fill="#f7aec0" opacity=".85" />
-      <path d="M49 47 Q55 44.5 61 47 Q57 53 55 53 Q53 53 49 47 Z" fill="#f6b660" {...s} stroke="#e09444" strokeWidth="1" />
-      <path d="M53 15 C51 8 58 6 57 12" fill="none" {...s} />
-      <g {...s} stroke="#33465c"><path d="M42 12.8 V16 C48 18.4 62 18.4 68 16 V12.8" fill="#4a5f78" /><path d="M36 9.6 L55 3 L74 9.6 L55 16.2 Z" fill="#53698a" /><path d="M55 9.6 C61 10.6 68 12 70.6 14 V20" fill="none" stroke="#e9a54b" strokeWidth="1.1" /></g>
+      <g {...s} strokeWidth="1.1"><ellipse cx="44" cy="38" rx="6.4" ry="6.8" fill="#fff" /><ellipse cx="65" cy="37.6" rx="4.8" ry="6.4" fill="#fff" /></g>
+      <circle cx="45.4" cy="38.6" r="3.4" fill="#283a4b" /><circle cx="46.8" cy="37" r="1.3" fill="#fff" /><circle cx="66" cy="38.2" r="2.8" fill="#283a4b" /><circle cx="67.1" cy="36.9" r="1.05" fill="#fff" />
+      <ellipse cx="34" cy="48" rx="4.4" ry="2.4" fill="#f7a9bb" opacity=".85" /><ellipse cx="74" cy="47" rx="2.6" ry="2" fill="#f7a9bb" opacity=".7" />
+      <g {...s} stroke="#e2903f" strokeWidth="1"><path d="M50 46 Q60 41 72 48 Q61 52 50 49 Z" fill="#f8be6a" /><path d="M50 49 Q61 52 72 48 Q67 54 59 55 Q52 54 50 49 Z" fill="#e2903f" /></g>
+      <path d="M53 45 Q59 42.6 65 44.6" stroke="#fff" strokeWidth=".9" opacity=".75" fill="none" />
+      <path d="M51 15 C47 6 58 4 56 12" fill="none" {...s} />
+      <g {...s} stroke="#33465c"><path d="M40 12.8 V16 C46 18.4 60 18.4 66 16 V12.8" fill="#4a5f78" /><path d="M34 9.6 L53 3 L72 9.6 L53 16.2 Z" fill="#53698a" /><path d="M53 3 L72 9.6 L53 16.2 Z" fill="#41557a" stroke="none" /><path d="M34 9.6 L53 3 L72 9.6 L53 16.2 Z" fill="none" /><path d="M53 9.6 C59 10.6 66 12 68.6 14 V20" fill="none" stroke="#e9a54b" strokeWidth="1.1" /></g>
       {/* wings hooked over the edge */}
-      <path d="M26 60 C20 60 17 64 19 68 C21 72 28 72 33 69 C35 67 35 63 32 61 Z" fill="#b8ecdf" {...s} />
-      <path d="M22 68 L23 72 M26 69 L27 73 M30 68 L31 72" {...s} strokeWidth="1" />
-      <path d="M84 60 C90 60 93 64 91 68 C89 72 82 72 77 69 C75 67 75 63 78 61 Z" fill="#b8ecdf" {...s} />
-      <path d="M88 68 L87 72 M84 69 L83 73 M80 68 L79 72" {...s} strokeWidth="1" />
+      <path d="M24 60 C18 60 15 64 17 68 C19 72 26 72 31 69 C33 67 33 63 30 61 Z" fill="#bdeee1" {...s} />
+      <path d="M20 68 L21 72 M24 69 L25 73 M28 68 L29 72" {...s} strokeWidth="1" />
+      <path d="M82 60 C88 60 91 64 89 68 C87 72 80 72 75 69 C73 67 73 63 76 61 Z" fill="#86d2bd" {...s} />
+      <path d="M86 68 L85 72 M82 69 L81 73 M78 68 L77 72" {...s} strokeWidth="1" />
     </svg>
   );
 }
@@ -109,8 +117,10 @@ function Mochi() {
       <path d="M86 42 C94 42 96 34 91 29" fill="none" {...s} strokeWidth="3.4" stroke="#2e5f74" />
       <path d="M86 42 C94 42 96 34 91 29" fill="none" stroke="#f9e9da" strokeWidth="1.6" strokeLinecap="round" />
       <path d="M30 44 C28 31 40 22 58 22 C76 22 89 31 88 44 Z" fill="#f9e9da" {...s} />
+      <path d="M31 44 C40 37 72 36 87 44 Z M70 24 C80 27 88 34 88 44 H80 C82 36 78 29 70 24 Z" fill="#ecd0b6" />
       <path d="M56 24 C58 29 58 34 56 38 M66 24 C68 29 68 34 66 38 M76 27 C78 31 78 35 76 39" fill="none" stroke="#efc59d" strokeWidth="2" strokeLinecap="round" />
       <path d="M8 44 C6 33 12 23 24 23 C36 23 42 33 40 44 Z" fill="#f9e9da" {...s} />
+      <path d="M32 26 C38 30 41 37 40 44 H34 C36 38 35 31 32 26 Z" fill="#ecd0b6" /><path d="M12 28 C14 25 17 24 20 24" stroke="#fff" strokeWidth="1.6" fill="none" opacity=".8" strokeLinecap="round" />
       <path d="M11 29 L12 15 L21 23 Z M28 23 L36 15 L37 29 Z" fill="#f9e9da" {...s} />
       <path d="M13.4 25 L13.8 19 L17.6 22.6 Z M31 22.6 L34.6 19 L34.8 25 Z" fill="#f7c4cc" />
       <path d="M14 34 Q17 36.4 20 34 M28 34 Q31 36.4 34 34" fill="none" {...s} strokeWidth="1.2" />
@@ -130,6 +140,7 @@ function Bumble() {
       <g className="crit-wing"><ellipse cx="30" cy="15" rx="7.5" ry="11" transform="rotate(-22 30 15)" fill="#eef7ff" {...s} strokeWidth="1.1" opacity=".95" /><ellipse cx="40" cy="16" rx="6.5" ry="9.5" transform="rotate(20 40 16)" fill="#eef7ff" {...s} strokeWidth="1.1" opacity=".95" /></g>
       <path d="M48 34 L54 35.4 L48 37.6" fill="#6b5236" {...s} strokeWidth="1" />
       <ellipse cx="32" cy="35" rx="17" ry="12.5" fill="#ffd96e" {...s} />
+      <path d="M40 24.4 C46 27 49 31 49 35 C49 41 43 46.6 34 47.4 C42 44 46 38 46 33 C46 29 44 26.4 40 24.4 Z" fill="#f2b94a" />
       <path d="M37 23.6 C39.4 29 39.4 41 37 46.4 M44.4 26.4 C46.2 31 46.2 39 44.4 43.6" fill="none" stroke="#6b5236" strokeWidth="2.6" strokeLinecap="round" />
       <path d="M19 29 C21 25.6 24 24 27 23.6" stroke="#fff" strokeWidth="1.8" fill="none" opacity=".75" strokeLinecap="round" />
       <path d="M21 24 C19 18 17 15 14 14 M27 23 C27 17 28 14 31 12" fill="none" {...s} strokeWidth="1.1" />
@@ -169,6 +180,7 @@ function Ladybird() {
       <circle cx="17" cy="10" r="6.4" fill="#4a5a70" {...s} />
       {eye(14.4, 9.6, 2.2, 0)}{eye(19.6, 9.6, 2.2, 0)}
       <ellipse cx="17" cy="26" rx="11.4" ry="13" fill="#f59a8e" {...s} />
+      <path d="M20 13.4 C25 15.4 28.4 20 28.4 26 C28.4 32 25 37 19 39 C24 35 25.6 30 25.6 26 C25.6 20 23.6 16 20 13.4 Z" fill="#e0756a" />
       <path d="M17 13.6 V39" {...s} strokeWidth="1.1" />
       <g fill="#4a5a70" opacity=".85"><circle cx="11.4" cy="22" r="2.2" /><circle cx="22.6" cy="22" r="2.2" /><circle cx="12" cy="31" r="1.8" /><circle cx="22" cy="31" r="1.8" /></g>
       <path d="M9 18 C10 16 11.6 15 13 14.6" stroke="#fff" strokeWidth="1.5" fill="none" opacity=".75" strokeLinecap="round" />

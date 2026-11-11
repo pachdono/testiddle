@@ -4,10 +4,10 @@ import { useRef, useState } from "react";
 import { Mascot } from "./Mascot.jsx";
 
 const FEATURES = [
-  ["notes", "Notes for every skill", "Read short revision notes for all 43 SAT skills, with the key points to tick off as you learn them.", "Every skill in eight topics"],
-  ["quiz", "Check your understanding", "Answer questions on one skill, or build a quiz across several, with an explanation after every answer.", "735 practice questions"],
-  ["cards", "Memorise key ideas", "Flip flashcards of terms, formulas and the notes for each skill, and mark the ones you know.", "Build your own decks"],
-  ["exam", "Get test ready", "Sit full length tests on paper or on screen, with an adaptive second module like the real thing.", "Ten full tests"],
+  ["notes", "Notes for every topic", "Short revision notes for all 43 SAT skills and every topic of 26 IGCSE subjects, with the key points to tick off as you learn them.", "Over 270 notes pages"],
+  ["quiz", "Check your understanding", "Answer questions on one topic, or build a quiz across several, with an explanation after every answer.", "Nearly 2000 practice questions"],
+  ["cards", "Memorise key ideas", "Flip flashcards of key terms, formulas and the notes for each topic, mark the ones you know, and build your own decks.", "Key terms for every subject"],
+  ["exam", "Get exam ready", "Cheat sheets for every topic, exam style questions marked against a mark scheme, and ten full SAT tests on paper or on screen.", "Cheat sheets and full tests"],
 ];
 
 // Tiddle in different costumes, floating round the edge of the hero: pose, size, left, top, tilt.
@@ -60,7 +60,7 @@ export default function Landing({ onStart }) {
       </section>
       <section className="cg-lcta" ref={form}>
         <span className="cg-badge dark">Start practising</span>
-        <h2>Get the score you're working for</h2>
+        <h2>Get the grade you're working for</h2>
         <p>Sign in with your Dwiddle account, or make one. It's the same account.</p>
         <Mascot size={110} pose="cheer" />
         <button className="cg-btn primary big" onClick={onStart}>Start revising, it's free</button>
