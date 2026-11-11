@@ -30,7 +30,7 @@ export default {
       ["What does 我去过中国 mean?", ["I am going to China", "I have been to China", "I am in China", "I want to go to China"], "B", "过 shows past experience."],
       ["Which measure word goes with 书 (book)?", ["个", "只", "本", "张"], "C", "一本书: 本 is for books."],
       ["What does 看电影 mean?", ["Read a book", "Watch a film", "Listen to music", "Play football"], "B", "电影 is film."],
-      ["Which measure word is used for books?", ["个", "本", "只", "张"], "B", "一本书."],
+      ["Which measure word is used for books?", ["个", "本", "只", "张"], "B", "Books take 本: 一本书."],
       ["What does 过 show?", ["Future", "Past experience", "A question", "Location"], "B", "我去过中国: I have been to China."],
     ]),
     one("world", "The world around us: town, environment, transport and weather", "Town, transport and weather", 7, "Places, transport and weather, with 在, 有 and 坐.", [
