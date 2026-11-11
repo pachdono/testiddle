@@ -6,6 +6,7 @@ import { TERMS } from "./content.js";
 import { doneFrom, isRight, loadBank } from "./bank.js";
 import { logQuiz, quizLog, rateCard, cardRatings } from "./progress.js";
 import { Critter, CritterFor, castFor } from "./Critters.jsx";
+import { TopicIcon } from "./figs/pics.jsx";
 
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); window.dispatchEvent(new Event("testiddle:progress")); } catch { /* private mode */ } };
@@ -63,7 +64,7 @@ export function TopicList({ progressOf, onOpen, search = true, topics = TOPICS, 
         return (
           <section key={topic.id} className={"cg-topic" + (open[topic.id] ? " open" : "")}>
             <button className="cg-topichead" aria-expanded={!!open[topic.id]} onClick={() => setOpen({ ...open, [topic.id]: !open[topic.id] })}>
-              <Chev open={open[topic.id]} /><span><b>Topic {i + 1}</b> - {topic.name} {mixed && <small className="muted">{topic.subject}</small>}</span><span className="cg-meter"><i style={{ width: `${p * 100}%` }} /></span>
+              <Chev open={open[topic.id]} />{topic.pic && <TopicIcon name={topic.pic} />}<span><b>Topic {topic.no ?? i + 1}</b> - {topic.name} {mixed && <small className="muted">{topic.subject}</small>}</span><span className="cg-meter"><i style={{ width: `${p * 100}%` }} /></span>
             </button>
             {open[topic.id] && <div className="cg-subs">{subs.map((s) => <button key={s.id} onClick={() => onOpen(s)}><span>{s.code} - {s.skill}</span><span className="cg-meter small"><i style={{ width: `${progressOf(s) * 100}%` }} /></span></button>)}</div>}
           </section>

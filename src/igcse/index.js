@@ -30,6 +30,8 @@ const LOADERS = {
   pe: () => import("./pe.js"),
 };
 
+export { layoutFor, topicPic } from "./layouts.js";
+
 export const PACK_IDS = Object.keys(LOADERS);
 
 /** Written exam questions live beside each pack, in exam/<id>.js. */
@@ -54,7 +56,7 @@ function written(packId, topic, list = []) {
 /** Turns a pack into the same topic and subtopic shape the SAT notes use. */
 export function shape(pack, exam = {}) {
   let n = 0;
-  const topics = pack.topics.map((t) => ({ ...t, subject: pack.name, written: written(pack.id, t, exam[t.id]) }));
+  const topics = pack.topics.map((t, i) => ({ ...t, no: i + 1, subject: pack.name, written: written(pack.id, t, exam[t.id]) }));
   const subs = topics.flatMap((t, i) => t.subs.map((s, j) => {
     const id = `${pack.id}-${t.id}-${j + 1}`;
     return {
@@ -115,7 +117,7 @@ export function sheetsOf(pack, subject) {
     const many = pack.subs.filter((x) => x.topic.id === s.topic.id).length > 1;
     const blocks = s.sections.slice(0, 8).map(([h, lines]) => [h, lines.slice(0, 12).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l.startsWith("[H] ") ? `${plain(l)} (Higher)` : l))]);
     return {
-      id: sheetIdOf(s), title: many ? s.skill : s.topic.name, subject: pack.name, icon: subject.icon, desc: s.intro, blocks,
+      id: sheetIdOf(s), title: many ? s.skill : s.topic.name, subject: s.topic.name, icon: subject.icon, desc: s.intro, blocks,
       chips: ["IGCSE", pack.name.toUpperCase()],
       meta: { color: subject.tint, soft: soften(subject.tint), tagline: s.intro, key: s.points.slice(0, 2).join(" "), pose: POSES[i % POSES.length] },
     };

@@ -12,6 +12,7 @@ import { cardRatings, quizLog } from "./progress.js";
 import { SheetPoster, SheetThumb } from "./Posters.jsx";
 import { SubjectIcon } from "./SubjectIcons.jsx";
 import { doneFrom, loadBank } from "./bank.js";
+import { TopicIcon } from "./figs/pics.jsx";
 
 const base = import.meta.env.BASE_URL;
 const DECKS_KEY = "testiddle-decks";
@@ -88,7 +89,7 @@ export function FlashcardsIndex({ openDeck, build, topics: TOPICS = SAT_TOPICS, 
         const all = subs.flatMap(cardsFor);
         return (
           <section key={t.id} className={"cg-topic" + (open[t.id] ? " open" : "")}>
-            <button className="cg-topichead" aria-expanded={!!open[t.id]} onClick={() => setOpen({ ...open, [t.id]: !open[t.id] })}><span className="cg-round">{open[t.id] ? "\u25b4" : "\u25be"}</span><span><b>Topic {i + 1}</b> - {t.name}</span><span className="cg-meter"><i style={{ width: `${(conf(all) / all.length) * 100}%` }} /></span></button>
+            <button className="cg-topichead" aria-expanded={!!open[t.id]} onClick={() => setOpen({ ...open, [t.id]: !open[t.id] })}><span className="cg-round">{open[t.id] ? "\u25b4" : "\u25be"}</span>{t.pic && <TopicIcon name={t.pic} />}<span><b>Topic {t.no ?? i + 1}</b> - {t.name}</span><span className="cg-meter"><i style={{ width: `${(conf(all) / all.length) * 100}%` }} /></span></button>
             {open[t.id] && <div className="cg-subs">{subs.map((s) => { const c = cardsFor(s); return <button key={s.id} onClick={() => openDeck(c, `${s.code} ${s.skill}`)}><span>{s.code} - {s.skill}</span><span className="cg-meter small"><i style={{ width: `${(conf(c) / c.length) * 100}%` }} /></span></button>; })}</div>}
           </section>
         );
@@ -132,9 +133,10 @@ export function CheatSheets({ sheets: SHEETS = SAT_SHEETS, groups = ["Math", "Re
   return (
     <div className="cg-stack tight">
       <span className="cg-chipsm">{SHEETS.length} cheat sheets</span>
-      {groups.map((subject) => <section key={subject} className="cg-card cg-sheetlist"><span className="cg-tag dark">{subject}</span>
-        {SHEETS.filter((s) => s.subject === subject).map((s) => <button key={s.id} onClick={() => setOpen(s.id)}><SheetThumb sheet={s} /><span><b>{s.title}</b><small className="muted">{s.desc}</small></span></button>)}
-      </section>)}
+      {groups.map((g) => { const subject = g.name || g, list = SHEETS.filter((s) => s.subject === subject); return list.length > 0 && <section key={subject} className="cg-card cg-sheetlist"><span className="cg-tag dark">{g.no ? `${g.no}. ${subject}` : subject}</span>
+        {g.pic && <TopicIcon name={g.pic} size={40} />}
+        {list.map((s) => <button key={s.id} onClick={() => setOpen(s.id)}><SheetThumb sheet={s} /><span><b>{s.title}</b><small className="muted">{s.desc}</small></span></button>)}
+      </section>; })}
     </div>
   );
 }

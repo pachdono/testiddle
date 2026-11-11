@@ -5,7 +5,7 @@
 const N = (skill, minutes, intro, sections, points) => ({ skill, minutes, intro, sections, points });
 
 export const TOPICS = [
-  { id: "craft", subject: "Reading and Writing", name: "Craft and Structure", subs: [
+  { id: "craft", pic: "brush", subject: "Reading and Writing", name: "Craft and Structure", subs: [
     N("Words in context", 5, "Pick the word that fits the meaning and the tone of the sentence it sits in.", [
       ["How to approach it", ["Cover the choices and read the whole text first.", "Find the clue words: contrast (but, although, despite), cause (because, so), or restatement (a colon, in other words).", "Predict your own word, then pick the choice closest to it."]],
       ["Traps to avoid", ["A choice that is a real meaning of the word, but not the one used here.", "A choice with the right idea but the wrong strength: hostile when the text only says cautious.", "A choice that matches the topic but not the logic of the blank."]],
@@ -19,7 +19,7 @@ export const TOPICS = [
       ["Traps to avoid", ["Choices that are true of one text but not about the other.", "Choices that exaggerate: Text 2 'rejects' when it only adds a caution."]],
     ], ["Summarise each text in one line first.", "Most pairs partly agree: look for the qualification.", "The answer must be supported by both texts."]),
   ] },
-  { id: "info", subject: "Reading and Writing", name: "Information and Ideas", subs: [
+  { id: "info", pic: "magnifier", subject: "Reading and Writing", name: "Information and Ideas", subs: [
     N("Central ideas and details", 5, "Find the main point of a text, or a detail it states directly.", [
       ["Main idea", ["The main idea is what most sentences support.", "The first sentence is often background; the claim usually follows a turn word such as however.", "Too narrow: one detail. Too broad: more than the text says."]],
       ["Details", ["Detail questions are answered by one line of the text.", "Find the line and match it; do not infer beyond it."]],
@@ -37,7 +37,7 @@ export const TOPICS = [
       ["Traps to avoid", ["Conclusions that need an extra fact the text never gives.", "Choices that repeat an earlier sentence rather than finishing the logic."]],
     ], ["The right answer follows from the text with no extra facts.", "Narrow and careful beats bold.", "Read the last sentence closely: the blank continues it."]),
   ] },
-  { id: "conventions", subject: "Reading and Writing", name: "Standard English Conventions", subs: [
+  { id: "conventions", pic: "pen", subject: "Reading and Writing", name: "Standard English Conventions", subs: [
     N("Boundaries", 6, "Punctuate where sentences and clauses meet.", [
       ["Joining two complete sentences", ["Use a period, a semicolon, or a comma with and, but, or, so, for, nor, yet.", "A comma alone is a comma splice and is always wrong.", "A colon works when the second part explains the first."]],
       ["Extra information", ["Set it off with a matching pair: two commas, two dashes or two brackets.", "The sentence must still work if you remove it.", "No comma between a subject and its verb, or a verb and its object."]],
@@ -48,7 +48,7 @@ export const TOPICS = [
       ["Modifiers", ["An opening phrase describes the noun right after the comma.", "Fix a dangling modifier by putting the right doer first."]],
     ], ["Cross out the words between subject and verb.", "Its never takes an apostrophe for possession.", "The noun after an opening phrase must be its doer."]),
   ] },
-  { id: "expression", subject: "Reading and Writing", name: "Expression of Ideas", subs: [
+  { id: "expression", pic: "speech", subject: "Reading and Writing", name: "Expression of Ideas", subs: [
     N("Transitions", 5, "Pick the word or phrase that links two ideas correctly.", [
       ["Relationships", ["Contrast: however, nevertheless, in contrast.", "Addition: moreover, furthermore, similarly.", "Result: therefore, consequently, as a result.", "Example: for example, for instance. Sequence: then, subsequently, finally."]],
       ["Method", ["Ignore the choices and decide how the two sentences relate.", "Say it in plain words, such as 'but' or 'so', then match the choice.", "Two choices with the same meaning cannot both be right, so cross out pairs."]],
@@ -58,7 +58,7 @@ export const TOPICS = [
       ["Traps to avoid", ["Accurate sentences that meet a different goal.", "Choices that leave out a part the goal names, such as both studies."]],
     ], ["The goal in the question decides the answer.", "Accuracy is not enough; it must meet the goal.", "Check every part of the goal is covered."]),
   ] },
-  { id: "algebra", subject: "Math", name: "Algebra", subs: [
+  { id: "algebra", pic: "xy", subject: "Math", name: "Algebra", subs: [
     N("Linear equations", 5, "Solve equations in one variable and recognise how many solutions they have.", [
       ["Solving", ["Expand brackets, collect like terms, then undo operations in reverse order.", "Clear fractions by multiplying every term by the common denominator."]],
       ["Number of solutions", ["One solution: the x terms differ.", "No solution: same x terms, different constants (3x + 2 = 3x + 5).", "Infinitely many: both sides identical."]],
@@ -86,7 +86,7 @@ export const TOPICS = [
       ["Systems and graphs", ["The solution set of a system is where shaded regions overlap.", "A dashed line means the boundary is not included."]],
     ], ["Multiply or divide by a negative: flip the sign.", "At least is ≥, at most is ≤.", "Test a point to check a shaded region."]),
   ] },
-  { id: "advanced", subject: "Math", name: "Advanced Math", subs: [
+  { id: "advanced", pic: "rising", subject: "Math", name: "Advanced Math", subs: [
     N("Functions", 6, "Read, evaluate and compose functions.", [
       ["Evaluating", ["f(3) means replace x with 3 everywhere.", "f(g(x)): work out g first, then put the result into f."]],
       ["Graphs", ["f(x) = k: find where the graph has height k.", "Shifts: f(x) + k moves up, f(x - h) moves right by h.", "Zeros of f are the x-intercepts of its graph."]],
@@ -120,7 +120,7 @@ export const TOPICS = [
       ["Rules", ["|x| = k has two solutions, x = k and x = -k, when k > 0.", "|x - a| is the distance from x to a.", "The graph of y = |x| is a V with its corner at the origin."]],
     ], ["Absolute value is distance from zero.", "Split |expression| = k into two equations.", "A negative absolute value is impossible."]),
   ] },
-  { id: "data", subject: "Math", name: "Problem Solving and Data Analysis", subs: [
+  { id: "data", pic: "chart", subject: "Math", name: "Problem Solving and Data Analysis", subs: [
     N("Ratios and rates", 4, "Compare quantities and convert units.", [
       ["Method", ["Write the ratio as a fraction and set up a proportion.", "Convert units by multiplying by fractions equal to 1, so units cancel.", "Rate = amount / time."]],
     ], ["Units should cancel to what you want.", "Cross-multiply proportions.", "Check the order of the ratio."]),
@@ -144,7 +144,7 @@ export const TOPICS = [
       ["Method", ["P = favourable / total possible.", "Given that ... means the total is only the named group.", "Independent events: multiply the probabilities."]],
     ], ["Find the right total first.", "Given that narrows the total.", "Probabilities are between 0 and 1."]),
   ] },
-  { id: "geometry", subject: "Math", name: "Geometry and Trigonometry", subs: [
+  { id: "geometry", pic: "triangle", subject: "Math", name: "Geometry and Trigonometry", subs: [
     N("Area", 4, "Area of plane shapes and composite figures.", [
       ["Formulas", ["Rectangle ℓw. Triangle ½ bh. Circle πr². Trapezoid ½(a + b)h.", "Composite shapes: add the parts or subtract the cut-outs."]],
       ["Scaling", ["If lengths scale by k, area scales by k²."]],

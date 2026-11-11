@@ -235,3 +235,14 @@ export const PICKS = {
   "pe-skill": ["ball", "puzzle", "muscle", "clock"], "pe-skill-2": ["eye", "brain", "runner", "speech"], "pe-social": ["trophy", "tv", "coin", "camera", "people"],
   "pe-social-2": ["muscle", "bolt", "heart", "drop", "syringe"], "pe-practical": ["runner", "magnifier", "target", "recycle"],
 };
+
+/** A topic's picture on its own, for headings in the course lists. */
+export const TopicIcon = ({ name, size = 34 }) => {
+  const f = PICS[name] || PICS.book;
+  return (
+    <svg className="cg-topicpic" width={size} height={size} viewBox="-22 -22 44 44" aria-hidden="true">
+      <circle r="21" fill="#fff" stroke="#d5dbe3" strokeWidth="1.5" />
+      <g stroke={INK} strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round">{f()}</g>
+    </svg>
+  );
+};

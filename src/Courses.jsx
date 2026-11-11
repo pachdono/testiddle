@@ -149,9 +149,9 @@ function Explainer({ rows, cells, range, onClose }) {
   const best = Math.max(longestRunOf(rows), s.run);
   return (
     <Modal title="Your streak" onClose={onClose}>
-      <h2>Your streak</h2>
+      <div className="cg-streakhero"><StreakFlame lit={s.run > 0} size={78} /><h2>Your streak</h2></div>
       <p className="cg-longest">Longest streak: {best} {best === 1 ? "day" : "days"}</p>
-      <div className="cg-weekbox"><div className="cg-spread"><span className="small muted">{range}</span><span className="cg-freezes">{"❄"} {s.left} {s.left === 1 ? "freeze" : "freezes"}</span></div><div className="cg-week">{cells.map((c, i) => <span key={i} className={"cg-day" + (c.on ? " on" : "") + (c.frozen ? " frozen" : "")}>{c.on ? "✓" : c.frozen ? "❄" : c.l}</span>)}</div></div>
+      <div className="cg-weekbox"><div className="cg-spread"><span className="small muted">{range}</span><span className="cg-freezes">{"❄"} {s.left} {s.left === 1 ? "freeze" : "freezes"}</span></div><div className="cg-week">{cells.map((c, i) => <DayBadge key={i} c={c} />)}</div></div>
       <div className="cg-tip"><b>Study every day</b><span className="small muted">Finish a test, a quiz or a few flashcards each day to keep your streak going.</span></div>
       <div className="cg-tip"><b>Streak freezes</b><span className="small muted">If you miss a day, a freeze is applied automatically so your streak survives.</span></div>
       <div className="cg-tip"><b>Two at a time</b><span className="small muted">You can cover up to two missed days in a run. After that, a missed day starts the count again.</span></div>
@@ -160,24 +160,68 @@ function Explainer({ rows, cells, range, onClose }) {
   );
 }
 
-function Week({ rows }) {
+/** The streak flame: cheerful while the streak is alive, sleepy when it has gone out. */
+export function StreakFlame({ lit = true, size = 64 }) {
+  const [a, b, line] = lit ? ["#ffd36b", "#ff9a3c", "#e2741f"] : ["#e9e4dc", "#c9c1b5", "#a39a8c"];
+  return (
+    <svg className="cg-flamepic" width={size} height={size * 1.12} viewBox="0 0 64 72" aria-hidden="true">
+      <defs><linearGradient id={lit ? "flm" : "flm0"} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={a} /><stop offset="1" stopColor={b} /></linearGradient></defs>
+      <ellipse cx="32" cy="68" rx="18" ry="3" fill="#3b4654" opacity=".08" />
+      <path d="M33 3c3 9 11 13 17 22 6 9 7 20 1 29-5 8-12 12-19 12S17 62 12 55C6 46 7 35 13 27c2 5 5 7 8 8-2-11 3-23 12-32Z" fill={`url(#${lit ? "flm" : "flm0"})`} stroke={line} strokeWidth="2.2" strokeLinejoin="round" />
+      <path d="M32 64c-8 0-13-5-13-12 0-6 4-10 7-13 0 4 2 6 4 6-1-6 2-11 6-14 1 6 9 10 9 20 0 8-6 13-13 13Z" fill={lit ? "#fff1b8" : "#f4f1ec"} opacity=".85" />
+      <path d="M11 30c-3-2-4-6-3-9" fill="none" stroke={line} strokeWidth="2" strokeLinecap="round" />
+      {lit ? <>
+        <ellipse cx="25" cy="44" rx="5.6" ry="6.2" fill="#fff" stroke={line} strokeWidth="1.6" /><ellipse cx="40" cy="44" rx="5.6" ry="6.2" fill="#fff" stroke={line} strokeWidth="1.6" />
+        <circle cx="26.4" cy="45" r="2.6" fill="#3b2a1a" /><circle cx="41.4" cy="45" r="2.6" fill="#3b2a1a" /><circle cx="27.3" cy="44" r=".9" fill="#fff" /><circle cx="42.3" cy="44" r=".9" fill="#fff" />
+        <path d="M28 53q4.5 4 9 0" fill="none" stroke="#7a3d12" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="18" cy="52" rx="3.2" ry="2" fill="#ff7b6b" opacity=".35" /><ellipse cx="47" cy="52" rx="3.2" ry="2" fill="#ff7b6b" opacity=".35" />
+      </> : <>
+        <path d="M20 45q5 3 10 0M35 45q5 3 10 0" fill="none" stroke="#6b6358" strokeWidth="2" strokeLinecap="round" />
+        <path d="M29 54h7" stroke="#6b6358" strokeWidth="2" strokeLinecap="round" />
+      </>}
+    </svg>
+  );
+}
+
+/** One day of the week: a little flame with a tick once you studied, ice for a freeze. */
+function DayBadge({ c }) {
+  if (c.on) return (
+    <span className="cg-day badge" aria-label={`${c.name}, studied`}>
+      <svg width="48" height="52" viewBox="0 0 48 52" aria-hidden="true"><path d="M24 2c2 6 6 6 9 3 1 5 5 7 8 6 0 4 3 8 3 15 0 13-9 23-20 23S4 39 4 26c0-7 3-11 3-15 3 1 7-1 8-6 3 3 7 3 9-3Z" fill="url(#dayflm)" stroke="#e8902b" strokeWidth="2" strokeLinejoin="round" />
+        <defs><linearGradient id="dayflm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffe08a" /><stop offset="1" stopColor="#ffbf47" /></linearGradient></defs>
+        <ellipse cx="15" cy="20" rx="4" ry="2.4" fill="#fff" opacity=".55" transform="rotate(-30 15 20)" />
+        <path d="M15 29l6 6 12-12" fill="none" stroke="#fff" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M15 29l6 6 12-12" fill="none" stroke="#e8902b" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" opacity=".5" />
+      </svg>
+    </span>
+  );
+  if (c.frozen) return <span className="cg-day frozen" aria-label={`${c.name}, covered by a freeze`}>{"\u2744"}</span>;
+  return <span className={"cg-day" + (c.today ? " today" : "") + (c.future ? " future" : "")} aria-label={c.name}>{c.l}</span>;
+}
+
+const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+export function Week({ rows }) {
   const [explain, setExplain] = useState(false);
+  const [back, setBack] = useState(0); // weeks before this one
   const { days, frozen, run, left } = streakWith(rows);
   const now = new Date();
   const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
-  const cells = WEEK.map((l, i) => { const d = new Date(monday); d.setDate(monday.getDate() + i); return { l, on: days.has(fmt(d)), frozen: frozen.has(fmt(d)), today: fmt(d) === fmt(now) }; });
-  const span = (d) => d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7) - back * 7);
+  const cells = WEEK.map((l, i) => { const d = new Date(monday); d.setDate(monday.getDate() + i); return { l, name: DAY_NAMES[i], on: days.has(fmt(d)), frozen: frozen.has(fmt(d)), today: fmt(d) === fmt(now), future: d > now }; });
+  const span = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
   const range = `${span(monday)} - ${span(sunday)}`;
   return (
     <div className="cg-streak">
       <div className="cg-streakhead">
-        <div className="cg-flame"><svg width="46" height="46" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c1 3.5 5 5.5 5 10.2a5 5 0 0 1-10 0c0-2 1-3.4 2-4.4.3 1.4 1 2 1.8 2.4C10.5 8 10.8 5 12 2.5Z" fill="#f4a73a" stroke="#d98a1c" strokeWidth="1" strokeLinejoin="round" /></svg><div><b className="cg-big">{run} {run === 1 ? "day" : "days"}</b><span className="muted small">Current streak</span></div></div>
-        <span className="cg-range small muted">{range}<button className="cg-info" aria-label="How streaks work" onClick={() => setExplain(true)}>i</button></span>
+        <div className="cg-flame"><StreakFlame lit={run > 0} /><div><b className="cg-big">{run} {run === 1 ? "day" : "days"}</b><span className="muted">{run ? "Current streak" : "Study today to start a streak"}</span></div></div>
+        <span className="cg-rangebox">
+          <span className="cg-range"><button aria-label="Previous week" onClick={() => setBack(back + 1)}>&lsaquo;</button><span>{range}</span><button aria-label="Next week" disabled={back === 0} onClick={() => setBack(back - 1)}>&rsaquo;</button></span>
+          <button className="cg-info" aria-label="How streaks work" onClick={() => setExplain(true)}>i</button>
+        </span>
       </div>
-      <div className="cg-week">{cells.map((c, i) => <span key={i} className={"cg-day" + (c.on ? " on" : "") + (c.frozen ? " frozen" : "") + (c.today ? " today" : "")} aria-label={`${c.l}${c.on ? ", studied" : ""}`}>{c.on ? "✓" : c.frozen ? "❄" : c.l}</span>)}</div>
-      <span className="cg-freezepill">{"❄"} {left} {left === 1 ? "freeze" : "freezes"}</span>
+      <div className="cg-week">{cells.map((c, i) => <DayBadge key={i} c={c} />)}</div>
+      <span className="cg-freezepill">{"\u2744"} {left} {left === 1 ? "freeze" : "freezes"}</span>
       {explain && <Explainer rows={rows} cells={cells} range={range} onClose={() => setExplain(false)} />}
     </div>
   );

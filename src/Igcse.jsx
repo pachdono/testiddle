@@ -11,7 +11,7 @@ import { TopicList, StudyView, ExamTab, ExamView, CardDeck, notesRead, cardsFor 
 import { QuizTab, TermsTab, Wizard } from "./Study.jsx";
 import { CheatSheets, FlashcardsIndex, readDecks, writeDecks } from "./CoursePage.jsx";
 import { doneFrom } from "./bank.js";
-import { hasPack, loadPack, sheetsOf, sheetIdOf, termsOf, forLevel, withoutTopics } from "./igcse/index.js";
+import { hasPack, loadPack, sheetsOf, sheetIdOf, termsOf, forLevel, withoutTopics, layoutFor } from "./igcse/index.js";
 import { IFIG } from "./figs/index.js";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
@@ -42,7 +42,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const skip = [...(course?.tripleOnly?.pack || []), ...otherBoard].join(",");
   const pack = useMemo(() => {
     if (!raw) return null;
-    const p = withoutTopics(forLevel(raw, course?.level, course?.board), skip ? skip.split(",") : []);
+    const p = layoutFor(withoutTopics(forLevel(raw, course?.level, course?.board), skip ? skip.split(",") : []), course?.board);
     return { ...p, subs: p.subs.map((s) => ({ ...s, figs: ["", "-b", "-c"].map((x) => IFIG[sheetIdOf(s) + x]).filter(Boolean), figColor: course?.tint, figId: sheetIdOf(s) })) };
   }, [raw, course?.level, course?.board, course?.tint, skip]);
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
       {extra && tab.startsWith("quiz") && <QuizTab key={tab} bank={extra.bank} total={extra.bank.length} groups={extra.groups} startOpen={tab === "quiz-open"} onXp={back}
         onExam={(picked) => setExam({ picked, title: "Your paper" })} onCards={makeDeck} openSkill={(s) => { const sub = subOf(s); if (sub) setStudy({ sub, mode: "quiz" }); }} />}
       {extra && tab === "cards" && <FlashcardsIndex topics={pack.topics} subs={pack.subs} storeKey={decksKey} icon={subject.icon} fixed={[["Key terms", subject.icon, extra.terms]]} openDeck={(cards, title) => setDeck({ cards, title })} build={() => setWizard(true)} />}
-      {extra && tab === "sheets" && <CheatSheets sheets={extra.sheets} groups={[pack.name]} />}
+      {extra && tab === "sheets" && <CheatSheets sheets={extra.sheets} groups={pack.topics} />}
       {extra && tab === "exam" && <ExamTab topics={pack.topics} subs={pack.subs} openExam={setExam} />}
       {extra && tab === "terms" && <TermsTab terms={extra.terms} groups={extra.groups} />}
       {extra && tab === "tests" && <div className="cg-list">{pack.topics.map((t, i) => {

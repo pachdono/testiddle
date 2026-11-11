@@ -103,3 +103,34 @@ test("every topic has a written exam question with a sound mark scheme", async (
     assert.ok(!/[–—]/.test(readFileSync(new URL(`../src/igcse/exam/${p.id}.js`, import.meta.url), "utf8")), `${p.id} dashes`);
   }
 });
+
+test("Edexcel layouts place every subtopic once, leaving out only what is not on the specification", async () => {
+  const { LAYOUTS, layoutFor } = await import("../src/igcse/layouts.js");
+  const { shape } = await import("../src/igcse/index.js");
+  const notOnSpec = { physics: ["Lenses and dispersion"] };
+  for (const id of Object.keys(LAYOUTS)) {
+    const pack = shape((await import(`../src/igcse/${id}.js`)).default);
+    const placed = LAYOUTS[id].edexcel.flatMap(([, , skills]) => skills);
+    assert.equal(new Set(placed).size, placed.length, `${id}: a subtopic is placed twice`);
+    const all = pack.subs.map((s) => s.skill);
+    for (const k of placed) assert.ok(all.includes(k), `${id}: "${k}" is not in the notes`);
+    assert.deepEqual(all.filter((k) => !placed.includes(k)), notOnSpec[id] || [], `${id}: subtopics missing from the Edexcel layout`);
+    const out = layoutFor(pack, "edexcel");
+    assert.equal(out.topics.length, LAYOUTS[id].edexcel.length);
+    assert.ok(out.subs.every((s) => s.code.startsWith(`${s.topic.no}.`) && s.questions.every((q) => q.subject === s.topic.name)));
+    assert.equal(new Set(out.subs.map((s) => s.id)).size, out.subs.length);
+  }
+});
+
+test("every topic in every course has a picture", async () => {
+  const { PACK_IDS, shape } = await import("../src/igcse/index.js");
+  const { TOPIC_PICS } = await import("../src/igcse/layouts.js");
+  const { PICS } = await import("../src/figs/pics.jsx").catch(() => ({ PICS: null }));
+  for (const id of PACK_IDS) {
+    const pack = shape((await import(`../src/igcse/${id}.js`)).default);
+    for (const t of pack.topics) {
+      assert.ok(TOPIC_PICS[id]?.[t.id], `${id}: no picture for topic ${t.id}`);
+      if (PICS) assert.ok(PICS[TOPIC_PICS[id][t.id]], `${id}: no drawing called ${TOPIC_PICS[id][t.id]}`);
+    }
+  }
+});

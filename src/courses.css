@@ -854,3 +854,35 @@ button.cg-btn.primary { border-color: var(--ink); }
 .cg-ext { display: inline-block; margin-right: 6px; padding: 1px 7px; border-radius: 999px; background: #efe7fd; color: #6a4fc4; font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; vertical-align: 2px; }
 .cg-written { width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; font: inherit; line-height: 1.5; resize: vertical; background: var(--surface); }
 .cg-scheme { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-radius: 12px; background: #f3f8ff; border: 1px solid #d6e4f7; }
+
+/* topic pictures beside topic headings and cheat sheet groups */
+.cg-topicpic { flex: none; filter: drop-shadow(0 1px 1.5px rgba(40, 50, 70, .14)); }
+.cg-topichead > .cg-topicpic + span { flex: 1; }
+.cg-sheetlist { position: relative; }
+.cg-sheetlist > .cg-topicpic { position: absolute; top: -18px; right: 18px; }
+
+/* streak: a flame with a face, flame badges for studied days, a week you can page back through */
+.cg-flame { gap: 14px; }
+.cg-flame .cg-big { font-family: var(--sans, inherit); font-weight: 800; font-size: 30px; color: #e2741f; letter-spacing: 0; }
+.cg-flamepic { flex: none; animation: cg-bob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes cg-bob { 0%, 100% { transform: rotate(-2deg) scale(1); } 50% { transform: rotate(2deg) scale(1.03, .98); } }
+@media (prefers-reduced-motion: reduce) { .cg-flamepic { animation: none; } }
+.cg-rangebox { display: flex; align-items: center; gap: 10px; }
+.cg-range { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 999px; background: var(--hover); font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.cg-range button { width: 26px; height: 26px; border: 0; border-radius: 50%; background: none; color: var(--ink-3); font-size: 20px; line-height: 1; cursor: pointer; }
+.cg-range button:hover:not(:disabled) { background: var(--surface); color: var(--ink); }
+.cg-range button:disabled { opacity: .35; cursor: default; }
+.cg-info { margin-left: 0; width: 24px; height: 24px; border: 2px solid var(--ink); color: var(--ink); font-weight: 800; }
+.cg-day { transition: transform .15s; }
+.cg-day.badge { background: none; width: 48px; height: 52px; animation: cg-pop .35s ease-out both; }
+.cg-day.badge:hover { transform: translateY(-2px) rotate(-4deg); }
+@keyframes cg-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.cg-day.today { box-shadow: none; border: 3px solid #e2741f; background: color-mix(in srgb, #ff9a3c 12%, var(--surface)); color: #e2741f; }
+.cg-day.future { opacity: .75; }
+.cg-day.frozen { box-shadow: inset 0 -4px 0 color-mix(in srgb, #6aa8e8 30%, transparent); font-size: 20px; }
+.cg-week { align-items: center; }
+.cg-weekbox .cg-day.badge { width: 40px; height: 44px; }
+.cg-weekbox .cg-day.badge svg { width: 40px; height: 44px; }
+.cg-streakhero { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.cg-streakhero h2 { margin: 0; }
+@media (max-width: 720px) { .cg-day.badge, .cg-day.badge svg { width: 38px; height: 42px; } .cg-flame .cg-big { font-size: 24px; } }
