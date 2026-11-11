@@ -11,13 +11,13 @@ import { TopicList, StudyView, ExamTab, ExamView, CardDeck, notesRead, cardsFor 
 import { QuizTab, TermsTab, Wizard } from "./Study.jsx";
 import { CheatSheets, FlashcardsIndex, readDecks, writeDecks } from "./CoursePage.jsx";
 import { doneFrom } from "./bank.js";
-import { hasPack, loadPack, sheetsOf, termsOf, forLevel } from "./igcse/index.js";
+import { hasPack, loadPack, sheetsOf, termsOf, forLevel, withoutTopics } from "./igcse/index.js";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
 const SESSIONS = { cie: [["May/June", "s"], ["October/November", "w"], ["February/March", "m"]], edexcel: [["May/June", "Jun"], ["January", "Jan"], ["October/November", "Nov"]] };
 const search = (q) => `https://www.google.com/search?q=${encodeURIComponent(q)}`;
-const KEY = (id, board) => `testiddle-topics:${id}${board === "edexcel" ? ":edexcel" : ""}`;
-const readTopics = (id, board) => { try { const v = JSON.parse(localStorage.getItem(KEY(id, board))); return Array.isArray(v) ? v : []; } catch { return []; } };
+const KEY = (id, board, tier) => `testiddle-topics:${id}${board === "edexcel" ? ":edexcel" : ""}${tier === "Double" ? ":double" : ""}`;
+const readTopics = (id, board, tier) => { try { const v = JSON.parse(localStorage.getItem(KEY(id, board, tier))); return Array.isArray(v) ? v : []; } catch { return []; } };
 const nothing = () => {};
 
 export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }) {
@@ -36,15 +36,16 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const [, refresh] = useState(0);
   const moreRef = useRef(null);
   useEffect(() => { loadPack(subjectId).then(setPack).catch(() => setPack(null)); }, [subjectId]);
-  const pack = useMemo(() => (raw ? forLevel(raw, course?.level, course?.board) : null), [raw, course?.level, course?.board]);
+  const skip = (course?.tripleOnly?.pack || []).join(",");
+  const pack = useMemo(() => (raw ? withoutTopics(forLevel(raw, course?.level, course?.board), skip ? skip.split(",") : []) : null), [raw, course?.level, course?.board, skip]);
   useEffect(() => {
     if (!moreOpen) return undefined;
     const f = (e) => { if (!moreRef.current?.contains(e.target)) setMoreOpen(false); };
     document.addEventListener("mousedown", f);
     return () => document.removeEventListener("mousedown", f);
   }, [moreOpen]);
-  const [done, setDone] = useState(() => readTopics(id, course?.board));
-  useEffect(() => { setDone(readTopics(id, course?.board)); }, [id, course?.board]);
+  const [done, setDone] = useState(() => readTopics(id, course?.board, course?.tier));
+  useEffect(() => { setDone(readTopics(id, course?.board, course?.tier)); }, [id, course?.board, course?.tier]);
   const [open, setOpen] = useState({ [YEARS[0]]: true });
   const [tierOpen, setTierOpen] = useState(false);
   const extra = useMemo(() => (pack && subject ? {
@@ -73,7 +74,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
     onExam={(picked) => { setWizard(false); setExam({ picked, title: "Your paper" }); }} onCards={makeDeck} />;
   if (!course || !subject) return <div className="cg-page"><div className="cg-empty">That course could not be found. <button className="cg-link" onClick={() => nav("/")}>Back to the dashboard</button></div></div>;
 
-  const toggle = (i) => { const n = done.includes(i) ? done.filter((x) => x !== i) : [...done, i]; setDone(n); try { localStorage.setItem(KEY(id, course.board), JSON.stringify(n)); window.dispatchEvent(new Event("testiddle:progress")); } catch { /* private mode */ } };
+  const toggle = (i) => { const n = done.includes(i) ? done.filter((x) => x !== i) : [...done, i]; setDone(n); try { localStorage.setItem(KEY(id, course.board, course.tier), JSON.stringify(n)); window.dispatchEvent(new Event("testiddle:progress")); } catch { /* private mode */ } };
   const change = (patch) => { const list = myCourses(); const n = list.some((x) => x.id === id) ? list.map((x) => (x.id === id ? { ...x, ...patch } : x)) : [...list, { ...sel, ...patch }]; setMyCourses(n); };
   const read = notesRead(), answered = doneFrom(quizLog()), rated = cardRatings();
   const progress = {
@@ -99,8 +100,8 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
             {course.level && <span className="ig-tier"><button className="cg-chipsm" aria-expanded={levelOpen} onClick={() => setLevelOpen(!levelOpen)}>{course.levelNames[course.level]} {"⇕"}</button>
               {levelOpen && <span className="cg-menulist ig-menu">{["Core", "Extended"].map((l) => <button key={l} onClick={() => { change({ level: l }); setLevelOpen(false); back(); }}>{course.levelNames[l]}{course.level === l ? " ✓" : ""}</button>)}</span>}</span>}
             {course.tier && <span className="ig-tier"><button className="cg-chipsm" aria-expanded={tierOpen} onClick={() => setTierOpen(!tierOpen)}>{course.tier} {"⇕"}</button>
-              {tierOpen && <span className="cg-menulist ig-menu">{["Triple", "Double"].map((t) => <button key={t} onClick={() => { change({ tier: t }); setTierOpen(false); }}>{t}{course.tier === t ? " ✓" : ""}</button>)}</span>}</span>}
-            {Object.keys(subject.boards).length > 1 && Object.keys(subject.boards).map((b) => <button key={b} className={"cg-chipsm" + (course.board === b ? " blue" : "")} onClick={() => change({ board: b })}>{BOARDS[b]}</button>)}
+              {tierOpen && <span className="cg-menulist ig-menu">{["Triple", "Double"].map((t) => <button key={t} onClick={() => { change({ tier: t }); setTierOpen(false); back(); }}>{t}{course.tier === t ? " ✓" : ""}</button>)}</span>}</span>}
+            {Object.keys(subject.boards).length > 1 && Object.keys(subject.boards).map((b) => <button key={b} className={"cg-chipsm" + (course.board === b ? " blue" : "")} onClick={() => { change({ board: b }); back(); }}>{BOARDS[b]}</button>)}
           </div>
         </div>
         {extra && <button className="cg-btn primary cg-multi" onClick={() => (tab === "quiz" ? setTab("quiz-open") : setWizard(true))}>{banner} &rarr;</button>}
@@ -119,7 +120,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
         </span>}
       </nav>
 
-      {course.tier === "Double" && <p className="cg-note small muted">{course.syllabus} covers most of these topics in less depth than the separate science. Check your syllabus list for the topics your exam leaves out.</p>}
+      {course.tier === "Double" && <p className="cg-note small muted">{course.syllabus}: {course.tripleOnly.list.length ? `${course.tripleOnly.list.join(", ")} ${course.tripleOnly.list.length === 1 ? "is" : "are"} only in the separate science, so ${course.tripleOnly.list.length === 1 ? "it is" : "they are"} left out here. ` : ""}Some other topics are covered in less depth; your syllabus lists the details.</p>}
       {!pack && hasPack(subjectId) && <div className="cg-empty">Loading the course</div>}
       {extra && tab === "notes" && <TopicList topics={pack.topics} subs={pack.subs} terms={extra.terms} progressOf={progress.notes} onOpen={(sub) => setStudy({ sub, mode: "notes" })} />}
       {extra && tab.startsWith("quiz") && <QuizTab key={tab} bank={extra.bank} total={extra.bank.length} groups={extra.groups} startOpen={tab === "quiz-open"} onXp={back}
@@ -157,7 +158,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
 
       {tab === "topics" && <div className="cg-stack tight">
         <div className="cg-listbar"><div className="cg-overall"><span className="small">Overall progress:</span><span className="cg-meter wide"><i style={{ width: `${pct * 100}%` }} /></span><b className="small">{Math.round(pct * 100)}%</b></div><span className="cg-spacer" />
-          <button className="cg-btn" onClick={() => { const all = done.length === course.topics.length ? [] : course.topics.map((_, i) => i); setDone(all); try { localStorage.setItem(KEY(id, course.board), JSON.stringify(all)); } catch { /* private mode */ } }}>{done.length === course.topics.length ? "Clear all" : "Tick all"}</button></div>
+          <button className="cg-btn" onClick={() => { const all = done.length === course.topics.length ? [] : course.topics.map((_, i) => i); setDone(all); try { localStorage.setItem(KEY(id, course.board, course.tier), JSON.stringify(all)); } catch { /* private mode */ } }}>{done.length === course.topics.length ? "Clear all" : "Tick all"}</button></div>
         <section className="cg-card ig-topics"><span className="cg-tag">Syllabus topics</span>
           {course.topics.map((t, i) => <label key={t} className={"ig-topic" + (done.includes(i) ? " done" : "")}><input type="checkbox" checked={done.includes(i)} onChange={() => toggle(i)} /><span className="ig-num">{i + 1}</span><span>{t}</span></label>)}
         </section>

@@ -81,6 +81,12 @@ export const isExt = (line) => line.startsWith(EXT);
 export const plain = (line) => (isExt(line) || line.startsWith("[H] ") ? line.slice(EXT.length) : line);
 
 /** The pack for one level: Core leaves out the Extended lines; Extended keeps them, marked. */
+/** Leaves out whole topics, such as those only in the separate (Triple) science. */
+export function withoutTopics(pack, ids = []) {
+  if (!ids.length) return pack;
+  return { ...pack, topics: pack.topics.filter((t) => !ids.includes(t.id)), subs: pack.subs.filter((s) => !ids.includes(s.topic.id)) };
+}
+
 export function forLevel(pack, level, board = "cie") {
   const map = (f) => ({ ...pack, subs: pack.subs.map((s) => ({ ...s, sections: s.sections.map(([h, lines]) => [h, f(lines)]).filter(([, lines]) => lines.length) })) });
   if (level === "Core") return map((lines) => lines.filter((l) => !isExt(l)));
