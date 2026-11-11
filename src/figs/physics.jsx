@@ -106,7 +106,7 @@ export default {
       <Box x={20} y={30} w={110} color={c}>NEBULA</Box><Box x={160} y={30} w={110} color={c}>PROTOSTAR</Box><Box x={300} y={30} w={150} color="#c0902a" fill="#fff8e0">MAIN SEQUENCE</Box>
       <Arrow from={[132, 52]} to={[156, 52]} color={c} width={2} /><Arrow from={[272, 52]} to={[296, 52]} color={c} width={2} />
       <T x={20} y={152} s={14} fill="#c0702a">STARS LIKE THE SUN</T><T x={20} y={232} s={14} fill="#7a5cd6">MASSIVE STARS</T>
-      <Box x={300} y={124} w={120} color="#d0496d" fill="#fde6ec">RED GIANT</Box><Box x={470} y={124} w={130} color={INK}>WHITE DWARF</Box>
+      <Box x={300} y={124} w={120} color="#d0496d" fill="#fde6ec">RED GIANT</Box><Box x={470} y={124} w={130} color={INK}>WHITE DWARF</Box><T x={535} y={184} s={12} anchor="middle">VIA A PLANETARY NEBULA</T>
       <Box x={300} y={204} w={140} color="#d0496d" fill="#fde6ec">RED SUPERGIANT</Box><Box x={466} y={204} w={100} color="#c0702a" fill="#fff1e0">SUPERNOVA</Box>
       <Box x={586} y={204} w={88} color={INK} s={12}>NEUTRON STAR</Box><T x={630} y={268} s={12} anchor="middle">OR BLACK HOLE</T>
       <Arrow from={[340, 76]} to={[340, 120]} color={c} width={2} /><Arrow from={[436, 76]} to={[436, 200]} color={c} width={2} />

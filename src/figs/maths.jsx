@@ -89,7 +89,7 @@ export default {
         <path d={`M${A[0] + 46} ${A[1]} A46 46 0 0 0 ${A[0] + 46 * Math.cos(Math.atan2(170, 270))} ${A[1] - 46 * Math.sin(Math.atan2(170, 270))}`} fill="none" stroke={c} strokeWidth="1.6" />
         <T x={A[0] + 54} y={A[1] - 8} s={17} fill={c}>θ</T>
         <T x={180} y={150} s={17} fill="#7a5cd6" anchor="end">HYPOTENUSE</T>
-        <T x={340} y={170} s={17} fill="#d0496d">OPPOSITE</T>
+        <g transform="rotate(90 350 196)"><T x={350} y={196} s={17} fill="#d0496d" anchor="middle">OPPOSITE</T></g>
         <T x={195} y={276} s={17} fill="#c0702a" anchor="middle">ADJACENT</T>
         <Label x={420} y={4} w={250} color={c} title="SOH CAH TOA" keep lines={["sin θ = opp / hyp", "cos θ = adj / hyp", "tan θ = opp / adj"]} />
         <Label x={420} y={110} w={250} color={INK} title="SINE RULE" keep lines={["a / sin A = b / sin B"]} />
