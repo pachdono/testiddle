@@ -1,7 +1,7 @@
 // An IGCSE course, laid out like the SAT course: notes, quiz, flashcards, cheat sheets, exam
-// practice and past papers, with key terms, topic tests, mark schemes, the syllabus checklist and
-// results under More. The papers belong to the boards, so each opens a search for that exact
-// paper and its mark scheme rather than a copy.
+// practice and past papers, with key terms, topic tests, the syllabus checklist and
+// results under More. Past papers are the two Testiddle practice papers; the real ones are on
+// the board's own site.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BOARDS, SUBJECTS, courseFor } from "./catalog.js";
@@ -15,9 +15,6 @@ import { hasPack, loadPack, sheetsOf, sheetIdOf, termsOf, forLevel, withoutTopic
 import { IFIG } from "./figs/index.js";
 import PaperView from "./PaperView.jsx";
 
-const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
-const SESSIONS = { cie: [["May/June", "s"], ["October/November", "w"], ["February/March", "m"]], edexcel: [["May/June", "Jun"], ["January", "Jan"], ["October/November", "Nov"]] };
-const search = (q) => `https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const KEY = (id, board, tier) => `testiddle-topics:${id}${board === "edexcel" ? ":edexcel" : ""}${tier === "Double" ? ":double" : ""}`;
 const readTopics = (id, board, tier) => { try { const v = JSON.parse(localStorage.getItem(KEY(id, board, tier))); return Array.isArray(v) ? v : []; } catch { return []; } };
 const nothing = () => {};
@@ -55,7 +52,6 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   }, [moreOpen]);
   const [done, setDone] = useState(() => readTopics(id, course?.board, course?.tier));
   useEffect(() => { setDone(readTopics(id, course?.board, course?.tier)); }, [id, course?.board, course?.tier]);
-  const [open, setOpen] = useState({ [YEARS[0]]: true });
   const [tierOpen, setTierOpen] = useState(false);
   const extra = useMemo(() => (pack && subject ? {
     bank: pack.subs.flatMap((s) => s.questions),
@@ -99,7 +95,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const mineIds = extra ? extra.bank.filter((q) => q.id in answered) : [];
   const right = mineIds.filter((q) => answered[q.id]).length;
   const tabs = pack ? [["notes", "Notes"], ["quiz", "Quiz"], ["cards", "Flashcards"], ["sheets", "Cheat sheets"], ["exam", "Exam practice"], ["papers", "Past papers"]] : [["topics", "Topics"], ["papers", "Past papers"]];
-  const more = pack ? [["terms", "Key terms"], ["tests", "Topic tests"], ["marks", "Mark schemes"], ["topics", "Syllabus checklist"], ["results", "Results"]] : [];
+  const more = pack ? [["terms", "Key terms"], ["tests", "Topic tests"], ["topics", "Syllabus checklist"], ["results", "Results"]] : [];
   const banner = { cards: "Build your own deck", exam: "Build your own paper" }[tab] || "Study multiple skills";
   const subOf = (s) => pack.subs.find((x) => x.skill === s.skill && x.topic.name === s.subject);
 
@@ -152,13 +148,6 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
           <i className="cg-chev" aria-hidden="true">&rsaquo;</i>
         </button>;
       })}</div>}
-      {extra && tab === "marks" && <div className="cg-stack tight">
-        <p className="small muted">{what}. Each button searches for that exact mark scheme on the board's site and revision sites.</p>
-        <section className="cg-card cg-years">{YEARS.map((y) => (
-          <div key={y} className="cg-year open"><div className="cg-yearhead"><b>{y}</b></div>
-            <div className="cg-yearrows">{SESSIONS[course.board].map(([session]) => <div key={session} className="cg-yearrow"><span>{session} {y}</span><span className="cg-pair"><a href={search(`${what} ${session} ${y} mark scheme pdf`)} target="_blank" rel="noopener noreferrer">Mark scheme</a></span></div>)}</div>
-          </div>))}</section>
-      </div>}
       {extra && tab === "results" && <div className="cg-list">
         {mineIds.length === 0 && <div className="cg-empty">No results yet. Answer some quiz or exam questions and they will show up here.</div>}
         {mineIds.length > 0 && pack.topics.map((t) => {
