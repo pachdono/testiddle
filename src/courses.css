@@ -886,3 +886,9 @@ button.cg-btn.primary { border-color: var(--ink); }
 .cg-streakhero { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .cg-streakhero h2 { margin: 0; }
 @media (max-width: 720px) { .cg-day.badge, .cg-day.badge svg { width: 38px; height: 42px; } .cg-flame .cg-big { font-size: 24px; } }
+
+/* practice papers */
+.cg-papershead { margin: 14px 0 0; font-size: 18px; }
+.cg-section { margin: 26px 0 10px; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3); }
+.cg-timer { padding: 4px 10px; border-radius: 999px; background: var(--hover); font-weight: 700; font-variant-numeric: tabular-nums; font-size: 14px; }
+.cg-timer.up { background: #fde3dc; color: #c2410c; }

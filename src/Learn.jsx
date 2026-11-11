@@ -13,6 +13,8 @@ const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); wind
 const READ_KEY = "testiddle-notes-read", TICK_KEY = "testiddle-ticks", LOOK_KEY = "testiddle-reader", RATE_KEY = "testiddle-question-feedback", EXAM_KEY = "testiddle-exam";
 
 export const notesRead = () => read(READ_KEY, {});
+/** Saved marks for each exam set, by its id. */
+export const examMarks = () => read(EXAM_KEY, {});
 const Html = ({ html, className = "" }) => <div className={"dq-html " + className} dangerouslySetInnerHTML={{ __html: html }} />;
 const Chev = ({ open }) => <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" style={{ transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }}><path d="m8 5 5 5-5 5" /></svg>;
 
@@ -337,8 +339,11 @@ export function ExamTab({ openExam, topics, subs }) {
 }
 
 /** A set of exam questions: one skill's, or a paper built from several skills. */
-export function ExamView({ sub, picked, title, onClose, report }) {
+export function ExamView({ sub, picked, title, minutes, onClose, report }) {
   const { bank, failed } = useBank(Boolean(picked));
+  // a timed paper counts down from its time allowed; it only shows the time, it never stops you
+  const [left, setLeft] = useState(minutes ? minutes * 60 : null);
+  useEffect(() => { if (!minutes) return undefined; const t = setInterval(() => setLeft((l) => Math.max(0, l - 1)), 1000); return () => clearInterval(t); }, [minutes]);
   const key = sub?.id || "custom";
   const [marks, setMarks] = useState(() => (sub ? read(EXAM_KEY, {})[key] || {} : {}));
   const [cur, setCur] = useState(0);
@@ -356,7 +361,7 @@ export function ExamView({ sub, picked, title, onClose, report }) {
   const name = title || sub?.skill;
   return (
     <div className="cg-reader">
-      <header className="cg-rtop"><button className="cg-wx" aria-label="Back to the course" onClick={onClose}>&larr;</button><b className="cg-switcher plain">{name}</b><span className="cg-rprogress"><i style={{ width: `${qs.length ? (Object.keys(marks).filter((id) => qs.some((q) => q.id === id)).length / qs.length) * 100 : 0}%` }} /></span><span className="small">Total:</span><span className="cg-markbox">{got} / {out}</span><button className="cg-wx" aria-label="Report an issue" onClick={() => report(`Issue with exam practice: ${name}`)}>{"⋮"}</button></header>
+      <header className="cg-rtop"><button className="cg-wx" aria-label="Back to the course" onClick={onClose}>&larr;</button><b className="cg-switcher plain">{name}</b><span className="cg-rprogress"><i style={{ width: `${qs.length ? (Object.keys(marks).filter((id) => qs.some((q) => q.id === id)).length / qs.length) * 100 : 0}%` }} /></span>{left != null && <span className={"cg-timer" + (left ? "" : " up")} role="timer" aria-label="Time left">{left ? `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}` : "Time up"}</span>}<span className="small">Total:</span><span className="cg-markbox">{got} / {out}</span><button className="cg-wx" aria-label="Report an issue" onClick={() => report(`Issue with exam practice: ${name}`)}>{"⋮"}</button></header>
       <div className="cg-rbody">
         <div className="cg-qcol">
           {failed && <div className="cg-empty">The questions could not be loaded. Check your connection.</div>}
@@ -366,7 +371,7 @@ export function ExamView({ sub, picked, title, onClose, report }) {
             {!collapsed && <><div className="cg-qnums">{qs.map((q, n) => <button key={q.id} className={(n === cur ? "on " : "") + (marks[q.id] ? (marks[q.id].ok ? "right" : "wrong") : "")} onClick={() => { setCur(n); refs.current[n]?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>{n + 1}</button>)}</div>
               <div className="cg-spread"><button className="cg-link" onClick={() => save({})}>{"↺"} Reset {qs.length} questions</button><span className="cg-markbox">Total marks: {got} / {out}</span></div></>}
           </section>}
-          {qs.map((q, n) => <div key={q.id + JSON.stringify(marks[q.id] || "")} ref={(el) => { refs.current[n] = el; }}><span className="cg-qlabel">Question {n + 1}</span>{q.kind === "written" ? <WrittenCard q={q} n={n + 1} total={qs.length} state={marks[q.id]} onMark={(g, s, k) => markWritten(q, g, s, k)} /> : <QuestionCard q={q} n={n + 1} total={qs.length} state={marks[q.id]} onAnswer={(g) => mark(q, g)} button="Mark" />}</div>)}
+          {qs.map((q, n) => <div key={q.id + JSON.stringify(marks[q.id] || "")} ref={(el) => { refs.current[n] = el; }}>{q.section && q.section !== qs[n - 1]?.section && <h3 className="cg-section">{q.section}</h3>}<span className="cg-qlabel">Question {n + 1}</span>{q.kind === "written" ? <WrittenCard q={q} n={n + 1} total={qs.length} state={marks[q.id]} onMark={(g, s, k) => markWritten(q, g, s, k)} /> : <QuestionCard q={q} n={n + 1} total={qs.length} state={marks[q.id]} onAnswer={(g) => mark(q, g)} button="Mark" />}</div>)}
         </div>
       </div>
     </div>

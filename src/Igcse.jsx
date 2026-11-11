@@ -7,11 +7,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BOARDS, SUBJECTS, courseFor } from "./catalog.js";
 import { myCourses, setMyCourses, quizLog, cardRatings } from "./progress.js";
 import { CourseMark } from "./Courses.jsx";
-import { TopicList, StudyView, ExamTab, ExamView, CardDeck, notesRead, cardsFor } from "./Learn.jsx";
+import { TopicList, StudyView, ExamTab, ExamView, CardDeck, notesRead, cardsFor, examMarks } from "./Learn.jsx";
 import { QuizTab, TermsTab, Wizard } from "./Study.jsx";
 import { CheatSheets, FlashcardsIndex, readDecks, writeDecks } from "./CoursePage.jsx";
 import { doneFrom } from "./bank.js";
-import { hasPack, loadPack, sheetsOf, sheetIdOf, termsOf, forLevel, withoutTopics, layoutFor } from "./igcse/index.js";
+import { hasPack, loadPack, sheetsOf, sheetIdOf, termsOf, forLevel, withoutTopics, layoutFor, buildPapers, loadPaperExtra } from "./igcse/index.js";
 import { IFIG } from "./figs/index.js";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
@@ -61,6 +61,9 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
     sheets: sheetsOf(pack, subject),
     terms: termsOf(pack),
   } : null), [pack, subject]);
+  const [paperQ, setPaperQ] = useState(null);
+  useEffect(() => { if (tab === "papers" && pack && !paperQ) loadPaperExtra().then(setPaperQ); }, [tab, pack, paperQ]);
+  const papers = useMemo(() => (pack && paperQ ? buildPapers(pack, paperQ) : null), [pack, paperQ]);
   const decksKey = `testiddle-decks:${id}`;
   const back = () => refresh((n) => n + 1);
 
@@ -173,6 +176,26 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
       </div>}
 
       {tab === "papers" && <div className="cg-stack tight">
+        {pack && <>
+          <h3 className="cg-papershead">Practice papers</h3>
+          <p className="small muted">Two full papers in the style of the real exam, written for Testiddle and covering every topic on your course. Each is timed and marked as you go, with no question shared between them.</p>
+          <div className="cg-list">
+            {!papers && <div className="cg-empty">Loading papers</div>}
+            {(papers || []).map((p) => {
+              const m = examMarks()[p.id] || {};
+              const done = p.picked.filter((q) => m[q.id]);
+              const got = done.reduce((n, q) => n + (m[q.id].score ?? (m[q.id].ok ? 1 : 0)), 0);
+              const time = p.minutes >= 60 ? `${Math.floor(p.minutes / 60)} hr${p.minutes % 60 ? ` ${p.minutes % 60} min` : ""}` : `${p.minutes} min`;
+              return <button key={p.id} className="cg-row" onClick={() => setExam({ sub: { id: p.id, skill: p.title }, picked: p.picked, title: `${subject?.name || pack.name} ${p.title}`, minutes: p.minutes })}>
+                <span className="cg-rownum" aria-hidden="true">{p.n}</span>
+                <span className="cg-rowtext"><b>{p.title}</b><span className="small muted">{p.mc} multiple choice and {p.long} structured questions, {p.marks} marks, {time}</span></span>
+                {done.length ? <span className={"cg-pill" + (done.length === p.picked.length ? " good" : "")}>{done.length === p.picked.length ? `${got} / ${p.marks} marks` : `${done.length} of ${p.picked.length} done`}</span> : <span className="cg-pill">Not started</span>}
+                <i className="cg-chev" aria-hidden="true">&rsaquo;</i>
+              </button>;
+            })}
+          </div>
+          <h3 className="cg-papershead">Real past papers</h3>
+        </>}
         <p className="small muted">{what}. Each button searches for that exact paper or mark scheme on the board's site and revision sites.</p>
         <section className="cg-card cg-years">{YEARS.map((y) => (
           <div key={y} className={"cg-year" + (open[y] ? " open" : "")}>

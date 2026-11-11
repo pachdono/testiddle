@@ -134,3 +134,24 @@ test("every topic in every course has a picture", async () => {
     }
   }
 });
+
+test("every course has two practice papers that share no question and use only its own topics", async () => {
+  const { PACK_IDS, loadPack, buildPapers, layoutFor } = await import("../src/igcse/index.js");
+  const { PAPER_EXTRA } = await import("../src/igcse/paperq.js");
+  assert.ok(!/[–—]/.test(readFileSync(new URL("../src/igcse/paperq.js", import.meta.url), "utf8")), "paper questions use dashes");
+  for (const id of PACK_IDS) {
+    const pack = await loadPack(id);
+    const topicIds = new Set(pack.topics.map((t) => t.id));
+    for (const p of Object.values(PAPER_EXTRA[id] || {})) for (const [tid, q, points, marks] of p) {
+      assert.ok(topicIds.has(tid), `${id}: paper question on unknown topic ${tid}`);
+      assert.ok(q && points.length && (!marks || marks <= points.length), `${id}: bad paper question ${q}`);
+    }
+    for (const board of ["cie", "edexcel"]) {
+      const papers = buildPapers(layoutFor(pack, board), PAPER_EXTRA);
+      assert.equal(papers.length, 2);
+      const ids = papers.flatMap((p) => p.picked.map((q) => q.id));
+      assert.equal(new Set(ids).size, ids.length, `${id}: papers share a question`);
+      for (const p of papers) assert.ok(p.mc >= 5 && p.long >= 3 && p.minutes > 0, `${id} paper ${p.n} is too short`);
+    }
+  }
+});

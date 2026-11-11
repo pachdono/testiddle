@@ -140,3 +140,46 @@ export function termsOf(pack) {
   })));
   return out;
 }
+
+/* ---------- practice papers ---------- */
+
+/** The extra written questions the papers add, loaded only when the papers are opened. */
+export const loadPaperExtra = () => import("./paperq.js").then((m) => m.PAPER_EXTRA).catch(() => ({}));
+
+const MC_CAP = 25;
+
+/**
+ * Two full practice papers for a course, in the shape of a real paper: Section A multiple choice,
+ * then Section B structured questions. Paper 1 takes every other question from each subtopic and
+ * topic, Paper 2 the rest, so the two share nothing; extra holds written questions made for each
+ * paper. Only topics in the course as laid out (board, Double or Triple) are used.
+ */
+export function buildPapers(pack, extra = {}) {
+  const origTopic = (s) => s.id.slice(pack.id.length + 1).replace(/-\d+$/, "");
+  const topicOf = new Map();
+  pack.subs.forEach((s) => { if (!topicOf.has(origTopic(s))) topicOf.set(origTopic(s), s.topic); });
+  const order = (name) => pack.topics.findIndex((t) => t.name === name);
+  const seen = new Set();
+  const written = pack.topics.flatMap((t) => (t.written || []).filter((q) => !seen.has(q.id) && seen.add(q.id)));
+  return [1, 2].map((p) => {
+    // round robin over the subtopics so every part of the course is in each paper
+    const lists = pack.subs.map((s) => s.questions.filter((q, k) => k % 2 === p - 1));
+    const mc = [];
+    for (let round = 0; mc.length < MC_CAP && lists.some((l) => l.length > round); round++) {
+      lists.forEach((l) => { if (l[round] && mc.length < MC_CAP) mc.push(l[round]); });
+    }
+    mc.sort((a, b) => order(a.subject) - order(b.subject));
+    const mine = (extra[pack.id]?.[p] || []).filter(([tid]) => topicOf.has(tid)).map(([tid, q, points, marks], k) => {
+      const name = topicOf.get(tid).name;
+      return { id: `${pack.id}-paper${p}-w${k + 1}`, kind: "written", q, points, marks: marks || points.length, anyOf: Boolean(marks && marks < points.length), skill: name, subject: name };
+    });
+    const long = [...written.filter((q, i) => i % 2 === p - 1), ...mine].sort((a, b) => order(a.subject) - order(b.subject));
+    const picked = [
+      ...mc.map((q) => ({ ...q, section: "Section A: multiple choice" })),
+      ...long.map((q) => ({ ...q, section: "Section B: structured questions" })),
+    ];
+    const marks = picked.reduce((n, q) => n + (q.marks || 1), 0);
+    const minutes = Math.ceil((mc.length * 1.2 + long.reduce((n, q) => n + q.marks, 0) * 1.25) / 5) * 5;
+    return { id: `${pack.id}-paper-${p}`, n: p, title: `Practice paper ${p}`, picked, marks, minutes, mc: mc.length, long: long.length };
+  });
+}
