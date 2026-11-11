@@ -287,7 +287,7 @@ const businessCycle = (c) => {
 };
 
 export default {
-  "biology-human-nutrition": digestive,
+  "biology-human-nutrition-2": digestive,
   "chemistry-periodic": periodic,
   "maths-transform": transformations,
   "addmaths-circle": circle,

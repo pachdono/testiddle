@@ -134,6 +134,8 @@ export const PICS = {
   saw: () => <g transform="rotate(-25)"><path d="M-15 -4 H8 V4 H-15 Z" fill={GREY} /><path d="M-15 4 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3 l2 3 l2 -3 l2 3 l1.5 -3" fill="none" strokeWidth="1" /><rect x="8" y="-6" width="9" height="12" rx="3" fill={BROWN} /></g>,
   sheet: () => <><path d="M-12 -10 L14 -14 L12 10 L-14 14 Z" fill="#bfe3ff" opacity=".85" /><path d="M-6 -6 L4 -8" fill="none" stroke={WHITE} strokeWidth="2" /></>,
   ingot: () => <><path d="M-14 6 L-9 -6 H9 L14 6 Z" fill="#c9d1da" /><path d="M-9 -6 L-6 -10 H12 L9 -6 M12 -10 L16 2 L14 6" fill="#e3e8ee" /></>,
+  bug: () => <><path d="M-6 -10 L-13 -14 M6 -10 L13 -14 M-7 -2 L-15 -4 M7 -2 L15 -4 M-7 6 L-14 10 M7 6 L14 10 M-3 -15 L-6 -19 M3 -15 L6 -19" fill="none" strokeWidth="1.4" /><ellipse cy="2" rx="7" ry="10" fill="#6cc070" /><circle cy="-11" r="4.5" fill={INK} /></>,
+  spider: () => <>{[-1, 1].map((k) => [-9, -3, 3, 9].map((y) => <path key={`${k}${y}`} d={`M${k * 5} ${y * 0.4} Q${k * 12} ${y - 6} ${k * 16} ${y + 2}`} fill="none" strokeWidth="1.4" />))}<circle cy="4" r="7" fill={INK} /><circle cy="-5" r="4.5" fill={INK} /></>,
   hammer: () => <g transform="rotate(-35)"><rect x="-2.5" y="-6" width="5" height="21" rx="2" fill={BROWN} /><rect x="-11" y="-13" width="22" height="8" rx="1.5" fill={GREY} /></g>,
 };
 
@@ -152,6 +154,10 @@ export const Pic = ({ name, x, y, size = 40 }) => {
 // Pictures chosen by hand for each box or row of the cheat sheets built from text, in order.
 // null leaves a box without one.
 export const PICKS = {
+  "biology-characteristics-2": ["person", "plane", "egg", "drop", "fish", "bug", "spider"], "biology-organisation-2": ["wind", "leaf", "leaf", "brain", "heart", "dna"],
+  "biology-human-nutrition": ["apple", "muscle", "apple", "sun", "bone", "heart", "leaf"], "biology-plant-transport-2": ["thermometer", "cloud", "wind", "sun"],
+  "biology-gas-exchange-2": ["muscle", "bone", "lungs", "lungs", "gauge"], "biology-coordination-3": ["rising", "syringe", "database", "tick"],
+  "biology-inheritance": ["cell", "dna"], "biology-human-influences": ["truck", "warning", "wheat", "tree"], "biology-human-influences-3": ["star", "fish", "tree", "heart", "flower", "pin", "book"],
   "chemistry-states-2": ["wind", "scales"], "chemistry-stoich": ["atom", "atom", "atom", "scales", "scales"], "chemistry-stoich-3": ["calculator", "cloud", "drop", "rising", "pie", "magnifier"],
   "chemistry-electrochem-2": ["drop", "car"], "chemistry-reactions-2": ["factory", "factory", "drop", "drop"], "chemistry-reactions-3": ["flame", "atom", "rising", "flask", "flask"],
   "chemistry-acids-2": ["ingot", "cloud", "scales", "cross"], "chemistry-acids-3": ["tick", "tick", "drop", "drop", "cross", "cross"], "chemistry-periodic-2": ["cloud", "drop", "ingot"],
@@ -205,10 +211,10 @@ export const PICKS = {
   "drama-pre-release": ["scroll", "masks", "person", "palette", "person", "key", "people"], "drama-devising": ["camera", "brain", "clock", "mic", "masks"],
   "drama-performing": ["mic", "runner"], "drama-written": ["masks", "masks", "masks", "masks"],
   "biology-characteristics": ["cell", "runner", "lungs", "eye", "rising", "flower", "kidney"], "biology-molecules": ["drop", "drop", "drop", "drop", "drop"],
-  "biology-human-nutrition": ["stomach", "stomach", "stomach", "stomach", "drop"], "biology-plant-transport": ["drop", "leaf", "leaf", "leaf", "cloud"],
+  "biology-human-nutrition-2": ["stomach", "stomach", "stomach", "stomach", "drop"], "biology-plant-transport": ["drop", "leaf", "leaf", "leaf", "cloud"],
   "biology-disease": ["germ", "shield", "cell", "cell", "shield"], "biology-respiration": ["lungs", "muscle"], "biology-excretion": ["egg", "stomach", "heart", "kidney", "drop"],
-  "biology-drugs": ["pill", "warning"], "biology-reproduction": ["flower", "wind"], "biology-variation": ["dna", "people", "scales", "shield", "dna"],
-  "biology-human-influences": ["drop", "leaf", "cross", "germ", "fish"], "biology-biotech": ["dna", "dna", "puzzle", "cell", "rising"],
+  "biology-drugs": ["pill", "warning"], "biology-reproduction": ["flower", "wind"], "biology-variation-2": ["dna", "people", "scales", "shield", "dna"],
+  "biology-human-influences-2": ["drop", "leaf", "cross", "germ", "fish"], "biology-biotech-2": ["dna", "dna", "puzzle", "cell", "rising"],
   "chemistry-stoich-2": ["atom", "calculator", "cloud", "drop", "atom", "scales", "flask"], "chemistry-periodic": ["flame", "flask", "bulb", "gear"],
   "chemistry-metals-2": ["flame", "flame", "atom", "gear", "coin"], "chemistry-environment-3": ["car", "factory", "car", "sun"],
   "maths-number": ["calculator", "key", "puzzle", "pie", "rising", "ruler", "pie"], "addmaths-functions": ["arrow", "gear", "arrow", "recycle"],

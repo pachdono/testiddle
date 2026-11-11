@@ -139,7 +139,7 @@ export default {
       <T x={20} y={292} s={14}>AT A SYNAPSE, NEUROTRANSMITTER DIFFUSES ACROSS THE GAP, SO IMPULSES GO ONE WAY</T>
     </svg>
   ),
-  "biology-inheritance": (c) => {
+  "biology-inheritance-2": (c) => {
     const x0 = 130, y0 = 70, s = 96, cell = [["BB", "Bb"], ["Bb", "bb"]];
     return (
       <svg viewBox={V}><Defs c={c} />
