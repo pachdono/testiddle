@@ -13,7 +13,7 @@ for (const pack of packs) {
     const subject = SUBJECTS.find((s) => s.id === pack.id);
     assert.ok(subject, pack.id);
     assert.equal(pack.name, subject.name);
-    assert.deepEqual(pack.topics.map((t) => t.name), subject.topics);
+    assert.deepEqual(pack.topics.filter((t) => !t.board || t.board === "cie").map((t) => t.name), subject.topics);
   });
   test(`${pack.id}: every subtopic has notes, points and a sound quiz`, () => {
     const { subs } = shape(pack);

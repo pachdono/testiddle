@@ -37,7 +37,9 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const [, refresh] = useState(0);
   const moreRef = useRef(null);
   useEffect(() => { loadPack(subjectId).then(setPack).catch(() => setPack(null)); }, [subjectId]);
-  const skip = (course?.tripleOnly?.pack || []).join(",");
+  // leave out Triple only topics for Double Award, and topics that belong to the other exam board
+  const otherBoard = (raw?.topics || []).filter((t) => t.board && t.board !== (course?.board || "cie")).map((t) => t.id);
+  const skip = [...(course?.tripleOnly?.pack || []), ...otherBoard].join(",");
   const pack = useMemo(() => {
     if (!raw) return null;
     const p = withoutTopics(forLevel(raw, course?.level, course?.board), skip ? skip.split(",") : []);
