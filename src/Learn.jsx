@@ -79,7 +79,7 @@ export function NotesTab({ open }) {
 
 const ACCENTS = [["Plain", "#8a8f98"], ["Amber", "#d9962b"], ["Blue", "#3b82f6"], ["Rose", "#d0496d"], ["Green", "#3fa46a"], ["Purple", "#7c5cd6"], ["Slate", "#4b5563"]];
 
-export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, report, subs = SUBTOPICS }) {
+export function StudyView({ sub, mode, onMode, onSub, onClose, report, subs = SUBTOPICS }) {
   const [look, setLook] = useState(() => read(LOOK_KEY, { accent: "#3fa46a", outlines: "some" }));
   const [menu, setMenu] = useState(false);
   const [switcher, setSwitcher] = useState(false);
@@ -117,7 +117,6 @@ export function StudyView({ sub, mode, onMode, onSub, onClose, theme, setTheme, 
             <div className="cg-swatches">{ACCENTS.map(([n, c]) => <button key={c} aria-label={n} className={look.accent === c ? "on" : ""} style={{ background: c }} onClick={() => setL({ accent: c })} />)}</div>
             <div className="cg-optrow"><span>Card outlines</span></div>
             <div className="cg-seg">{["none", "some", "all"].map((o) => <button key={o} className={look.outlines === o ? "on" : ""} onClick={() => setL({ outlines: o })}>{o[0].toUpperCase() + o.slice(1)}</button>)}</div>
-            <button className="cg-optrow btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}><span>Dark mode</span><span className={"cg-switch small" + (theme === "dark" ? " on" : "")}><i /></span></button>
             <button className="cg-optrow btn" onClick={() => { navigator.clipboard?.writeText(sub.questions ? location.href : `${location.origin}/learn/${sub.id}/${mode}`); setMenu(false); }}>Copy link</button>
             <button className="cg-optrow btn" onClick={() => { setMenu(false); report(`Issue with ${sub.code} ${sub.skill} (${mode})`); }}>Report an issue</button>
           </div>}

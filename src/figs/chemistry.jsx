@@ -1,6 +1,6 @@
 // Diagrams for the IGCSE Chemistry cheat sheets, drawn to match the notes.
 
-import { INK, Label, Link, Dot, Defs, plot, T, Arrow } from "../posterKit.jsx";
+import { INK, Label, Link, Defs, plot, T, Arrow } from "../posterKit.jsx";
 
 const V = "0 0 680 310";
 const ball = (x, y, r = 11, f = "#9cc9f5") => <circle cx={x} cy={y} r={r} fill={f} stroke={INK} strokeWidth="1" />;

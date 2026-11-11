@@ -103,7 +103,7 @@ function GoalDialog({ onClose }) {
 
 /* ---------- top bar ---------- */
 
-export function TopBar({ path, nav, history, user, theme, setTheme, onSignOut, dwiddle, courses, manage }) {
+export function TopBar({ path, nav, history, user, onSignOut, dwiddle, courses, manage }) {
   const rows = activity(history);
   const { run } = streakWith(rows);
   const home = path === "/";
@@ -127,7 +127,6 @@ export function TopBar({ path, nav, history, user, theme, setTheme, onSignOut, d
       </div>
       <Menu label={name} wide>
         <div className="cg-menuhead">{user?.email || "Signed in"}</div>
-        <button className="cg-toggle" onClick={(e) => { e.stopPropagation(); setTheme(theme === "dark" ? "light" : "dark"); }}>Dark mode<span className={"cg-switch small" + (theme === "dark" ? " on" : "")}><i /></span></button>
         <button onClick={manage}>Manage courses</button>
         <button onClick={() => nav("/")}>Dashboard</button>
         <button onClick={() => nav("/account/account")}>Account settings</button>

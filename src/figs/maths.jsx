@@ -1,7 +1,7 @@
 // Diagrams for the IGCSE Mathematics and Additional Mathematics cheat sheets, plotted from the
 // real equations so every point is where it should be.
 
-import { INK, Label, Link, Dot, Defs, plot, T, Arrow } from "../posterKit.jsx";
+import { INK, Label, Link, Dot, Defs, plot, T } from "../posterKit.jsx";
 
 const V = "0 0 680 310";
 const at = (cx, cy, r, deg) => [cx + r * Math.cos((deg * Math.PI) / 180), cy - r * Math.sin((deg * Math.PI) / 180)];

@@ -1,17 +1,15 @@
-// Light or dark, and nothing else: the classroom look is the same either way.
+// The colour theme. Testiddle is light only.
 const KEY = "testiddle-theme";
 
+// Testiddle is light only. Dark mode was switched off, so any saved choice is cleared and the
+// device's own dark setting is ignored.
 export function savedTheme() {
-  try {
-    const v = localStorage.getItem(KEY);
-    if (v === "light" || v === "dark") return v;
-  } catch { /* storage blocked */ }
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  try { localStorage.removeItem(KEY); } catch { /* storage blocked */ }
+  return "light";
 }
 
-export function applyTheme(t) {
-  document.documentElement.dataset.theme = t;
-  const meta = document.querySelectorAll('meta[name="theme-color"]');
-  meta.forEach((m) => m.setAttribute("content", t === "dark" ? "#3d2c1c" : "#e1c799"));
-  try { localStorage.setItem(KEY, t); } catch { /* storage blocked */ }
+export function applyTheme() {
+  document.documentElement.dataset.theme = "light";
+  document.documentElement.style.colorScheme = "light";
+  document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", "#ffffff"));
 }

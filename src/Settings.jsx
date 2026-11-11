@@ -1,4 +1,4 @@
-// The account area: Account, Preferences and Activity, with a side menu like the course site's.
+// The account area: Account and Activity, with a side menu like the course site's.
 
 import { useEffect, useMemo, useState } from "react";
 import { getProfile, saveLook } from "./supabase.js";
@@ -6,10 +6,9 @@ import { Modal } from "./Courses.jsx";
 import { COURSES, RANGES, byHour, courseOf, dayOf, inRange, kindOf, summary } from "./courses.js";
 import { activity, cardRatings, quizLog } from "./progress.js";
 
-const TABS = [["account", "Account"], ["preferences", "Preferences"], ["activity", "Activity"]];
+const TABS = [["account", "Account"], ["activity", "Activity"]];
 const TAB_ICON = {
   account: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20a7.5 7.5 0 0 1 15 0",
-  preferences: "M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6",
   activity: "M5 20V10M10 20V4M15 20v-7M20 20V8",
 };
 
@@ -17,15 +16,14 @@ function Ico({ id }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={TAB_ICON[id]} /></svg>;
 }
 
-export function Settings({ tab, nav, history, user, theme, setTheme, onReset, requestDelete }) {
+export function Settings({ tab, nav, history, user, onReset, requestDelete }) {
   return (
     <div className="cg-settings">
       <nav className="cg-side" aria-label="Account">
         {TABS.map(([id, label]) => <button key={id} className={tab === id ? "on" : ""} onClick={() => nav(`/account/${id}`)}><Ico id={id} />{label}</button>)}
       </nav>
       <div className="cg-sidemain">
-        {tab === "preferences" ? <Preferences theme={theme} setTheme={setTheme} />
-          : tab === "activity" ? <Activity history={history} />
+        {tab === "activity" ? <Activity history={history} />
             : <AccountTab user={user} history={history} onReset={onReset} requestDelete={requestDelete} />}
       </div>
     </div>
@@ -89,21 +87,6 @@ function ResetDialog({ history, onClose, onReset }) {
   );
 }
 
-function Toggle({ on, onChange, label }) {
-  return <button role="switch" aria-checked={on} aria-label={label} className={"cg-switch" + (on ? " on" : "")} onClick={() => onChange(!on)}><i /></button>;
-}
-
-function Preferences({ theme, setTheme }) {
-  return (
-    <section className="cg-card cg-prefs">
-      <span className="cg-tag">Preferences</span>
-      <div className="cg-pref">
-        <div><b>Dark mode</b><span className="small muted">Switch between light and dark themes.</span></div>
-        <Toggle on={theme === "dark"} onChange={(v) => setTheme(v ? "dark" : "light")} label="Dark mode" />
-      </div>
-    </section>
-  );
-}
 
 /* ---------- activity ---------- */
 
