@@ -13,6 +13,7 @@ import { CheatSheets, FlashcardsIndex, readDecks, writeDecks } from "./CoursePag
 import { doneFrom } from "./bank.js";
 import { hasPack, loadPack, sheetsOf, sheetIdOf, termsOf, forLevel, withoutTopics, layoutFor, buildPapers, loadPaperExtra } from "./igcse/index.js";
 import { IFIG } from "./figs/index.js";
+import PaperView from "./PaperView.jsx";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
 const SESSIONS = { cie: [["May/June", "s"], ["October/November", "w"], ["February/March", "m"]], edexcel: [["May/June", "Jun"], ["January", "Jan"], ["October/November", "Nov"]] };
@@ -33,6 +34,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const [exam, setExam] = useState(null); // { sub, picked, title }
   const [deck, setDeck] = useState(null); // { cards, title }
   const [wizard, setWizard] = useState(false);
+  const [paperOpen, setPaperOpen] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [, refresh] = useState(0);
   const moreRef = useRef(null);
@@ -68,6 +70,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const back = () => refresh((n) => n + 1);
 
   if (study && pack) return <StudyView sub={study.sub} mode={study.mode} subs={pack.subs} onMode={(mode) => setStudy({ ...study, mode })} onSub={(sub) => setStudy({ ...study, sub })} onClose={() => { setStudy(null); back(); }} theme={theme} setTheme={setTheme} report={report} />;
+  if (paperOpen && subject) return <PaperView paper={paperOpen} subject={subject} what={`${course.board === "cie" ? "Cambridge IGCSE" : "Edexcel International GCSE"} ${course.syllabus} ${course.code || ""}`.trim()} level={course?.board === "cie" ? course?.level && `${course.level}${course.tier ? `, ${course.tier}` : ""}` : course?.tier} onClose={() => { setPaperOpen(null); back(); }} report={report} />;
   if (exam) return <ExamView {...exam} onClose={() => { setExam(null); back(); }} report={report} />;
   if (deck) return (
     <div className="cg-reader"><header className="cg-rtop"><button className="cg-wx" aria-label="Back to the course" onClick={() => { setDeck(null); back(); }}>&larr;</button><b className="cg-switcher plain">{deck.title}</b><span className="cg-rprogress" /></header>
@@ -178,7 +181,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
       {tab === "papers" && <div className="cg-stack tight">
         {pack && <>
           <h3 className="cg-papershead">Practice papers</h3>
-          <p className="small muted">Two full papers in the style of the real exam, written for Testiddle and covering every topic on your course. Each is timed and marked as you go, with no question shared between them.</p>
+          <p className="small muted">Two full papers laid out like the real exam booklet, written for Testiddle and covering every topic on your course. Sit one on the clock, then mark it against the mark scheme. You can print them too.</p>
           <div className="cg-list">
             {!papers && <div className="cg-empty">Loading papers</div>}
             {(papers || []).map((p) => {
@@ -186,7 +189,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
               const done = p.picked.filter((q) => m[q.id]);
               const got = done.reduce((n, q) => n + (m[q.id].score ?? (m[q.id].ok ? 1 : 0)), 0);
               const time = p.minutes >= 60 ? `${Math.floor(p.minutes / 60)} hr${p.minutes % 60 ? ` ${p.minutes % 60} min` : ""}` : `${p.minutes} min`;
-              return <button key={p.id} className="cg-row" onClick={() => setExam({ sub: { id: p.id, skill: p.title }, picked: p.picked, title: `${subject?.name || pack.name} ${p.title}`, minutes: p.minutes })}>
+              return <button key={p.id} className="cg-row" onClick={() => setPaperOpen(p)}>
                 <span className="cg-rownum" aria-hidden="true">{p.n}</span>
                 <span className="cg-rowtext"><b>{p.title}</b><span className="small muted">{p.mc} multiple choice and {p.long} structured questions, {p.marks} marks, {time}</span></span>
                 {done.length ? <span className={"cg-pill" + (done.length === p.picked.length ? " good" : "")}>{done.length === p.picked.length ? `${got} / ${p.marks} marks` : `${done.length} of ${p.picked.length} done`}</span> : <span className="cg-pill">Not started</span>}
@@ -194,18 +197,8 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
               </button>;
             })}
           </div>
-          <h3 className="cg-papershead">Real past papers</h3>
         </>}
-        <p className="small muted">{what}. Each button searches for that exact paper or mark scheme on the board's site and revision sites.</p>
-        <section className="cg-card cg-years">{YEARS.map((y) => (
-          <div key={y} className={"cg-year" + (open[y] ? " open" : "")}>
-            <button className="cg-yearhead" onClick={() => setOpen({ ...open, [y]: !open[y] })}><span className="cg-round">{open[y] ? "▴" : "▾"}</span><b>{y}</b></button>
-            {open[y] && <div className="cg-yearrows">{SESSIONS[course.board].map(([session]) => (
-              <div key={session} className="cg-yearrow"><span>{session} {y}</span><span className="cg-pair">
-                <a href={search(`${what} ${session} ${y} question paper pdf`)} target="_blank" rel="noopener noreferrer">Paper</a>
-                <a href={search(`${what} ${session} ${y} mark scheme pdf`)} target="_blank" rel="noopener noreferrer">Mark scheme</a>
-              </span></div>))}</div>}
-          </div>))}</section>
+        <p className="small muted">Real past papers and mark schemes from {what} are on the board's own site.</p>
         <div className="row"><a className="cg-btn" href={course.board === "cie" ? "https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-igcse/" : "https://qualifications.pearson.com/en/qualifications/edexcel-international-gcses.html"} target="_blank" rel="noopener noreferrer">The board's own page</a></div>
       </div>}
     </div>

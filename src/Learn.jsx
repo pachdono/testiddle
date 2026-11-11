@@ -15,6 +15,7 @@ const READ_KEY = "testiddle-notes-read", TICK_KEY = "testiddle-ticks", LOOK_KEY 
 export const notesRead = () => read(READ_KEY, {});
 /** Saved marks for each exam set, by its id. */
 export const examMarks = () => read(EXAM_KEY, {});
+export const saveExamMarks = (id, m) => { const all = read(EXAM_KEY, {}); all[id] = m; write(EXAM_KEY, all); };
 const Html = ({ html, className = "" }) => <div className={"dq-html " + className} dangerouslySetInnerHTML={{ __html: html }} />;
 const Chev = ({ open }) => <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" style={{ transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }}><path d="m8 5 5 5-5 5" /></svg>;
 
