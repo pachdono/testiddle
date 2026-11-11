@@ -41,7 +41,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const pack = useMemo(() => {
     if (!raw) return null;
     const p = withoutTopics(forLevel(raw, course?.level, course?.board), skip ? skip.split(",") : []);
-    return { ...p, subs: p.subs.map((s) => ({ ...s, figs: ["", "-b", "-c"].map((x) => IFIG[sheetIdOf(s) + x]).filter(Boolean), figColor: course?.tint })) };
+    return { ...p, subs: p.subs.map((s) => ({ ...s, figs: ["", "-b", "-c"].map((x) => IFIG[sheetIdOf(s) + x]).filter(Boolean), figColor: course?.tint, figId: sheetIdOf(s) })) };
   }, [raw, course?.level, course?.board, course?.tint, skip]);
   useEffect(() => {
     if (!moreOpen) return undefined;

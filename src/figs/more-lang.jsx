@@ -74,5 +74,5 @@ export default {
   "drama-pre-release": hub("The extract", [["Actor", "voice and movement"], ["Director", "blocking and pace"], ["Designer", "set, light, sound"], ["Character", "objectives"], ["Themes", "what it is about"], ["Audience", "the intended effect"]]),
   "drama-devising": table(["Technique", "What it does"], [["Tableau", "A still image"], ["Thought tracking", "Speaks inner thoughts"], ["Flashback", "Moves back in time"], ["Narration", "Tells the audience"], ["Multi role", "One actor, several parts"]], { widths: [1, 2], caption: "BRECHT: EPIC THEATRE. STANISLAVSKI: NATURALISM" }),
   "drama-performing": compare([["Vocal skills", ["Pitch, pace, pause", "Volume, tone, accent", "Emphasis"]], ["Physical skills", ["Posture, gesture", "Facial expression", "Proxemics: use of space"]]]),
-  "drama-written": table(["Stage", "Audience"], [["Proscenium", "One side, picture frame"], ["Thrust", "Three sides"], ["Traverse", "Two facing sides"], ["In the round", "All sides"]], { widths: [1, 2], caption: "DOWNSTAGE IS NEAREST THE AUDIENCE" }),
+  "drama-written-b": table(["Stage", "Audience"], [["Proscenium", "One side, picture frame"], ["Thrust", "Three sides"], ["Traverse", "Two facing sides"], ["In the round", "All sides"]], { widths: [1, 2], caption: "DOWNSTAGE IS NEAREST THE AUDIENCE" }),
 };

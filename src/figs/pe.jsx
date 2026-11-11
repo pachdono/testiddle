@@ -243,7 +243,7 @@ export default {
         {cap.map((d) => <path key={d} d={d} fill="none" stroke={INK} strokeWidth="3.4" strokeLinecap="round" />)}
         {lig.map((d) => <g key={d}><path d={d} fill="none" stroke={INK} strokeWidth="8.6" strokeLinecap="round" /><path d={d} fill="none" stroke="#d9b57a" strokeWidth="6" strokeLinecap="round" /></g>)}
         <Label x={4} y={6} w={176} color={INK} title="femur" lines={["thigh bone"]} /><Link from={[180, 34]} to={[290, 40]} color={INK} />
-        <Label x={4} y={82} w={176} color="#2a8fb6" title="cartilage" lines={["articular: on bone ends"]} /><Link from={[180, 112]} to={[238, 147]} color="#2a8fb6" />
+        <Label x={4} y={82} w={176} color="#2a8fb6" title="articular cartilage" lines={["on the bone ends"]} /><Link from={[180, 112]} to={[238, 147]} color="#2a8fb6" />
         <Label x={4} y={158} w={176} color="#b08a10" title="synovial fluid" lines={["fills the cavity"]} /><Link from={[180, 188]} to={[270, 162]} color="#b08a10" bend={-14} />
         <Label x={4} y={234} w={176} color={INK} title="tibia" lines={["shin bone"]} /><Link from={[180, 262]} to={[290, 270]} color={INK} />
         <Label x={420} y={20} w={254} color="#a07a3a" title="ligament" lines={["joins bone to bone"]} /><Link from={[420, 49]} to={[374, 112]} color="#a07a3a" />
