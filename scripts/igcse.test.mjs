@@ -62,3 +62,13 @@ test("answers are spread across A to D overall", () => {
   const counts = ["A", "B", "C", "D"].map((L) => all.filter((q) => q.answer === L).length);
   assert.ok(Math.max(...counts) < all.length * 0.4, counts.join(","));
 });
+
+test("every hand drawn diagram belongs to a real cheat sheet", async () => {
+  const { readdirSync } = await import("node:fs");
+  const dir = new URL("../src/figs/", import.meta.url);
+  const ids = readdirSync(dir).filter((f) => f.endsWith(".jsx")).flatMap((f) => [...readFileSync(new URL(f, dir), "utf8").matchAll(/^\s+"([a-z-]+)": /gm)].map((m) => m[1]));
+  const sheets = new Set(packs.flatMap((p) => sheetsOf(shape(p), SUBJECTS.find((s) => s.id === p.id)).map((s) => s.id)));
+  assert.ok(ids.length >= 50);
+  assert.deepEqual(ids.filter((id) => !sheets.has(id)), []);
+  assert.equal(new Set(ids).size, ids.length);
+});
