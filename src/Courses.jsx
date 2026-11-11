@@ -12,7 +12,7 @@ import { GOALS, activity, cardRatings, getAvatar, getGoal, longestRunOf, myCours
 import { CARDS } from "./content.js";
 import { QUESTION_COUNT, doneFrom } from "./bank.js";
 
-export const topicsDone = (id) => { try { const v = JSON.parse(localStorage.getItem(`testiddle-topics:${id}`)); return Array.isArray(v) ? v : []; } catch { return []; } };
+export const topicsDone = (id, board) => { try { const v = JSON.parse(localStorage.getItem(`testiddle-topics:${id}${board === "edexcel" ? ":edexcel" : ""}`)); return Array.isArray(v) ? v : []; } catch { return []; } };
 
 export function readHistory() {
   try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY)); return Array.isArray(h) ? h : []; } catch { return []; }
@@ -259,7 +259,7 @@ export function Dashboard({ nav, history, user, courses, manage }) {
         {sorted.map((c) => {
           const s = summary(history, c);
           if (c.kind === "igcse") {
-            const done = topicsDone(c.id).length;
+            const done = topicsDone(c.id, c.board).length;
             return (
               <button key={c.id} className="cg-tr" onClick={() => nav(`/course/${c.id}`)}>
                 <span className="cg-course"><CourseMark course={c} /><span><b>{c.name}</b><span className="small muted">{c.tag}{c.tier ? `, ${c.tier}` : ""}</span></span></span>
