@@ -21,12 +21,14 @@ export default {
     one("writing", "Writing", "Writing tasks", 8, "Emails, articles, reports and reviews with the right register.", [
       ["Forms", ["Email or letter: greeting, clear paragraphs, closing. Informal to a friend, formal to an organisation.", "Article: a catchy title, engaging opening, opinions and examples.", "Report: a clear title, neutral tone, headings and recommendations.", "Review: describe briefly, give opinions and a recommendation."]],
       ["Language", ["Use linking words: however, furthermore, as a result, on the other hand.", "Vary vocabulary and sentence structures.", "Cover every point in the task and keep to the word count.", "Check tenses, articles and subject verb agreement."]],
+      ["Grammar and register", ["Tenses to show range: present simple and continuous, past simple and continuous, present perfect, past perfect, future forms (will, going to), conditionals (if I had more time, I would...).", "Formal register: no contractions or slang, polite phrases (I would be grateful if...). Informal: contractions, friendly phrases (Can't wait to see you!).", "Keep to the word count; plan paragraphs: introduction, main points, conclusion.", "Useful phrases: In my opinion, On the one hand... on the other hand, To sum up, I strongly recommend."]],
     ], ["Match register to the reader.", "Cover all the content points.", "Use linking words and varied sentences."], [
       ["Which is a formal email opening?", ["Hey!", "Dear Sir or Madam,", "Hi mate,", "Yo"], "B", "Formal emails use a polite, standard greeting."],
       ["Which linking word shows contrast?", ["Furthermore", "However", "Also", "Firstly"], "B", "However introduces a contrasting idea."],
       ["What tone does a report usually have?", ["Chatty", "Neutral and factual", "Angry", "Poetic"], "B", "Reports present information objectively."],
       ["Which sentence is correct?", ["She go to school every day.", "She goes to school every day.", "She going to school every day.", "She gone to school every day."], "B", "Third person singular takes -s in the present simple."],
       ["What should a review include?", ["Only facts", "A description, opinions and a recommendation", "A list of prices only", "A story"], "B", "Reviews give a view and a recommendation."],
+      ["Which is formal?", ["Can't wait!", "I would be grateful if you could reply.", "Hey there", "Gonna"], "B", "Polite and no contractions."],
     ]),
     one("listening", "Listening", "Listening tasks", 6, "Short answers, gap fills and multiple choice from recordings.", [
       ["Before and during", ["Use the reading time to underline key words in the questions.", "Predict the type of answer: a number, a place, a name.", "Listen for paraphrases and for corrections: 'not Tuesday, actually Wednesday'.", "You hear each recording twice: use the second time to check."]],
