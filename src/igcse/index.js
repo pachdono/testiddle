@@ -78,13 +78,15 @@ export async function loadPack(subjectId) {
 /** Lines that only Extended (Supplement) students need start with "[E] ". */
 export const EXT = "[E] ";
 export const isExt = (line) => line.startsWith(EXT);
-export const plain = (line) => (isExt(line) ? line.slice(EXT.length) : line);
+export const plain = (line) => (isExt(line) || line.startsWith("[H] ") ? line.slice(EXT.length) : line);
 
 /** The pack for one level: Core leaves out the Extended lines; Extended keeps them, marked. */
-export function forLevel(pack, level) {
-  if (level !== "Core") return pack;
-  const subs = pack.subs.map((s) => ({ ...s, sections: s.sections.map(([h, lines]) => [h, lines.filter((l) => !isExt(l))]).filter(([, lines]) => lines.length) }));
-  return { ...pack, subs };
+export function forLevel(pack, level, board = "cie") {
+  const map = (f) => ({ ...pack, subs: pack.subs.map((s) => ({ ...s, sections: s.sections.map(([h, lines]) => [h, f(lines)]).filter(([, lines]) => lines.length) })) });
+  if (level === "Core") return map((lines) => lines.filter((l) => !isExt(l)));
+  if (board !== "edexcel") return pack;
+  // Edexcel has no Core and Extended: Higher maths keeps the lines marked Higher; the sciences show them plainly.
+  return map((lines) => lines.map((l) => (isExt(l) ? (level === "Extended" ? `[H] ${plain(l)}` : plain(l)) : l)));
 }
 
 /** Mixes a colour with white, for the soft background of a poster. */

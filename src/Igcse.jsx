@@ -36,7 +36,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const [, refresh] = useState(0);
   const moreRef = useRef(null);
   useEffect(() => { loadPack(subjectId).then(setPack).catch(() => setPack(null)); }, [subjectId]);
-  const pack = useMemo(() => (raw ? forLevel(raw, course?.level) : null), [raw, course?.level]);
+  const pack = useMemo(() => (raw ? forLevel(raw, course?.level, course?.board) : null), [raw, course?.level, course?.board]);
   useEffect(() => {
     if (!moreOpen) return undefined;
     const f = (e) => { if (!moreRef.current?.contains(e.target)) setMoreOpen(false); };

@@ -16,7 +16,7 @@ const Html = ({ html, className = "" }) => <div className={"dq-html " + classNam
 const Chev = ({ open }) => <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" style={{ transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }}><path d="m8 5 5 5-5 5" /></svg>;
 
 /** A note line; IGCSE lines only Extended students need are marked with a badge. */
-const Line = ({ l }) => (l.startsWith("[E] ") ? <><span className="cg-ext">Extended</span>{l.slice(4)}</> : l);
+const Line = ({ l }) => (l.startsWith("[E] ") || l.startsWith("[H] ") ? <><span className="cg-ext">{l[1] === "H" ? "Higher" : "Extended"}</span>{l.slice(4)}</> : l);
 
 /** Cards for one subtopic, made from its notes: each section, and the key points. */
 export function cardsFor(sub) {
