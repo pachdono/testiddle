@@ -75,3 +75,30 @@ export function courseFor(sel) {
 
 /** Every course id that can be added, for search. */
 export const ALL = [{ id: "sat", name: "SAT", qual: "sat" }, ...SUBJECTS.map((s) => ({ id: `igcse-${s.id}`, name: s.name, qual: "igcse", subject: s }))];
+
+/** Nicknames people type when looking for a subject, on top of its initials (pe, cs, ict, dt). */
+const ALIASES = {
+  biology: ["bio", "science", "sciences"], chemistry: ["chem", "science", "sciences"], physics: ["phys", "science", "sciences"],
+  maths: ["math", "mathematics", "maths"], addmaths: ["add maths", "additional maths", "further pure", "fpm", "further maths"],
+  "english-lang": ["english", "eng lang", "first language english", "language"], "english-lit": ["english", "eng lit", "lit", "literature"],
+  esl: ["english", "eal", "efl", "second language"], french: ["fr", "francais", "language"], german: ["de", "deutsch", "language"],
+  spanish: ["es", "espanol", "language"], mandarin: ["chinese", "cn", "language"], thai: ["th", "language"],
+  cs: ["computing", "comp sci", "computer", "coding", "programming"], ict: ["it", "information technology", "computer", "computing"],
+  dt: ["d&t", "dandt", "design", "technology", "product design"], geography: ["geo", "geog"], history: ["hist"],
+  economics: ["econ", "eco"], business: ["bs", "business studies"], accounting: ["accounts", "acc"], global: ["gp", "global perspectives"],
+  art: ["art and design", "design"], music: ["mus"], drama: ["theatre", "theater"], pe: ["physical education", "sport", "sports", "gym"],
+};
+const SMALL = new Set(["and", "as", "a", "of", "the"]);
+const initials = (name) => name.toLowerCase().replace(/[^a-z ]/g, " ").split(/\s+/).filter((w) => w && !SMALL.has(w)).map((w) => w[0]).join("");
+
+/** Whether a subject matches what someone typed: its name, syllabus code, initials or a nickname. */
+export function matchesSubject(s, typed) {
+  const q = String(typed || "").toLowerCase().trim().replace(/\s+/g, " ");
+  if (!q) return true;
+  const names = [s.name, ...Object.values(s.boardNames || {})].map((x) => x.toLowerCase());
+  const keys = [initials(s.name), ...(ALIASES[s.id] || [])];
+  if (keys.some((k) => k === q || (q.length >= 2 && k.startsWith(q)))) return true;
+  if (Object.values(s.boards).some((c) => c.toLowerCase().includes(q))) return true;
+  // Match from the start of a word, so "cs" does not find physics and "econ" does not find "second".
+  return names.some((n) => (" " + n.replace(/[^a-z0-9]+/g, " ")).includes(" " + q));
+}

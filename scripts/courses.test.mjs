@@ -92,3 +92,15 @@ test("a stored choice becomes a full course, with the double award code for a do
   assert.equal(courseFor({ id: "paper-sat" }).id, "sat");
   assert.equal(courseFor({ id: "nope" }), null);
 });
+
+test("subject search finds initials and nicknames", async () => {
+  const { SUBJECTS, matchesSubject } = await import("../src/catalog.js");
+  const find = (q) => SUBJECTS.filter((s) => matchesSubject(s, q)).map((s) => s.id);
+  assert.ok(find("pe").includes("pe"));
+  assert.deepEqual(find("cs"), ["cs"]);
+  assert.deepEqual(find("ict"), ["ict"]);
+  assert.ok(find("chem").includes("chemistry"));
+  assert.ok(!find("econ").includes("esl"));
+  assert.deepEqual(find("0610"), ["biology"]);
+  assert.ok(find("add maths").includes("addmaths"));
+});

@@ -2,7 +2,7 @@
 // (and Triple or Double for the sciences), or the test date for the SAT.
 
 import { useState } from "react";
-import { QUALS, SUBJECTS, BOARDS, courseFor } from "./catalog.js";
+import { QUALS, SUBJECTS, BOARDS, courseFor, matchesSubject } from "./catalog.js";
 import { SubjectIcon } from "./SubjectIcons.jsx";
 
 const DATES = ["August", "October", "November", "December", "March", "May", "June", "Not sure yet"];
@@ -49,11 +49,11 @@ export function SubjectList({ qual, picked, setPicked }) {
     );
   }
   const t = q.trim().toLowerCase();
-  const list = SUBJECTS.filter((s) => !t || s.name.toLowerCase().includes(t) || Object.values(s.boards).some((c) => c.toLowerCase().includes(t)));
+  const list = SUBJECTS.filter((s) => matchesSubject(s, t));
   const groups = [...new Set(SUBJECTS.map((s) => s.group))];
   return (
     <>
-      <input className="ob-search" type="search" placeholder="Search subjects or syllabus codes" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search subjects" />
+      <input className="ob-search" type="search" placeholder="Search subjects, like PE, CS or 0610" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search subjects" />
       {list.length === 0 && <p className="muted center">No subjects match that.</p>}
       {groups.map((g) => {
         const items = list.filter((s) => s.group === g);
