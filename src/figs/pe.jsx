@@ -46,15 +46,20 @@ const Tag = ({ y, at, side, children, color = INK, x = side < 0 ? 196 : 484 }) =
 };
 
 /** One half of the skeleton (the figure's right side, on the viewer's left); mirrored for the other. */
-const halfSkeleton = (k) => {
+/** back draws the view from behind: the whole scapula, the heel, no patella or toes. */
+const halfSkeleton = (k, back = false) => {
   const m = (x) => (k ? 680 - x : x);
   const P = (x, y) => [m(x), y];
-  const ribW = [24, 32, 38, 42, 44, 44, 42, 38];
+  const ribW = [22, 30, 36, 40, 43, 44, 44, 43, 40, 36];
+  const scapula = back
+    ? <g><path d={`M${m(282)} 136 L${m(328)} 148 L${m(306)} 220 Z`} fill={BONE} stroke={INK} strokeWidth="1.4" /><path d={`M${m(324)} 156 L${m(284)} 140`} stroke={INK} strokeWidth="2.4" strokeLinecap="round" /></g>
+    : <path d={`M${m(282)} 138 L${m(314)} 144 L${m(300)} 206 Z`} fill={BONE} stroke={INK} strokeWidth="1.2" opacity=".75" />;
   return (
     <g key={k}>
-      <path d={`M${m(282)} 138 L${m(314)} 144 L${m(300)} 206 Z`} fill={BONE} stroke={INK} strokeWidth="1.2" opacity=".75" />
-      {ribW.map((w, i) => { const y = 148 + i * 12; return <path key={i} d={`M${m(334)} ${y} Q${m(334 - w - 8)} ${y - 6} ${m(340 - w)} ${y + 16}`} fill="none" stroke={INK} strokeWidth="5.4" strokeLinecap="round" />; })}
-      {ribW.map((w, i) => { const y = 148 + i * 12; return <path key={`r${i}`} d={`M${m(334)} ${y} Q${m(334 - w - 8)} ${y - 6} ${m(340 - w)} ${y + 16}`} fill="none" stroke={BONE} strokeWidth="3.2" strokeLinecap="round" />; })}
+      {!back && scapula}
+      {ribW.map((w, i) => { const y = 154 + i * 9.4; return <path key={i} d={`M${m(334)} ${y} Q${m(334 - w - 8)} ${y - 6} ${m(340 - w)} ${y + 16}`} fill="none" stroke={INK} strokeWidth="5.4" strokeLinecap="round" />; })}
+      {ribW.map((w, i) => { const y = 154 + i * 9.4; return <path key={`r${i}`} d={`M${m(334)} ${y} Q${m(334 - w - 8)} ${y - 6} ${m(340 - w)} ${y + 16}`} fill="none" stroke={BONE} strokeWidth="3.2" strokeLinecap="round" />; })}
+      {back && scapula}
       <Rod a={P(336, 138)} b={P(286, 132)} w={6} />
       <path d={`M${m(337)} 296 C${m(312)} 280 ${m(282)} 286 ${m(286)} 312 C${m(290)} 330 ${m(304)} 342 ${m(322)} 348 L${m(338)} 338 Z`} fill={BONE} stroke={INK} strokeWidth="1.4" />
       <Rod a={P(282, 144)} b={P(268, 250)} w={10} />
@@ -68,13 +73,15 @@ const halfSkeleton = (k) => {
       <circle cx={m(321)} cy={331} r="8" fill={BONE} stroke={INK} strokeWidth="1.3" />
       <Rod a={P(305, 342)} b={P(318, 446)} w={11} />
       <ellipse cx={m(318)} cy={452} rx="10" ry="7" fill={BONE} stroke={INK} strokeWidth="1.2" />
-      <ellipse cx={m(319)} cy={458} rx="6" ry="8" fill={BONE} stroke={INK} strokeWidth="1.3" />
+      {!back && <ellipse cx={m(319)} cy={458} rx="6" ry="8" fill={BONE} stroke={INK} strokeWidth="1.3" />}
       <Rod a={P(322, 470)} b={P(322, 538)} w={9} />
       <Rod a={P(305, 472)} b={P(308, 538)} w={4} />
       <ellipse cx={m(318)} cy={546} rx="8" ry="5" fill={BONE} stroke={INK} strokeWidth="1.2" />
+      {back ? <ellipse cx={m(318)} cy={560} rx="8" ry="10" fill={BONE} stroke={INK} strokeWidth="1.3" /> : <>
       {[[310, 554], [318, 556], [326, 554]].map(([x, y]) => <circle key={x} cx={m(x)} cy={y} r="3.6" fill={BONE} stroke={INK} strokeWidth="1.1" />)}
       {[[306, 300], [312, 305], [318, 310], [324, 315], [330, 320]].map(([x], i) => <Rod key={x} a={P(308 + i * 5, 561)} b={P([300, 308, 316, 324, 332][i], 576)} w={2.4} />)}
       {[300, 308, 316, 324, 332].map((x) => <Rod key={x} a={P(x, 581)} b={P(x, 589)} w={2.2} />)}
+      </>}
     </g>
   );
 };
@@ -82,7 +89,7 @@ const halfSkeleton = (k) => {
 /** The skeleton from the front, with every bone in the syllabus named. */
 const skeleton = (c) => (
   <svg viewBox={TALL}><Defs c={c} />
-    {Array.from({ length: 20 }, (_, i) => <rect key={i} x={333 + (i > 14 ? -2 : 0)} y={106 + i * 9.6} width={i > 14 ? 18 : 14} height="7.4" rx="2.4" fill={BONE} stroke={INK} strokeWidth="1.1" />)}
+    {Array.from({ length: 24 }, (_, i) => <rect key={i} x={i > 18 ? 331 : 333} y={106 + i * 7.9} width={i > 18 ? 18 : 14} height="6.2" rx="2.2" fill={BONE} stroke={INK} strokeWidth="1.1" />)}
     <path d="M330 296 L350 296 L340 332 Z" fill={BONE} stroke={INK} strokeWidth="1.3" />
     {halfSkeleton(0)}{halfSkeleton(1)}
     <rect x="334" y="140" width="12" height="76" rx="5" fill={BONE} stroke={INK} strokeWidth="1.3" />
@@ -113,6 +120,35 @@ const skeleton = (c) => (
     <Tag side={1} y={560} at={[364, 556]}>tarsals</Tag>
     <Tag side={1} y={580} at={[358, 570]}>metatarsals</Tag>
     <Tag side={1} y={598} at={[356, 586]}>phalanges</Tag>
+  </svg>
+);
+
+/** The skeleton from behind: the spine in its three sections, the scapulae, sacrum, coccyx and heel. */
+const skeletonBack = (c) => (
+  <svg viewBox={TALL}><Defs c={c} />
+    {halfSkeleton(0, true)}{halfSkeleton(1, true)}
+    {Array.from({ length: 24 }, (_, i) => <rect key={i} x={i > 18 ? 331 : 333} y={106 + i * 7.9} width={i > 18 ? 18 : 14} height="6.2" rx="2.2" fill={BONE} stroke={INK} strokeWidth="1.1" />)}
+    <path d="M330 296 L350 296 L340 326 Z" fill={BONE} stroke={INK} strokeWidth="1.3" />
+    <path d="M336 328 L344 328 L340 338 Z" fill={BONE} stroke={INK} strokeWidth="1.2" />
+    <g filter="url(#ps)"><ellipse cx="340" cy="62" rx="30" ry="38" fill={BONE} stroke={INK} strokeWidth="1.6" /></g>
+    <T x={340} y={20} s={16} anchor="middle" fill={c}>THE SKELETON (BACK)</T>
+    <Tag side={-1} y={56} at={[318, 50]}>cranium</Tag>
+    <Tag side={-1} y={150} at={[300, 150]}>scapula</Tag>
+    <Tag side={-1} y={210} at={[274, 206]}>humerus</Tag>
+    <Tag side={-1} y={276} at={[256, 296]}>radius (outer)</Tag>
+    <Tag side={-1} y={310} at={[269, 304]}>ulna (inner)</Tag>
+    <Tag side={-1} y={420} at={[311, 395]}>femur</Tag>
+    <Tag side={-1} y={500} at={[306, 505]}>fibula</Tag>
+    <Tag side={-1} y={534} at={[322, 522]}>tibia</Tag>
+    <Tag side={-1} y={570} at={[312, 562]}>calcaneus (heel)</Tag>
+    <Tag side={1} y={120} at={[347, 128]}>cervical vertebrae (7)</Tag>
+    <Tag side={1} y={186} at={[347, 200]}>thoracic vertebrae (12)</Tag>
+    <Tag side={1} y={222} at={[382, 214]}>ribs (12 pairs)</Tag>
+    <Tag side={1} y={262} at={[349, 272]}>lumbar vertebrae (5)</Tag>
+    <Tag side={1} y={300} at={[388, 306]}>pelvis</Tag>
+    <Tag side={1} y={326} at={[344, 308]}>sacrum</Tag>
+    <Tag side={1} y={350} at={[340, 334]}>coccyx</Tag>
+    <Tag side={1} y={548} at={[364, 546]}>talus</Tag>
   </svg>
 );
 
@@ -184,7 +220,9 @@ const muscles = (c) => {
 export default {
   "pe-anatomy": skeleton,
 
-  "pe-anatomy-b": table(["Bone type", "Examples", "Job in sport"], [["Long", "femur, humerus, tibia", "levers for big movements"], ["Short", "carpals, tarsals", "strength, fine control"], ["Flat", "cranium, scapula, ribs", "protection, muscle attachment"], ["Irregular", "vertebrae", "protect the spinal cord"]], { widths: [2, 3, 3], caption: "SUPPORT, PROTECTION, MOVEMENT, BLOOD CELL PRODUCTION, MINERAL STORAGE" }),
+  "pe-anatomy-b": skeletonBack,
+
+  "pe-anatomy-c": table(["Bone type", "Examples", "Job in sport"], [["Long", "femur, humerus, tibia", "levers for big movements"], ["Short", "carpals, tarsals", "strength, fine control"], ["Flat", "cranium, scapula, ribs", "protection, muscle attachment"], ["Irregular", "vertebrae", "protect the spinal cord"]], { widths: [2, 3, 3], caption: "SUPPORT, PROTECTION, MOVEMENT, BLOOD CELL PRODUCTION, MINERAL STORAGE" }),
 
   // A synovial joint (knee) in section: cartilage caps both bone ends, the synovial membrane
   // encloses the fluid filled cavity and lines the capsule, which is attached to both bones, and

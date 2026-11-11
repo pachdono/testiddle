@@ -281,7 +281,7 @@ export function SheetPoster({ sheet }) {
       </header>
       <p className="poster-tag"><span>★</span>{p.tagline}<span>★</span></p>
       {fig && <section className="poster-fig">{fig(p.color, sheet.id)}</section>}
-      {IFIG[`${sheet.id}-b`] && <section className="poster-fig">{IFIG[`${sheet.id}-b`](p.color, sheet.id)}</section>}
+      {["-b", "-c"].map((x) => IFIG[sheet.id + x] && <section key={x} className="poster-fig">{IFIG[sheet.id + x](p.color, sheet.id)}</section>)}
       <div className="poster-grid">
         {sheet.blocks.map(([h, lines], i) => (
           <section key={h + i} className={"poster-box " + DECOR[i % DECOR.length] + (i === 1 ? " dashed" : "")} style={{ "--r": `${((i % 3) - 1) * 0.5}deg` }}>

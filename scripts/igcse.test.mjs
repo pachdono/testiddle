@@ -69,7 +69,7 @@ test("every hand drawn diagram belongs to a real cheat sheet", async () => {
   const ids = readdirSync(dir).filter((f) => f.endsWith(".jsx")).flatMap((f) => [...readFileSync(new URL(f, dir), "utf8").matchAll(/^\s+"([a-z0-9-]+)": /gm)].map((m) => m[1]));
   const sheets = new Set(packs.flatMap((p) => sheetsOf(shape(p), SUBJECTS.find((s) => s.id === p.id)).map((s) => s.id)));
   assert.ok(ids.length >= 50);
-  assert.deepEqual(ids.filter((id) => !sheets.has(id.replace(/-b$/, ""))), []);
+  assert.deepEqual(ids.filter((id) => !sheets.has(id.replace(/-[bc]$/, ""))), []);
   assert.equal(new Set(ids).size, ids.length);
 });
 
