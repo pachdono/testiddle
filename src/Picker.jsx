@@ -2,7 +2,7 @@
 // (and Triple or Double for the sciences), or the test date for the SAT.
 
 import { useState } from "react";
-import { QUALS, SUBJECTS, BOARDS, courseFor, matchesSubject } from "./catalog.js";
+import { QUALS, SUBJECTS, BOARDS, PATANA, courseFor, matchesSubject } from "./catalog.js";
 import { SubjectIcon } from "./SubjectIcons.jsx";
 
 const DATES = ["August", "October", "November", "December", "March", "May", "June", "Not sure yet"];
@@ -65,8 +65,8 @@ export function SubjectList({ qual, picked, setPicked }) {
               const c = sel && courseFor(sel);
               return (
                 <Row key={s.id} icon={s.icon} name={s.name} sub={c ? `Added: ${BOARDS[c.board]}${c.tier ? `, ${c.tier}` : ""}` : Object.keys(s.boards).map((b) => BOARDS[b]).join(" or ")} sel={sel} open={open === id} onToggle={() => setOpen(open === id ? null : id)}>
-                  {s.tiers && <><b>Triple or Double?</b><div className="ob-chips">{[["Triple", "Triple (separate science)"], ["Double", "Double (combined science)"]].map(([tier, label]) => <button key={tier} className={(sel?.tier || "Triple") === tier && sel ? "on" : ""} onClick={() => set(id, { id, board: sel?.board || Object.keys(s.boards)[0], tier })}>{label}</button>)}</div></>}
-                  <b>{sel ? "Exam board" : "Add exam board"}</b><small className="muted">International GCSE</small>
+                  {s.tiers && <><b>Triple or Double?</b><div className="ob-chips">{[["Triple", "Triple (separate science)"], ["Double", "Double (combined science)"]].map(([tier, label]) => <button key={tier} className={(sel?.tier || "Triple") === tier && sel ? "on" : ""} onClick={() => set(id, { id, board: sel?.board || PATANA[s.id] || Object.keys(s.boards)[0], tier })}>{label}</button>)}</div></>}
+                  <b>{sel ? "Exam board" : "Add exam board"}</b><small className="muted">International GCSE{PATANA[s.id] ? `. Bangkok Patana uses ${PATANA[s.id] === "cie" ? "Cambridge" : "Edexcel"}` : ""}</small>
                   <div className="ob-chips">{Object.entries(s.boards).map(([b, code]) => <button key={b} className={sel?.board === b ? "on" : ""} onClick={() => { set(id, { id, board: b, tier: sel?.tier || (s.tiers ? "Triple" : undefined) }); if (!s.tiers) setOpen(null); }}>{b === "cie" ? "Cambridge (CIE)" : "Edexcel iGCSE"} <small className="muted">{code}</small></button>)}</div>
                   {sel && <button className="cg-link ob-remove" onClick={() => { set(id, null); setOpen(null); }}>Remove course</button>}
                 </Row>

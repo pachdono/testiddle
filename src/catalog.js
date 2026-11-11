@@ -7,6 +7,8 @@ export const QUALS = [
 ];
 
 export const BOARDS = { cie: "Cambridge IGCSE", edexcel: "Edexcel International GCSE" };
+/** The exam boards Bangkok Patana School uses, where known, shown as a hint when choosing a board. */
+export const PATANA = { biology: "edexcel", chemistry: "edexcel", physics: "edexcel", maths: "cie" };
 export const BOARD_SHORT = { cie: "Cambridge", edexcel: "Edexcel" };
 
 const LANG_ED = ["Home and abroad", "Education and employment", "Personal life and relationships", "The world around us", "Social activities, fitness and health", "Listening", "Reading and writing", "Speaking"];
