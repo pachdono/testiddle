@@ -196,6 +196,8 @@ const nuclide = (c) => (
   </svg>
 );
 
+// Each planet gets its own little expression.
+const MOODS = { Mercury: "surprised", Venus: "smug", Earth: "happy", Mars: "determined", Jupiter: "chill", Saturn: "happy", Uranus: "sleepy", Neptune: "worried" };
 const solarSystem = (c) => {
   // Widths in proportion within each group (Earth = 1: Mercury 0.38, Venus 0.95, Mars 0.53;
   // Jupiter = 11.2: Saturn 9.45, Uranus 4.0, Neptune 3.9). The giants use a smaller scale.
@@ -210,7 +212,7 @@ const solarSystem = (c) => {
   return (
     <svg viewBox={V}><Defs c={c} />
       <circle cx="-120" cy={cy} r="180" fill="#ffcf4a" stroke="#f2a53a" strokeWidth="3" />
-      <Face x={24} y={cy - 6} r={30} />
+      <Face x={22} y={cy - 6} r={34} skin="#ffcf4a" mood="chill" blush />
       <T x={28} y={cy + 44} s={15} anchor="middle" fill="#8a5a10">SUN</T>
       {Array.from({ length: 26 }, (_, i) => <circle key={i} cx={belt + 6 * Math.sin(i * 1.7)} cy={cy - 60 + i * 4.8} r={1 + (i % 3) * 0.6} fill="#9aa6b2" />)}
       <T x={belt} y={cy - 70} s={11} anchor="middle">ASTEROID BELT</T>
@@ -221,7 +223,7 @@ const solarSystem = (c) => {
           {n === "Jupiter" && <><path d={`M${px - 30} ${cy + 9} Q${px} ${cy + 13} ${px + 30} ${cy + 9}`} stroke="#b9763e" strokeWidth="3" fill="none" opacity=".6" /><ellipse cx={px + 14} cy={cy + 18} rx="6" ry="3.4" fill="#c0603a" opacity=".7" /></>}
           {n === "Saturn" && <path d={`M${px - r - 14} ${cy} A${r + 14} 6 0 0 0 ${px + r + 14} ${cy}`} fill="none" stroke="#b89a4a" strokeWidth="2.4" transform={`rotate(-12 ${px} ${cy})`} />}
           {n === "Earth" && <path d={`M${px - 5} ${cy - 6} q4 -3 7 1 q-2 4 -6 3 Z M${px + 2} ${cy + 3} q4 0 4 4 q-4 1 -5 -2 Z`} fill="#6cc070" />}
-          {r >= 5 ? <Face x={px} y={cy} r={r} /> : <><circle cx={px - 1.2} cy={cy - 0.5} r=".7" fill="#2b2f36" /><circle cx={px + 1.2} cy={cy - 0.5} r=".7" fill="#2b2f36" /></>}
+          <Face x={px} y={n === "Saturn" ? cy - r * 0.18 : cy} r={r} skin={col} mood={MOODS[n]} blush={n === "Earth" || n === "Saturn"} />
           <T x={px} y={cy + Math.max(r, 12) + 18 + (i < 4 && i % 2 ? 16 : 0)} s={12} anchor="middle">{n.toUpperCase()}</T>
         </g>
       ))}

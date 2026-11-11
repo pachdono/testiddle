@@ -24,9 +24,9 @@ const osmosis = (c) => (
     ))}
     <path d="M20 166 H660" stroke="#e3e7ec" strokeWidth="1.4" />
     <T x={340} y={186} s={14} anchor="middle" fill={c}>RED BLOOD CELLS (NO CELL WALL)</T>
-    <g><circle cx={95} cy={232} r="30" fill={RBC} opacity=".8" stroke={INK} /><Face x={95} y={232} r={22} mood="worried" /><path d="M70 214 l-8 -6 M120 214 l8 -6 M95 200 v-8" stroke={INK} /><T x={95} y={288} s={12} anchor="middle">IN WATER: SWELLS, BURSTS</T></g>
-    <g><ellipse cx={325} cy={232} rx="30" ry="24" fill={RBC} opacity=".8" stroke={INK} /><ellipse cx={325} cy={238} rx="12" ry="5" fill="#f6a3b0" /><Face x={325} y={228} r={17} /><T x={325} y={288} s={12} anchor="middle">SAME CONCENTRATION: NORMAL</T></g>
-    <g><path d="M555 210 l8 6 l8 -6 l6 10 l10 2 l-4 10 l6 8 l-10 4 l-2 10 l-10 -4 l-8 6 l-6 -8 l-10 -2 l2 -10 l-8 -8 l8 -6 l-2 -10 l10 0 Z" fill={RBC} opacity=".8" stroke={INK} /><Face x={565} y={232} r={13} mood="worried" /><T x={565} y={288} s={12} anchor="middle">CONCENTRATED: SHRINKS</T></g>
+    <g><circle cx={95} cy={232} r="30" fill={RBC} opacity=".8" stroke={INK} /><Face x={95} y={232} r={28} skin="#ef8b98" mood="surprised" /><path d="M70 214 l-8 -6 M120 214 l8 -6 M95 200 v-8" stroke={INK} /><T x={95} y={288} s={12} anchor="middle">IN WATER: SWELLS, BURSTS</T></g>
+    <g><ellipse cx={325} cy={232} rx="30" ry="24" fill={RBC} opacity=".8" stroke={INK} /><ellipse cx={325} cy={238} rx="12" ry="5" fill="#f6a3b0" /><Face x={325} y={228} r={22} skin="#ef8b98" mood="chill" /><T x={325} y={288} s={12} anchor="middle">SAME CONCENTRATION: NORMAL</T></g>
+    <g><path d="M555 210 l8 6 l8 -6 l6 10 l10 2 l-4 10 l6 8 l-10 4 l-2 10 l-10 -4 l-8 6 l-6 -8 l-10 -2 l2 -10 l-8 -8 l8 -6 l-2 -10 l10 0 Z" fill={RBC} opacity=".8" stroke={INK} /><Face x={565} y={232} r={17} skin="#ef8b98" mood="worried" /><T x={565} y={288} s={12} anchor="middle">CONCENTRATED: SHRINKS</T></g>
     <T x={340} y={306} s={12} anchor="middle">WATER MOVES FROM HIGH TO LOW WATER POTENTIAL, THROUGH THE PARTIALLY PERMEABLE MEMBRANE</T>
   </svg>
 );

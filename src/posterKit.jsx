@@ -88,19 +88,48 @@ export const Box = ({ x, y, w, h = 44, color = INK, fill = "#fff", children, s =
     <text x={x + w / 2} y={y + h / 2 + s / 3} textAnchor="middle" fontFamily={HAND} fontSize={s} fill={color}>{children}</text></g>
 );
 
-/** A small, friendly face for diagrams (planets, cells): two eyes, a smile and a little blush,
- * sized to fit a round shape of radius r centred at x, y. Keep it subtle: it should never hide
- * anything the diagram needs to show. */
-export const Face = ({ x, y, r, mood = "smile" }) => {
-  const e = Math.max(1, r * 0.13), dx = r * 0.32, ey = y - r * 0.08, my = y + r * 0.22, w = r * 0.26;
+/** A darker shade of a colour, for drawing a face in the object's own ink. */
+const shade = (hex, f = 0.45) => {
+  if (!/^#[0-9a-f]{6}$/i.test(hex || "")) return "#2b2f36";
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => Math.round(v * (1 - f)));
+  return `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+};
+
+/** A small character face for diagrams, in the style of Cognito's cells: outlined oval eyes with
+ * pupils, eyelids in the object's own colour, brows that set the mood, and a small mouth, all
+ * drawn in a darker shade of the object. r is the object's radius, skin its fill colour.
+ * Moods: chill, determined, dead, happy, sleepy, surprised, smug, worried. Faces sit a little
+ * above centre and stay small so they never hide what the diagram shows. */
+export const Face = ({ x, y, r, skin = "#f2c9a0", mood = "chill", look = 0.3, blush = false }) => {
+  const k = Math.max(r, 5), ink = shade(skin), sw = Math.max(0.7, k * 0.05);
+  const ex = k * 0.24, ey = y - k * 0.14, rx = k * 0.12, ry = k * 0.15, my = y + k * 0.2, w = k * 0.13;
+  const line = { fill: "none", stroke: ink, strokeWidth: sw, strokeLinecap: "round", strokeLinejoin: "round" };
+  const eye = (cx, lid = 0, lookY = 0) => (
+    <g>
+      <ellipse cx={cx} cy={ey} rx={rx} ry={ry} fill="#fff" stroke={ink} strokeWidth={sw} />
+      <circle cx={cx + rx * look * 0.6} cy={ey + ry * (0.15 + lookY)} r={rx * 0.5} fill={ink} />
+      {lid > 0 && <path d={`M${cx - rx - sw} ${ey - ry - sw} H${cx + rx + sw} V${ey - ry + 2 * ry * lid} Q${cx} ${ey - ry + 2 * ry * lid + ry * 0.25} ${cx - rx - sw} ${ey - ry + 2 * ry * lid} Z`} fill={skin} />}
+      {lid > 0 && <path d={`M${cx - rx} ${ey - ry + 2 * ry * lid} Q${cx} ${ey - ry + 2 * ry * lid + ry * 0.25} ${cx + rx} ${ey - ry + 2 * ry * lid}`} {...line} />}
+    </g>
+  );
+  const cross = (cx) => <g><circle cx={cx} cy={ey} r={ry} fill="#fff" stroke={ink} strokeWidth={sw} /><path d={`M${cx - rx * 0.55} ${ey - rx * 0.55} L${cx + rx * 0.55} ${ey + rx * 0.55} M${cx + rx * 0.55} ${ey - rx * 0.55} L${cx - rx * 0.55} ${ey + rx * 0.55}`} {...line} /></g>;
+  const arc = (cx, up) => <path d={`M${cx - rx} ${ey + (up ? ry * 0.3 : -ry * 0.1)} Q${cx} ${ey + (up ? -ry * 0.9 : ry * 0.8)} ${cx + rx} ${ey + (up ? ry * 0.3 : -ry * 0.1)}`} {...line} />;
+  const brow = (cx, tilt) => <path d={`M${cx - rx * 1.1} ${ey - ry * 1.5 + tilt} L${cx + rx * 1.1} ${ey - ry * 1.5 - tilt}`} {...line} />;
+  const L = x - ex, Rr = x + ex;
+  const faces = {
+    chill: <g>{eye(L, 0.45)}{eye(Rr, 0.45)}{brow(Rr, -ry * 0.25)}<path d={`M${x - w * 0.7} ${my} Q${x} ${my + w * 0.5} ${x + w * 0.7} ${my - w * 0.1}`} {...line} /></g>,
+    determined: <g>{eye(L, 0.3)}{eye(Rr, 0.3)}{brow(L, -ry * 0.45)}{brow(Rr, ry * 0.45)}<path d={`M${x - w * 0.7} ${my + w * 0.2} Q${x} ${my - w * 0.15} ${x + w * 0.7} ${my + w * 0.2}`} {...line} /></g>,
+    dead: <g>{cross(L)}{cross(Rr)}<path d={`M${x - w * 0.8} ${my} H${x + w * 0.8}`} {...line} /><path d={`M${x} ${my} q${w * 0.1} ${w * 1.1} ${w * 0.7} ${w * 0.9} q${w * 0.2} -${w * 0.5} 0 -${w * 0.9}`} fill="#e8768a" stroke={ink} strokeWidth={sw * 0.8} /></g>,
+    happy: <g>{arc(L, true)}{arc(Rr, true)}<path d={`M${x - w} ${my - w * 0.1} Q${x} ${my + w * 1.2} ${x + w} ${my - w * 0.1} Z`} fill={ink} /></g>,
+    sleepy: <g>{arc(L, false)}{arc(Rr, false)}<ellipse cx={x + w * 0.2} cy={my + w * 0.2} rx={w * 0.35} ry={w * 0.45} fill="none" stroke={ink} strokeWidth={sw} /><text x={x + k * 0.55} y={y - k * 0.45} fontFamily={HAND} fontSize={Math.max(6, k * 0.35)} fill={ink}>z</text></g>,
+    surprised: <g>{eye(L, 0, -0.2)}{eye(Rr, 0, -0.2)}{brow(L, ry * 0.3)}{brow(Rr, -ry * 0.3)}<ellipse cx={x} cy={my + w * 0.2} rx={w * 0.4} ry={w * 0.55} fill={ink} /></g>,
+    smug: <g>{eye(L, 0.55)}{eye(Rr, 0.55)}{brow(L, ry * 0.2)}<path d={`M${x - w * 0.6} ${my + w * 0.25} Q${x + w * 0.3} ${my + w * 0.6} ${x + w} ${my - w * 0.35}`} {...line} /></g>,
+    worried: <g>{eye(L, 0, 0.1)}{eye(Rr, 0, 0.1)}{brow(L, ry * 0.45)}{brow(Rr, -ry * 0.45)}<path d={`M${x - w} ${my + w * 0.3} q${w * 0.5} -${w * 0.5} ${w} 0 q${w * 0.5} ${w * 0.5} ${w} 0`} {...line} /></g>,
+  };
   return (
     <g pointerEvents="none">
-      <circle cx={x - dx} cy={ey} r={e} fill="#2b2f36" />
-      <circle cx={x + dx} cy={ey} r={e} fill="#2b2f36" />
-      {r >= 9 && <><circle cx={x - dx + e * 0.35} cy={ey - e * 0.35} r={e * 0.35} fill="#fff" /><circle cx={x + dx + e * 0.35} cy={ey - e * 0.35} r={e * 0.35} fill="#fff" /></>}
-      {mood === "smile" && <path d={`M${x - w} ${my} Q${x} ${my + w * 0.9} ${x + w} ${my}`} fill="none" stroke="#2b2f36" strokeWidth={Math.max(0.8, r * 0.07)} strokeLinecap="round" />}
-      {mood === "worried" && <path d={`M${x - w} ${my + w * 0.5} Q${x} ${my - w * 0.3} ${x + w} ${my + w * 0.5}`} fill="none" stroke="#2b2f36" strokeWidth={Math.max(0.8, r * 0.07)} strokeLinecap="round" />}
-      {r >= 9 && <><ellipse cx={x - dx - e * 0.6} cy={my - e * 0.3} rx={e * 1.1} ry={e * 0.6} fill="#f28b9b" opacity=".45" /><ellipse cx={x + dx + e * 0.6} cy={my - e * 0.3} rx={e * 1.1} ry={e * 0.6} fill="#f28b9b" opacity=".45" /></>}
+      {faces[mood] || faces.chill}
+      {blush && <><ellipse cx={L - rx * 0.4} cy={my - w * 0.2} rx={rx * 0.9} ry={rx * 0.45} fill="#f28b9b" opacity=".4" /><ellipse cx={Rr + rx * 0.4} cy={my - w * 0.2} rx={rx * 0.9} ry={rx * 0.45} fill="#f28b9b" opacity=".4" /></>}
     </g>
   );
 };

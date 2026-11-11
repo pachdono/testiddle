@@ -136,6 +136,11 @@ export function StudyView({ sub, mode, onMode, onSub, onClose, report, subs = SU
   );
 }
 
+// Critters that visit diagram cards: kept to the right half of the top edge or the right side, so
+// they never cover the Diagram label or the drawing.
+const DIAGRAM_CRITTERS = [["mochi", "perch", "78%"], ["fern", "side", "34%"], ["tiddle", "top", "84%"], ["sprout", "corner", "93%"], ["inky", "side", "62%"], ["pip", "perch", "70%"], ["bumble", "fly", "88%"], ["dot", "climb", "40%"]];
+const diagramCritter = (n) => { const [who, where, at] = DIAGRAM_CRITTERS[((n % 8) + 8) % 8]; return { who, where, at }; };
+
 function NotesBody({ sub, compact }) {
   const cast = castFor(sub.n ?? SUBTOPICS.findIndex((x) => x.id === sub.id));
   return (
@@ -153,7 +158,7 @@ function NotesBody({ sub, compact }) {
         <h2>{sub.skill}</h2>
         {sub.sections.map(([h, lines]) => <div key={h}><h3>{h}</h3><ul>{lines.map((l) => <li key={l}><Line l={l} /></li>)}</ul></div>)}
       </section>
-      {sub.figs?.map((f, i) => <section key={i} className="cg-ncard"><span className="cg-chipr">Diagram</span><div className="poster-fig" style={{ "--pc": sub.figColor }}>{f(sub.figColor, sub.figId)}</div></section>)}
+      {sub.figs?.map((f, i) => <section key={i} className="cg-ncard">{!compact && <Critter {...diagramCritter((sub.n ?? 0) * 2 + i)} />}<span className="cg-chipr">Diagram</span><div className="poster-fig" style={{ "--pc": sub.figColor }}>{f(sub.figColor, sub.figId)}</div></section>)}
       {compact && <section className="cg-ncard"><h3>Key points</h3><ul>{sub.points.map((p) => <li key={p}>{p}</li>)}</ul></section>}
     </>
   );
