@@ -191,7 +191,7 @@ function Avatar({ id, size }) {
   return <TiddleAv id={TAV_IDS.includes(key) ? key : "cool"} size={size} />;
 }
 
-function AvatarPicker({ onClose }) {
+export function AvatarPicker({ onClose }) {
   const [pick, setPick] = useState(() => (String(getAvatar()).startsWith("tav:") ? getAvatar() : "tav:cool"));
   return (
     <Modal title="Select your avatar" onClose={onClose} wide>
