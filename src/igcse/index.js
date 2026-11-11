@@ -17,6 +17,17 @@ const LOADERS = {
   thai: () => import("./thai.js"),
   cs: () => import("./cs.js"),
   ict: () => import("./ict.js"),
+  dt: () => import("./dt.js"),
+  geography: () => import("./geography.js"),
+  history: () => import("./history.js"),
+  economics: () => import("./economics.js"),
+  business: () => import("./business.js"),
+  accounting: () => import("./accounting.js"),
+  global: () => import("./global.js"),
+  art: () => import("./art.js"),
+  music: () => import("./music.js"),
+  drama: () => import("./drama.js"),
+  pe: () => import("./pe.js"),
 };
 
 export const PACK_IDS = Object.keys(LOADERS);
