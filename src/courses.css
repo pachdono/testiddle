@@ -851,3 +851,4 @@ button.cg-btn.primary { border-color: var(--ink); }
   .cg-avatars button { min-width: 0; }
   .cg-rtop > span.small { display: none; }
 }
+.cg-ext { display: inline-block; margin-right: 6px; padding: 1px 7px; border-radius: 999px; background: #efe7fd; color: #6a4fc4; font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; vertical-align: 2px; }

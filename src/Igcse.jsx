@@ -11,7 +11,7 @@ import { TopicList, StudyView, ExamTab, ExamView, CardDeck, notesRead, cardsFor 
 import { QuizTab, TermsTab, Wizard } from "./Study.jsx";
 import { CheatSheets, FlashcardsIndex, readDecks, writeDecks } from "./CoursePage.jsx";
 import { doneFrom } from "./bank.js";
-import { hasPack, loadPack, sheetsOf, termsOf } from "./igcse/index.js";
+import { hasPack, loadPack, sheetsOf, termsOf, forLevel } from "./igcse/index.js";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
 const SESSIONS = { cie: [["May/June", "s"], ["October/November", "w"], ["February/March", "m"]], edexcel: [["May/June", "Jun"], ["January", "Jan"], ["October/November", "Nov"]] };
@@ -25,7 +25,8 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const course = courseFor(sel);
   const subjectId = id.replace(/^igcse-/, "");
   const subject = SUBJECTS.find((s) => s.id === subjectId);
-  const [pack, setPack] = useState(null);
+  const [raw, setPack] = useState(null);
+  const [levelOpen, setLevelOpen] = useState(false);
   const [tab, setTab] = useState(hasPack(subjectId) ? "notes" : "topics");
   const [study, setStudy] = useState(null); // { sub, mode }
   const [exam, setExam] = useState(null); // { sub, picked, title }
@@ -35,6 +36,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const [, refresh] = useState(0);
   const moreRef = useRef(null);
   useEffect(() => { loadPack(subjectId).then(setPack).catch(() => setPack(null)); }, [subjectId]);
+  const pack = useMemo(() => (raw ? forLevel(raw, course?.level) : null), [raw, course?.level]);
   useEffect(() => {
     if (!moreOpen) return undefined;
     const f = (e) => { if (!moreRef.current?.contains(e.target)) setMoreOpen(false); };
@@ -93,6 +95,8 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
         <CourseMark course={course} size={96} />
         <div className="cg-bannertext"><h1>{course.name}</h1><p>{course.blurb}</p>
           <div className="ig-chips">
+            {course.level && <span className="ig-tier"><button className="cg-chipsm" aria-expanded={levelOpen} onClick={() => setLevelOpen(!levelOpen)}>{course.level} {"⇕"}</button>
+              {levelOpen && <span className="cg-menulist ig-menu">{["Core", "Extended"].map((l) => <button key={l} onClick={() => { change({ level: l }); setLevelOpen(false); back(); }}>{l}{course.level === l ? " ✓" : ""}</button>)}</span>}</span>}
             {course.tier && <span className="ig-tier"><button className="cg-chipsm" aria-expanded={tierOpen} onClick={() => setTierOpen(!tierOpen)}>{course.tier} {"⇕"}</button>
               {tierOpen && <span className="cg-menulist ig-menu">{["Triple", "Double"].map((t) => <button key={t} onClick={() => { change({ tier: t }); setTierOpen(false); }}>{t}{course.tier === t ? " ✓" : ""}</button>)}</span>}</span>}
             {Object.keys(subject.boards).length > 1 && Object.keys(subject.boards).map((b) => <button key={b} className={"cg-chipsm" + (course.board === b ? " blue" : "")} onClick={() => change({ board: b })}>{BOARDS[b]}</button>)}

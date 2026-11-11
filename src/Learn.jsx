@@ -15,6 +15,9 @@ export const notesRead = () => read(READ_KEY, {});
 const Html = ({ html, className = "" }) => <div className={"dq-html " + className} dangerouslySetInnerHTML={{ __html: html }} />;
 const Chev = ({ open }) => <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" style={{ transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }}><path d="m8 5 5 5-5 5" /></svg>;
 
+/** A note line; IGCSE lines only Extended students need are marked with a badge. */
+const Line = ({ l }) => (l.startsWith("[E] ") ? <><span className="cg-ext">Extended</span>{l.slice(4)}</> : l);
+
 /** Cards for one subtopic, made from its notes: each section, and the key points. */
 export function cardsFor(sub) {
   return [
@@ -148,7 +151,7 @@ function NotesBody({ sub, compact }) {
         {!compact && <Critter who={cast.note[0]} where={cast.note[1]} at={cast.note[2]} />}
         <span className="cg-chipr">Note 1 of 1</span>
         <h2>{sub.skill}</h2>
-        {sub.sections.map(([h, lines]) => <div key={h}><h3>{h}</h3><ul>{lines.map((l) => <li key={l}>{l}</li>)}</ul></div>)}
+        {sub.sections.map(([h, lines]) => <div key={h}><h3>{h}</h3><ul>{lines.map((l) => <li key={l}><Line l={l} /></li>)}</ul></div>)}
       </section>
       {compact && <section className="cg-ncard"><h3>Key points</h3><ul>{sub.points.map((p) => <li key={p}>{p}</li>)}</ul></section>}
     </>
@@ -260,7 +263,7 @@ export function CardDeck({ cards, browse, onProgress }) {
   const side = (c, i, back) => (
     <div className={"cg-side " + (back ? "back" : "front")} aria-hidden={Boolean(flip[c.id]) !== back}>
       <div className="cg-spread"><span /><small className="muted">{i + 1} of {cards.length}</small><span className="cg-chipsm">{back ? "Back" : "Front"}</span></div>
-      <div className="cg-fbody">{back ? (Array.isArray(c.back) ? <ol>{c.back.map((b) => <li key={b}>{b}</li>)}</ol> : <span>{c.back}</span>) : <b>{c.front}</b>}</div>
+      <div className="cg-fbody">{back ? (Array.isArray(c.back) ? <ol>{c.back.map((b) => <li key={b}><Line l={b} /></li>)}</ol> : <span>{c.back}</span>) : <b>{c.front}</b>}</div>
       <small className="muted cg-fhint"><i>{back ? "Tap to see the question" : "Tap card to flip"}</i></small>
     </div>
   );

@@ -10,8 +10,8 @@ export default {
     { id: "number", name: "Number", subs: [
       N("Number skills", 9, "Types of number, fractions, percentages, standard form, bounds and ratio.", [
         ["Types of number", ["Primes have exactly two factors. Write numbers as a product of primes using a factor tree: 60 = 2² x 3 x 5.", "HCF: multiply the shared prime factors. LCM: multiply the highest power of every prime.", "Rational numbers can be written as fractions; irrational numbers (like √2 and π) cannot."]],
-        ["Fractions and percentages", ["Percentage change = change / original x 100.", "Reverse percentage: if 120 percent is 84, then 100 percent is 84 / 1.2 = 70.", "Compound interest: amount = P(1 + r/100)ⁿ.", "Standard form: A x 10ⁿ with 1 ≤ A < 10. 45 000 = 4.5 x 10⁴; 0.0032 = 3.2 x 10⁻³."]],
-        ["Accuracy and ratio", ["Upper and lower bounds: 7 cm to the nearest cm lies between 6.5 cm and 7.5 cm.", "Divide in a ratio: add the parts, find one part, then multiply.", "Speed, density and pressure are compound measures."]],
+        ["Fractions and percentages", ["Percentage change = change / original x 100.", "[E] Reverse percentage: if 120 percent is 84, then 100 percent is 84 / 1.2 = 70.", "Compound interest: amount = P(1 + r/100)ⁿ.", "Standard form: A x 10ⁿ with 1 ≤ A < 10. 45 000 = 4.5 x 10⁴; 0.0032 = 3.2 x 10⁻³."]],
+        ["Accuracy and ratio", ["[E] Upper and lower bounds: 7 cm to the nearest cm lies between 6.5 cm and 7.5 cm.", "Divide in a ratio: add the parts, find one part, then multiply.", "Speed, density and pressure are compound measures."]],
       ], ["Reverse percentages: divide by the multiplier.", "Standard form needs 1 ≤ A < 10.", "Bounds are half a unit either side."], [
         ["What is 60 as a product of prime factors?", ["2 x 30", "2² x 15", "2² x 3 x 5", "2 x 3 x 10"], "C", "60 = 2 x 2 x 3 x 5."],
         ["A price rises by 20 percent to 84 dollars. What was the original price?", ["67.20", "70", "64", "100.80"], "B", "84 / 1.2 = 70."],
@@ -23,8 +23,8 @@ export default {
     { id: "algebra", name: "Algebra and graphs", subs: [
       N("Algebra", 10, "Expanding, factorising, equations, inequalities, sequences and indices.", [
         ["Manipulation", ["Expand double brackets: (x + 3)(x - 2) = x² + x - 6.", "Factorise: x² + 5x + 6 = (x + 2)(x + 3). Difference of two squares: x² - 9 = (x + 3)(x - 3).", "Index laws: aᵐ x aⁿ = aᵐ⁺ⁿ; aᵐ / aⁿ = aᵐ⁻ⁿ; (aᵐ)ⁿ = aᵐⁿ; a⁰ = 1; a⁻ⁿ = 1/aⁿ; a^(1/n) is the nth root."]],
-        ["Equations", ["Solve linear equations by doing the same to both sides.", "Quadratics: factorise, use the formula x = (-b ± √(b² - 4ac)) / 2a, or complete the square.", "Simultaneous equations: eliminate one variable or substitute.", "Inequalities: solve like equations, but reverse the sign when multiplying or dividing by a negative."]],
-        ["Sequences and functions", ["Linear sequence nth term: dn + c, where d is the common difference. 5, 8, 11 has nth term 3n + 2.", "Function notation: f(x) = 2x + 1. Composite fg(x) means do g first, then f.", "Inverse function f⁻¹(x) undoes f: for f(x) = 2x + 1, f⁻¹(x) = (x - 1)/2."]],
+        ["Equations", ["Solve linear equations by doing the same to both sides.", "[E] Quadratics: factorise, use the formula x = (-b ± √(b² - 4ac)) / 2a, or complete the square.", "Simultaneous equations: eliminate one variable or substitute.", "Inequalities: solve like equations, but reverse the sign when multiplying or dividing by a negative."]],
+        ["Sequences and functions", ["Linear sequence nth term: dn + c, where d is the common difference. 5, 8, 11 has nth term 3n + 2.", "[E] Function notation: f(x) = 2x + 1. Composite fg(x) means do g first, then f.", "[E] Inverse function f⁻¹(x) undoes f: for f(x) = 2x + 1, f⁻¹(x) = (x - 1)/2."]],
       ], ["Check factorising by expanding back.", "Flip the inequality sign when dividing by a negative.", "fg(x): g first, then f."], [
         ["Factorise x² - 7x + 12.", ["(x - 3)(x - 4)", "(x + 3)(x + 4)", "(x - 2)(x - 6)", "(x - 12)(x + 1)"], "A", "-3 and -4 multiply to 12 and add to -7."],
         ["Solve 3x - 5 = 16.", ["x = 3.7", "x = 7", "x = 11", "x = 21"], "B", "3x = 21, so x = 7."],
@@ -33,8 +33,8 @@ export default {
         ["Solve -2x > 8.", ["x > -4", "x < -4", "x > 4", "x < 4"], "B", "Divide by -2 and reverse the sign."],
       ]),
       N("Graphs", 8, "Straight lines, quadratics, other curves and real life graphs.", [
-        ["Shapes of graphs", ["Linear: y = mx + c, a straight line.", "Quadratic: y = ax² + bx + c, a parabola. Roots are where it crosses the x axis; the turning point is on the line of symmetry.", "Cubic y = x³; reciprocal y = 1/x (two branches, asymptotes on the axes); exponential y = aˣ."]],
-        ["Using graphs", ["Solve equations by finding where graphs cross.", "Estimate a gradient of a curve by drawing a tangent.", "Distance time and speed time graphs: gradient and area meanings.", "Show inequalities as regions, shading the unwanted side."]],
+        ["Shapes of graphs", ["Linear: y = mx + c, a straight line.", "Quadratic: y = ax² + bx + c, a parabola. Roots are where it crosses the x axis; the turning point is on the line of symmetry.", "[E] Cubic y = x³; reciprocal y = 1/x (two branches, asymptotes on the axes); exponential y = aˣ."]],
+        ["Using graphs", ["Solve equations by finding where graphs cross.", "[E] Estimate a gradient of a curve by drawing a tangent.", "Distance time and speed time graphs: gradient and area meanings.", "Show inequalities as regions, shading the unwanted side."]],
       ], ["Roots: where the curve crosses y = 0.", "Tangent gradient = rate of change at a point.", "Dashed line for < or >, solid for ≤ or ≥."], [
         ["Where does y = x² - 4 cross the x axis?", ["x = 4 only", "x = 2 and x = -2", "x = -4", "It does not cross"], "B", "x² = 4 gives x = 2 or -2."],
         ["What shape is the graph of y = 1/x?", ["A straight line", "A parabola", "Two curved branches with asymptotes on the axes", "A circle"], "C", "Reciprocal graphs have two branches that never touch the axes."],
@@ -58,8 +58,8 @@ export default {
     { id: "geometry", name: "Geometry", subs: [
       N("Angles, shapes and circle theorems", 10, "Angle facts, polygons, similarity, constructions and circle theorems.", [
         ["Angle facts", ["Angles on a straight line add to 180 degrees; around a point to 360 degrees; in a triangle to 180 degrees.", "Parallel lines: alternate angles are equal, corresponding angles are equal, co interior angles add to 180 degrees.", "Interior angles of an n sided polygon add to (n - 2) x 180 degrees. Exterior angles add to 360 degrees."]],
-        ["Similarity and congruence", ["Similar shapes: lengths scale by k, areas by k², volumes by k³.", "Congruent triangles: SSS, SAS, ASA, RHS."]],
-        ["Circle theorems", ["The angle in a semicircle is 90 degrees.", "The angle at the centre is twice the angle at the circumference.", "Angles in the same segment are equal.", "Opposite angles in a cyclic quadrilateral add to 180 degrees.", "A tangent is perpendicular to the radius; two tangents from a point are equal in length.", "Alternate segment theorem: the angle between a tangent and a chord equals the angle in the alternate segment."]],
+        ["Similarity and congruence", ["[E] Similar shapes: lengths scale by k, areas by k², volumes by k³.", "Congruent triangles: SSS, SAS, ASA, RHS."]],
+        ["Circle theorems", ["The angle in a semicircle is 90 degrees.", "[E] The angle at the centre is twice the angle at the circumference.", "[E] Angles in the same segment are equal.", "[E] Opposite angles in a cyclic quadrilateral add to 180 degrees.", "A tangent is perpendicular to the radius; two tangents from a point are equal in length.", "[E] Alternate segment theorem: the angle between a tangent and a chord equals the angle in the alternate segment."]],
       ], ["Polygon interior sum: (n - 2) x 180.", "Area scales by k², volume by k³.", "Give the reason for every circle theorem step."], [
         ["What is the sum of the interior angles of a hexagon?", ["360 degrees", "540 degrees", "720 degrees", "1080 degrees"], "C", "(6 - 2) x 180 = 720."],
         ["What is each exterior angle of a regular pentagon?", ["60 degrees", "72 degrees", "108 degrees", "120 degrees"], "B", "360 / 5 = 72."],
@@ -83,8 +83,8 @@ export default {
     { id: "trig", name: "Trigonometry", subs: [
       N("Pythagoras and trigonometry", 10, "Right angled triangles, bearings, the sine and cosine rules and 3D problems.", [
         ["Right angled triangles", ["Pythagoras: a² + b² = c², where c is the hypotenuse.", "SOH CAH TOA: sin = opp/hyp, cos = adj/hyp, tan = opp/adj.", "Bearings are measured clockwise from north, written with three figures (045 degrees)."]],
-        ["Any triangle", ["Sine rule: a/sin A = b/sin B = c/sin C.", "Cosine rule: a² = b² + c² - 2bc cos A.", "Area = ½ab sin C.", "Use the sine rule for a pair of opposite side and angle; use the cosine rule for three sides or two sides and the angle between."]],
-        ["Graphs and 3D", ["sin x and cos x repeat every 360 degrees and lie between -1 and 1.", "In 3D, find a right angled triangle inside the shape, then use Pythagoras or trigonometry."]],
+        ["Any triangle", ["[E] Sine rule: a/sin A = b/sin B = c/sin C.", "[E] Cosine rule: a² = b² + c² - 2bc cos A.", "[E] Area = ½ab sin C.", "[E] Use the sine rule for a pair of opposite side and angle; use the cosine rule for three sides or two sides and the angle between."]],
+        ["Graphs and 3D", ["sin x and cos x repeat every 360 degrees and lie between -1 and 1.", "[E] In 3D, find a right angled triangle inside the shape, then use Pythagoras or trigonometry."]],
       ], ["Label opp, adj, hyp first.", "Sine rule for opposite pairs; cosine rule otherwise.", "Bearings: clockwise from north, three figures."], [
         ["A right angled triangle has shorter sides 5 cm and 12 cm. How long is the hypotenuse?", ["13 cm", "17 cm", "7 cm", "60 cm"], "A", "√(25 + 144) = √169 = 13."],
         ["Which ratio is opposite over adjacent?", ["sin", "cos", "tan", "sec"], "C", "TOA: tan = opp/adj."],
@@ -96,7 +96,7 @@ export default {
     { id: "transform", name: "Transformations and vectors", subs: [
       N("Transformations and vectors", 8, "Reflections, rotations, translations, enlargements and vector arithmetic.", [
         ["Transformations", ["Reflection: give the mirror line (for example y = x).", "Rotation: give the centre, angle and direction.", "Translation: give the column vector.", "Enlargement: give the centre and scale factor. A negative scale factor flips the image through the centre; a fractional one makes it smaller."]],
-        ["Vectors", ["A vector has size and direction, written as a column or in bold.", "Add vectors tip to tail. a - b = a + (-b).", "Magnitude of (x, y) is √(x² + y²).", "Parallel vectors are multiples of each other. Use paths round a shape to prove points lie on a line."]],
+        ["Vectors", ["A vector has size and direction, written as a column or in bold.", "Add vectors tip to tail. a - b = a + (-b).", "[E] Magnitude of (x, y) is √(x² + y²).", "[E] Parallel vectors are multiples of each other. Use paths round a shape to prove points lie on a line."]],
       ], ["Every transformation needs its full description.", "Parallel vectors: one is a multiple of the other.", "Magnitude by Pythagoras."], [
         ["What do you need to describe a rotation fully?", ["Mirror line only", "Centre, angle and direction", "Column vector", "Scale factor only"], "B", "Rotations need a centre, an angle and a direction."],
         ["What is the magnitude of the vector (3, 4)?", ["5", "7", "12", "25"], "A", "√(9 + 16) = 5."],
@@ -108,7 +108,7 @@ export default {
     { id: "probability", name: "Probability", subs: [
       N("Probability", 7, "Single events, combined events, tree diagrams and Venn diagrams.", [
         ["Basics", ["Probability is between 0 and 1. P(not A) = 1 - P(A).", "Relative frequency = number of times it happened / number of trials. Expected number = probability x trials.", "Mutually exclusive events: P(A or B) = P(A) + P(B)."]],
-        ["Combined events", ["Independent events: P(A and B) = P(A) x P(B).", "Tree diagrams: multiply along branches, add the end results you want.", "Without replacement, the probabilities on the second branches change.", "Conditional probability: the probability of B given that A has happened."]],
+        ["Combined events", ["Independent events: P(A and B) = P(A) x P(B).", "Tree diagrams: multiply along branches, add the end results you want.", "Without replacement, the probabilities on the second branches change.", "[E] Conditional probability: the probability of B given that A has happened."]],
       ], ["AND means multiply; OR means add (for exclusive events).", "Watch for without replacement.", "Probabilities in a full set add to 1."], [
         ["The probability of rain is 0.3. What is the probability of no rain?", ["0.3", "0.7", "1.3", "0.03"], "B", "1 - 0.3 = 0.7."],
         ["Two fair coins are thrown. What is the probability of two heads?", ["1/2", "1/3", "1/4", "1/8"], "C", "½ x ½ = ¼."],
@@ -119,8 +119,8 @@ export default {
     ] },
     { id: "statistics", name: "Statistics", subs: [
       N("Statistics", 8, "Averages, charts, cumulative frequency, histograms and scatter graphs.", [
-        ["Averages", ["Mean = total / number of values. For grouped data use midpoints for an estimate.", "Median is the middle value; mode is the most common; range is largest minus smallest.", "Interquartile range = upper quartile - lower quartile: the spread of the middle half."]],
-        ["Charts", ["Cumulative frequency: plot at the upper bound of each class, then read off the median and quartiles.", "Histograms: frequency density = frequency / class width. The area of each bar shows frequency.", "Scatter graphs show correlation (positive, negative, none). A line of best fit can estimate values within the data range."]],
+        ["Averages", ["Mean = total / number of values. For grouped data use midpoints for an estimate.", "Median is the middle value; mode is the most common; range is largest minus smallest.", "[E] Interquartile range = upper quartile - lower quartile: the spread of the middle half."]],
+        ["Charts", ["[E] Cumulative frequency: plot at the upper bound of each class, then read off the median and quartiles.", "[E] Histograms: frequency density = frequency / class width. The area of each bar shows frequency.", "Scatter graphs show correlation (positive, negative, none). A line of best fit can estimate values within the data range."]],
       ], ["Grouped mean uses midpoints.", "Histogram: frequency density = frequency / class width.", "Plot cumulative frequency at upper bounds."], [
         ["What is the median of 3, 7, 2, 9, 5?", ["5", "7", "5.2", "3"], "A", "In order: 2, 3, 5, 7, 9. The middle is 5."],
         ["A class of width 10 has frequency 30. What is the frequency density?", ["0.3", "3", "30", "300"], "B", "30 / 10 = 3."],

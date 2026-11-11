@@ -16,10 +16,10 @@ const PHYS = ["Motion, forces and energy", "Thermal physics", "Waves", "Electric
 
 /** IGCSE subjects. boards maps a board to its syllabus code; tiers is for the sciences. */
 export const SUBJECTS = [
-  { id: "biology", name: "Biology", group: "Sciences and Maths", icon: "biology", tint: "#5aa02f", boards: { cie: "0610", edexcel: "4BI1" }, tiers: true, topics: BIO },
-  { id: "chemistry", name: "Chemistry", group: "Sciences and Maths", icon: "chemistry", tint: "#2a9d8f", boards: { cie: "0620", edexcel: "4CH1" }, tiers: true, topics: CHEM },
-  { id: "physics", name: "Physics", group: "Sciences and Maths", icon: "physics", tint: "#8b5cd6", boards: { cie: "0625", edexcel: "4PH1" }, tiers: true, topics: PHYS },
-  { id: "maths", name: "Mathematics", group: "Sciences and Maths", icon: "maths", tint: "#d0496d", boards: { cie: "0580", edexcel: "4MA1" }, topics: ["Number", "Algebra and graphs", "Coordinate geometry", "Geometry", "Mensuration", "Trigonometry", "Transformations and vectors", "Probability", "Statistics"] },
+  { id: "biology", name: "Biology", group: "Sciences and Maths", icon: "biology", tint: "#5aa02f", boards: { cie: "0610", edexcel: "4BI1" }, tiers: true, levels: true, topics: BIO },
+  { id: "chemistry", name: "Chemistry", group: "Sciences and Maths", icon: "chemistry", tint: "#2a9d8f", boards: { cie: "0620", edexcel: "4CH1" }, tiers: true, levels: true, topics: CHEM },
+  { id: "physics", name: "Physics", group: "Sciences and Maths", icon: "physics", tint: "#8b5cd6", boards: { cie: "0625", edexcel: "4PH1" }, tiers: true, levels: true, topics: PHYS },
+  { id: "maths", name: "Mathematics", group: "Sciences and Maths", icon: "maths", tint: "#d0496d", boards: { cie: "0580", edexcel: "4MA1" }, levels: true, topics: ["Number", "Algebra and graphs", "Coordinate geometry", "Geometry", "Mensuration", "Trigonometry", "Transformations and vectors", "Probability", "Statistics"] },
   { id: "addmaths", name: "Additional Mathematics", group: "Sciences and Maths", icon: "addmaths", tint: "#c0582f", boards: { cie: "0606", edexcel: "4PM1" }, boardNames: { edexcel: "Further Pure Mathematics" }, topics: ["Functions", "Quadratic functions", "Factors of polynomials", "Equations, inequalities and graphs", "Simultaneous equations", "Logarithmic and exponential functions", "Straight line graphs", "Coordinate geometry of the circle", "Circular measure", "Trigonometry", "Permutations and combinations", "Series", "Vectors in two dimensions", "Differentiation and integration"] },
   { id: "english-lang", name: "English Language", group: "English", icon: "englang", tint: "#3b6fb0", boards: { cie: "0500", edexcel: "4EA1" }, boardNames: { cie: "First Language English" }, topics: ["Reading for meaning", "Summary writing", "Writers' use of language", "Directed writing", "Descriptive writing", "Narrative writing", "Speaking and listening"] },
   { id: "english-lit", name: "English Literature", group: "English", icon: "englit", tint: "#b03a5a", boards: { cie: "0475", edexcel: "4ET1" }, topics: ["Poetry", "Prose", "Drama", "Unseen texts", "Essay writing and close analysis"] },
@@ -64,7 +64,7 @@ export function courseFor(sel) {
   const code = double ? DOUBLE[board]?.code : s.boards[board];
   const syllabus = double ? DOUBLE[board]?.name : s.boardNames?.[board] || s.name;
   return {
-    id: sel.id, kind: "igcse", qual: "igcse", subject: s, name: s.name, icon: s.icon, tint: s.tint, board, tier: s.tiers ? (double ? "Double" : "Triple") : null, code,
+    id: sel.id, kind: "igcse", qual: "igcse", subject: s, name: s.name, icon: s.icon, tint: s.tint, board, tier: s.tiers ? (double ? "Double" : "Triple") : null, level: s.levels ? (sel.level === "Core" ? "Core" : "Extended") : null, code,
     tag: `IGCSE · ${BOARD_SHORT[board]}${code ? ` (${code})` : ""}`, syllabus,
     blurb: `${BOARDS[board]} ${syllabus}${s.tiers && !double ? ", taken as a separate (Triple) science" : ""}. Track every topic in the syllabus and practise with past papers.`,
     topics: s.topics,

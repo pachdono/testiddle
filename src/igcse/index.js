@@ -64,6 +64,18 @@ export async function loadPack(subjectId) {
   return cache[subjectId];
 }
 
+/** Lines that only Extended (Supplement) students need start with "[E] ". */
+export const EXT = "[E] ";
+export const isExt = (line) => line.startsWith(EXT);
+export const plain = (line) => (isExt(line) ? line.slice(EXT.length) : line);
+
+/** The pack for one level: Core leaves out the Extended lines; Extended keeps them, marked. */
+export function forLevel(pack, level) {
+  if (level !== "Core") return pack;
+  const subs = pack.subs.map((s) => ({ ...s, sections: s.sections.map(([h, lines]) => [h, lines.filter((l) => !isExt(l))]).filter(([, lines]) => lines.length) }));
+  return { ...pack, subs };
+}
+
 /** Mixes a colour with white, for the soft background of a poster. */
 const soften = (hex, amount = 0.86) => {
   const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => Math.round(v + (255 - v) * amount));
@@ -75,7 +87,7 @@ const POSES = ["think", "read", "cheer", "wave"];
 export function sheetsOf(pack, subject) {
   return pack.topics.map((t, i) => {
     const subs = pack.subs.filter((s) => s.topic.id === t.id);
-    const blocks = subs.flatMap((s) => s.sections).slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 5)]);
+    const blocks = subs.flatMap((s) => s.sections).slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 5).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l))]);
     return {
       id: `${pack.id}-${t.id}`, title: t.name, subject: pack.name, icon: subject.icon, desc: subs[0].intro, blocks,
       chips: ["IGCSE", pack.name.toUpperCase()],
@@ -90,7 +102,7 @@ const NOT_TERMS = new Set(["example", "examples", "uses", "use", "tips", "note",
 
 export function termsOf(pack) {
   const seen = new Set(), out = [];
-  pack.subs.forEach((s) => s.sections.forEach(([, lines]) => lines.forEach((line) => {
+  pack.subs.forEach((s) => s.sections.forEach(([, lines]) => lines.map(plain).forEach((line) => {
     const m = /^([A-Z][^:.]{1,40}): (.{8,})$/.exec(line);
     if (!m) return;
     const term = m[1].trim();

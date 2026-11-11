@@ -72,3 +72,15 @@ test("every hand drawn diagram belongs to a real cheat sheet", async () => {
   assert.deepEqual(ids.filter((id) => !sheets.has(id)), []);
   assert.equal(new Set(ids).size, ids.length);
 });
+
+test("Extended lines are marked cleanly, and Core still leaves every page with notes", async () => {
+  const { forLevel, EXT } = await import("../src/igcse/index.js");
+  for (const p of packs) {
+    const shaped = shape(p);
+    for (const s of shaped.subs) for (const [, lines] of s.sections) for (const l of lines) assert.ok(!l.includes(EXT) || l.startsWith(EXT), l);
+    for (const s of forLevel(shaped, "Core").subs) {
+      assert.ok(s.sections.length >= 1, `${s.id} has no Core notes`);
+      assert.ok(s.sections.every(([, lines]) => lines.every((l) => !l.startsWith(EXT))), s.id);
+    }
+  }
+});

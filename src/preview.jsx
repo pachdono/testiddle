@@ -5,7 +5,5 @@ import "@fontsource-variable/fraunces";
 import "./styles.css";
 import "./testiddle.css";
 import "./courses.css";
-import { AvatarPicker } from "./Courses.jsx";
 import IgcsePage from "./Igcse.jsx";
-const v = new URLSearchParams(location.search).get("v");
-createRoot(document.getElementById("root")).render(v === "pick" ? <AvatarPicker onClose={() => {}} /> : <IgcsePage id="igcse-chemistry" nav={() => {}} />);
+createRoot(document.getElementById("root")).render(<IgcsePage id="igcse-biology" nav={() => {}} />);
