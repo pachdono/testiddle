@@ -177,18 +177,35 @@ const AV = {
     </g>,
   },
   superhero: {
-    name: "Superhero", bg: "#ffd0d5", rim: "#ee8f9c", tilt: -9,
-    back: <g><path d="M70 82 L20 40 M70 82 L120 30 M70 82 L130 92 M70 82 L14 104" stroke="#fff" strokeWidth="10" opacity=".35" /></g>,
+    name: "Superhero", bg: "#ffde74", rim: "#eeb036", tilt: -9,
+    back: <g>
+      <path d={Array.from({ length: 24 }, (_, i) => { const a = (i / 24) * Math.PI * 2, r = i % 2 ? 30 : 49; return `${i ? "L" : "M"}${(70 + r * Math.cos(a)).toFixed(1)} ${(82 + r * Math.sin(a)).toFixed(1)}`; }).join(" ") + " Z"} fill="#fff4c8" opacity=".9" />
+      {[[30, 46], [108, 50], [36, 110], [112, 112]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.6" fill="#e9a62c" opacity=".6" />)}
+    </g>,
     body: <><Body id="superhero" /><Tuft />
+      <path d="M40 58 C30 55 22 59 14 54 C19 64 29 65 40 63 Z" fill="#c43b45" {...s} /><path d="M40 63 C32 68 26 74 18 74 C27 78 35 73 42 67 Z" fill="#e5525a" {...s} />
       <path d="M40 56 C50 49 94 48 104 55 C104 66 98 71 92 71 C86 71 82 66 74 66 C64 66 60 71 54 71 C46 71 40 67 40 56 Z" fill="#e5525a" {...s} /><path d="M92 50 C99 51 103 53 104 55 C104 66 98 71 92 71 C96 64 96 56 92 50 Z" fill="#c43b45" stroke="none" />
-      <Eyes y={61} r={6.8} pupil={3.6} /><Cheeks y={80} /><Beak y={79} open />
-      <path d="M50 102 L72 94 L94 103 L88 121 L72 128 L56 120 Z" fill="#f5c45a" {...s} /><path d="M72 94 L94 103 L88 121 L72 128 Z" fill="#e0a634" stroke="none" /><path d="M50 102 L72 94 L94 103 L88 121 L72 128 L56 120 Z" fill="none" {...s} />
-      <text x="71" y="117" textAnchor="middle" fontFamily="Patrick Hand, cursive" fontSize="14" fill="#c0392b" stroke="none" transform="skewY(-4)">T</text></>,
+      <path d="M44 55 C50 52 56 52 60 53" stroke="#fff" strokeWidth="1.6" fill="none" opacity=".6" strokeLinecap="round" />
+      <Eyes y={61} r={6.8} pupil={3.6} />
+      <path d="M50 51 L64 55 M82 54 L95 50" {...s} strokeWidth="2.4" />
+      <Cheeks y={80} /><Beak y={79} open />
+      <path d="M52 100 L74 93 L94 102 L89 120 L73 128 L57 120 Z" fill="#ffd257" /><path d="M74 93 L94 102 L89 120 L73 128 Z" fill="#e6a830" />
+      <path d="M52 100 L74 93 L94 102 L89 120 L73 128 L57 120 Z" fill="none" {...s} />
+      <path d="M76 97 L66 112 L73 112 L68 125 L83 107 L76 107 L81 97 Z" fill="#e5525a" {...s} strokeWidth="1" />
+      <path d="M58 103 L72 98" stroke="#fff" strokeWidth="1.4" opacity=".7" strokeLinecap="round" /></>,
     props: <g {...s}>
-      <path d="M34 84 C16 92 8 112 2 132 C14 124 24 126 32 116 C34 104 36 94 40 88 Z" fill="#e5525a" /><path d="M10 120 C16 108 22 98 30 92 C22 104 18 114 16 124 Z" fill="#c43b45" stroke="none" />
-      <path d="M108 82 C124 90 134 110 138 130 C126 122 116 124 110 114 C108 102 106 92 102 86 Z" fill="#c43b45" />
-      <path d="M100 68 C112 58 116 42 112 32 C118 28 125 32 123 41 C121 52 114 64 106 74 Z" fill={MINT} /><path d="M117 31 C123 32 125 36 123 41 C122 48 118 56 114 62 C118 52 120 40 117 31 Z" fill={MINT_S} stroke="none" />
-      <path d="M118 25 C124 17 130 17 134 21 M110 20 C112 13 117 9 121 9" {...thin} strokeWidth="1.3" />
+      <path d="M40 88 C26 90 12 100 4 116 C0 124 -2 132 0 140 C6 134 12 136 16 130 C20 138 28 138 32 130 C36 120 38 104 44 94 Z" fill="#e5525a" />
+      <path d="M8 128 C10 116 18 104 30 96 C26 108 24 120 24 132 C20 134 14 132 8 128 Z" fill="#b8323d" stroke="none" />
+      <path d="M14 112 C18 106 22 102 28 98 M22 124 C24 116 28 108 34 100" {...thin} stroke="#fff" opacity=".5" />
+      <path d="M96 84 C108 88 118 100 122 118 C114 116 108 118 104 112 C102 102 100 92 96 84 Z" fill="#b8323d" />
+      <circle cx="42" cy="91" r="3.6" fill="#ffd257" /><circle cx="95" cy="83" r="3" fill="#ffd257" />
+      <path d="M-4 104 H-16 M-2 116 H-20 M0 128 H-12" {...thin} strokeWidth="1.3" />
+      <path d="M84 76 C93 64 97 52 98 42 L117 46 C115 58 109 72 99 84 Z" fill={MINT} /><path d="M109 44 L117 46 C115 58 109 72 99 84 L94 80 C103 69 108 56 109 44 Z" fill={MINT_S} stroke="none" />
+      <path d="M84 76 C93 64 97 52 98 42 M117 46 C115 58 109 72 99 84" fill="none" />
+      <path d="M95 30 C95 20 101 15 108 15 C117 15 123 21 123 30 C123 40 116 46 108 46 C100 46 95 40 95 30 Z" fill={MINT} /><path d="M110 15 C118 16 123 22 123 30 C123 40 116 46 108 46 C116 40 117 24 110 15 Z" fill={MINT_S} stroke="none" /><path d="M95 30 C95 20 101 15 108 15 C117 15 123 21 123 30 C123 40 116 46 108 46 C100 46 95 40 95 30 Z" fill="none" />
+      <path d="M97 24 Q100.5 20 104 24 M104 22.5 Q107.5 18.5 111 22.5 M111 23 Q114.5 19 118 23" {...thin} strokeWidth="1.1" />
+      <path d="M96 32 C100 36 105 36 108 33" {...thin} strokeWidth="1.1" /><path d="M100 18 C102 16 105 15.4 107 15.6" stroke="#fff" strokeWidth="1.6" opacity=".8" fill="none" />
+      <path d="M92 14 C90 10 90 7 92 3 M102 8 C102 4 104 1 107 0 M128 20 C132 24 133 29 131 34 M126 12 C130 12 133 14 135 17" {...thin} strokeWidth="1.3" />
     </g>,
   },
   bookworm: {
