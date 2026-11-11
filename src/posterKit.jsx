@@ -15,7 +15,7 @@ export const Label = ({ x, y, w, color, title, lines = [], align = "middle", kee
       <rect x={x} y={y} width={w} height={h} rx="8" fill="#fff" stroke={color} strokeWidth="1.4" />
       <path d={`M${x + 1} ${y + 27} V${y + 8} Q${x + 1} ${y + 1} ${x + 8} ${y + 1} H${x + w - 8} Q${x + w - 1} ${y + 1} ${x + w - 1} ${y + 8} V${y + 27} Z`} fill={color} opacity=".14" />
       <text x={tx} y={y + 19} textAnchor={anchor} fontFamily={HAND} fontSize="16" fill={color} letterSpacing=".6">{up(title)}</text>
-      {lines.map((l, i) => <text key={l} x={tx} y={y + 46 + i * 18} textAnchor={anchor} fontFamily={HAND} fontSize="15" fill={INK}>{up(l)}</text>)}
+      {lines.map((l, i) => <text key={i} x={tx} y={y + 46 + i * 18} textAnchor={anchor} fontFamily={HAND} fontSize="15" fill={INK}>{up(l)}</text>)}
     </g>
   );
 };

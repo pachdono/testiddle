@@ -7,5 +7,8 @@ import physics from "./physics.jsx";
 import maths from "./maths.jsx";
 import techGeo from "./tech-geo.jsx";
 import humanities from "./humanities.jsx";
+import moreStem from "./more-stem.jsx";
+import moreHumanities from "./more-humanities.jsx";
+import moreLang from "./more-lang.jsx";
 
-export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities };
+export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities, ...moreStem, ...moreHumanities, ...moreLang };
