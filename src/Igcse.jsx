@@ -119,6 +119,7 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
         </span>}
       </nav>
 
+      {course.tier === "Double" && <p className="cg-note small muted">{course.syllabus} covers most of these topics in less depth than the separate science. Check your syllabus list for the topics your exam leaves out.</p>}
       {!pack && hasPack(subjectId) && <div className="cg-empty">Loading the course</div>}
       {extra && tab === "notes" && <TopicList topics={pack.topics} subs={pack.subs} terms={extra.terms} progressOf={progress.notes} onOpen={(sub) => setStudy({ sub, mode: "notes" })} />}
       {extra && tab.startsWith("quiz") && <QuizTab key={tab} bank={extra.bank} total={extra.bank.length} groups={extra.groups} startOpen={tab === "quiz-open"} onXp={back}
