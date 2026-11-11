@@ -295,16 +295,16 @@ function SkillCards({ sub, browse, onProgress }) {
 
 /* ---------- exam practice ---------- */
 
-export function ExamTab({ openExam }) {
+export function ExamTab({ openExam, topics, subs }) {
   const saved = read(EXAM_KEY, {});
   return (
-    <TopicList search={false} progressOf={(s) => { const r = saved[s.id]; return r ? Object.keys(r).length / 8 : 0; }} onOpen={(s) => openExam({ sub: s })} />
+    <TopicList search={false} topics={topics} subs={subs} progressOf={(s) => { const r = saved[s.id]; return r ? Object.keys(r).length / (s.questions?.length || 8) : 0; }} onOpen={(s) => openExam(s.questions ? { sub: s, picked: s.questions } : { sub: s })} />
   );
 }
 
 /** A set of exam questions: one skill's, or a paper built from several skills. */
 export function ExamView({ sub, picked, title, onClose, report }) {
-  const { bank, failed } = useBank();
+  const { bank, failed } = useBank(Boolean(picked));
   const key = sub?.id || "custom";
   const [marks, setMarks] = useState(() => (sub ? read(EXAM_KEY, {})[key] || {} : {}));
   const [cur, setCur] = useState(0);

@@ -10,6 +10,7 @@ export default {
   topics: [
     one("comprehension", "Reading comprehension", "Reading comprehension", 7, "Understanding explicit and implied meaning in Thai texts.", [
       ["Skills", ["Find stated facts precisely, and infer ideas the writer suggests.", "Explain how word choice (การเลือกใช้คำ) creates tone and feeling.", "Use your own words (สำนวนของตนเอง) where the question asks, rather than copying."]],
+      ["Key terms", ["Simile (อุปมา): a comparison using words like เหมือน or ดั่ง.", "Metaphor (อุปลักษณ์): saying one thing is another, often with คือ or เป็น.", "Personification (บุคคลวัต): giving human qualities to things that are not human.", "Hyperbole (อติพจน์): deliberate exaggeration for effect.", "Register (ระดับภาษา): how formal or informal the language is.", "Main idea (ใจความสำคัญ): the central point a paragraph or text makes."]],
       ["Language features", ["Figurative language (ภาพพจน์): simile (อุปมา), metaphor (อุปลักษณ์), personification (บุคคลวัต).", "Formal and informal register (ระดับภาษา) show the writer's attitude and audience.", "Royal and polite vocabulary (ราชาศัพท์, คำสุภาพ) can signal respect and formality."]],
     ], ["Stated versus implied meaning.", "Explain the effect of word choice.", "Register shows audience and attitude."], [
       ["What is อุปมา?", ["Metaphor", "Simile", "Personification", "Alliteration"], "B", "อุปมา is a comparison using words like เหมือน (like)."],

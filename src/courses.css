@@ -836,3 +836,5 @@ button.cg-btn.primary { border-color: var(--ink); }
 .cg-rbody .cg-qcol, .cg-wbody > * { overflow: visible; }
 @media (max-width: 900px) { .critter-side { right: -10px; } .critter-left { left: -10px; } .critter-left svg { width: 46px; height: 52px; } }
 @media (max-width: 600px) { .cg-rbody .critter-side, .cg-wbody .critter-side, .cg-rbody .critter-left, .cg-wbody .critter-left { display: none; } }
+.poster-fig svg svg, .poster-thumb svg svg { width: 104px; height: 104px; }
+.poster.keepcase .poster-box ul, .poster.keepcase .poster-key p, .poster.keepcase .poster-tag { text-transform: none; font-size: 17px; }

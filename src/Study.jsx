@@ -1,7 +1,7 @@
 // The study tools in a course: quiz (with the three step set up), flashcards, cheat sheets and key terms.
 
 import { useEffect, useMemo, useState } from "react";
-import { CARDS, SHEETS, TERMS } from "./content.js";
+import { CARDS, SHEETS, TERMS as ALL_TERMS } from "./content.js";
 import { QUESTION_COUNT, doneFrom, isRight, loadBank, pickQuiz, skillsOf } from "./bank.js";
 import { cardRatings, logQuiz, quizLog, rateCard } from "./progress.js";
 import { Modal } from "./Courses.jsx";
@@ -11,25 +11,28 @@ const Html = ({ html, className = "" }) => <div className={"dq-html " + classNam
 
 /* ---------- quiz ---------- */
 
-export function QuizTab({ onXp, startOpen = false, onExam, onCards, openSkill }) {
-  const [bank, setBank] = useState(null);
+const SAT_GROUPS = ["Reading and Writing", "Math"];
+
+export function QuizTab({ onXp, startOpen = false, onExam, onCards, openSkill, bank: given, total = QUESTION_COUNT, groups = SAT_GROUPS }) {
+  const [loaded, setBank] = useState(null);
+  const bank = given || loaded;
   const [failed, setFailed] = useState(false);
   const [wizard, setWizard] = useState(startOpen);
   const [log, setLog] = useState(quizLog);
-  useEffect(() => { loadBank().then(setBank).catch(() => setFailed(true)); }, []);
+  useEffect(() => { if (!given) loadBank().then(setBank).catch(() => setFailed(true)); }, [given]);
   const done = doneFrom(log);
   const answered = Object.keys(done).length, right = Object.values(done).filter(Boolean).length;
   const skills = bank ? skillsOf(bank) : [];
 
-  if (wizard && bank) return <Wizard bank={bank} done={done} onExam={onExam} onCards={onCards} onClose={() => { setWizard(false); setLog(quizLog()); onXp?.(); }} />;
+  if (wizard && bank) return <Wizard bank={bank} groups={groups} done={done} onExam={onExam} onCards={onCards} onClose={() => { setWizard(false); setLog(quizLog()); onXp?.(); }} />;
   return (
     <div className="cg-stack">
       <section className="cg-card cg-quizhero">
         <span className="cg-tag">Quiz</span>
-        <div><b className="cg-bigger">{answered}</b><span className="muted"> of {QUESTION_COUNT} questions answered</span><div className="small muted">{answered ? `${Math.round((right / answered) * 100)}% right so far` : "Test yourself on any skill."}</div></div>
+        <div><b className="cg-bigger">{answered}</b><span className="muted"> of {total} questions answered</span><div className="small muted">{answered ? `${Math.round((right / answered) * 100)}% right so far` : "Test yourself on any skill."}</div></div>
         <button className="cg-btn primary" disabled={!bank} onClick={() => setWizard(true)}>{failed ? "Could not load" : bank ? "Create a quiz" : "Loading"}</button>
       </section>
-      {skills.length > 0 && ["Reading and Writing", "Math"].map((subject) => (
+      {skills.length > 0 && groups.map((subject) => (
         <section key={subject} className="cg-card"><span className="cg-tag">{subject}</span>
           <div className="cg-skills">{skills.filter((s) => s.subject === subject).map((s) => {
             const ids = bank.filter((q) => q.subject === s.subject && q.skill === s.skill).map((q) => q.id);
@@ -42,7 +45,7 @@ export function QuizTab({ onXp, startOpen = false, onExam, onCards, openSkill })
   );
 }
 
-export function Wizard({ bank, done, onClose, onExam, onCards }) {
+export function Wizard({ bank, done, onClose, onExam, onCards, groups = SAT_GROUPS }) {
   const [step, setStep] = useState(1);
   const [activity, setActivity] = useState("quiz");
   const [picked, setPicked] = useState(() => new Set());
@@ -70,7 +73,7 @@ export function Wizard({ bank, done, onClose, onExam, onCards }) {
         </section>}
         {step === 2 && <>
           <div className="cg-wbar"><span className="small">{picked.size} of {skills.length} selected</span><button className="cg-link" onClick={() => setPicked(picked.size === skills.length ? new Set() : new Set(skills.map(key)))}>{picked.size === skills.length ? "Clear all" : "Select all"}</button></div>
-          {["Reading and Writing", "Math"].map((subject) => <section key={subject} className="cg-card cg-picklist"><span className="cg-tag">{subject}</span>
+          {groups.map((subject) => <section key={subject} className="cg-card cg-picklist"><span className="cg-tag">{subject}</span>
             {skills.filter((s) => s.subject === subject).map((s) => <label key={s.skill}><input type="checkbox" checked={picked.has(key(s))} onChange={() => toggle(s)} /><span>{s.skill}</span><small className="muted">{s.count} questions</small></label>)}
           </section>)}
         </>}
@@ -183,7 +186,7 @@ export function SheetsTab() {
 
 /* ---------- key terms ---------- */
 
-export function TermsTab() {
+export function TermsTab({ terms: TERMS = ALL_TERMS, groups = SAT_GROUPS }) {
   const [q, setQ] = useState("");
   const [subject, setSubject] = useState("all");
   const [letter, setLetter] = useState("");
@@ -193,7 +196,7 @@ export function TermsTab() {
   return (
     <div className="cg-stack">
       <div className="cg-filters"><input className="cg-search" type="search" placeholder={`Search ${TERMS.length} key terms`} value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search key terms" />
-        <select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Subject"><option value="all">All subjects</option><option>Reading and Writing</option><option>Math</option></select></div>
+        <select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Subject"><option value="all">{groups.length > 2 ? "All topics" : "All subjects"}</option>{groups.map((g) => <option key={g}>{g}</option>)}</select></div>
       <div className="cg-letters" role="group" aria-label="Letter"><button className={!letter ? "on" : ""} onClick={() => setLetter("")}>All</button>{letters.map((l) => <button key={l} className={letter === l ? "on" : ""} onClick={() => setLetter(letter === l ? "" : l)}>{l}</button>)}</div>
       <section className="cg-card cg-terms">{list.length === 0 && <div className="cg-empty">No terms match that.</div>}{list.map((t) => <div key={t.id} className="cg-term"><b>{t.term}</b><span>{t.def}</span></div>)}</section>
     </div>

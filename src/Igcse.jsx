@@ -1,48 +1,90 @@
-// An IGCSE course: its syllabus topics to tick off as you revise them, and the past papers for
-// each year and session. The papers belong to the boards, so each opens a search for that exact
+// An IGCSE course, laid out like the SAT course: notes, quiz, flashcards, cheat sheets, exam
+// practice and past papers, with key terms, topic tests, mark schemes, the syllabus checklist and
+// results under More. The papers belong to the boards, so each opens a search for that exact
 // paper and its mark scheme rather than a copy.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BOARDS, SUBJECTS, courseFor } from "./catalog.js";
-import { myCourses, setMyCourses } from "./progress.js";
+import { myCourses, setMyCourses, quizLog, cardRatings } from "./progress.js";
 import { CourseMark } from "./Courses.jsx";
-import { TopicList, StudyView, notesRead, cardsFor } from "./Learn.jsx";
-import { quizLog, cardRatings } from "./progress.js";
+import { TopicList, StudyView, ExamTab, ExamView, CardDeck, notesRead, cardsFor } from "./Learn.jsx";
+import { QuizTab, TermsTab, Wizard } from "./Study.jsx";
+import { CheatSheets, FlashcardsIndex, readDecks, writeDecks } from "./CoursePage.jsx";
 import { doneFrom } from "./bank.js";
-import { hasPack, loadPack } from "./igcse/index.js";
+import { hasPack, loadPack, sheetsOf, termsOf } from "./igcse/index.js";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
 const SESSIONS = { cie: [["May/June", "s"], ["October/November", "w"], ["February/March", "m"]], edexcel: [["May/June", "Jun"], ["January", "Jan"], ["October/November", "Nov"]] };
 const search = (q) => `https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const KEY = (id) => `testiddle-topics:${id}`;
 const readTopics = (id) => { try { const v = JSON.parse(localStorage.getItem(KEY(id))); return Array.isArray(v) ? v : []; } catch { return []; } };
+const nothing = () => {};
 
-export default function IgcsePage({ id, nav, theme, setTheme, report }) {
+export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }) {
   const sel = myCourses().find((x) => x.id === id) || { id };
   const course = courseFor(sel);
   const subjectId = id.replace(/^igcse-/, "");
+  const subject = SUBJECTS.find((s) => s.id === subjectId);
   const [pack, setPack] = useState(null);
   const [tab, setTab] = useState(hasPack(subjectId) ? "notes" : "topics");
-  const [study, setStudy] = useState(null);
+  const [study, setStudy] = useState(null); // { sub, mode }
+  const [exam, setExam] = useState(null); // { sub, picked, title }
+  const [deck, setDeck] = useState(null); // { cards, title }
+  const [wizard, setWizard] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [, refresh] = useState(0);
+  const moreRef = useRef(null);
   useEffect(() => { loadPack(subjectId).then(setPack).catch(() => setPack(null)); }, [subjectId]);
+  useEffect(() => {
+    if (!moreOpen) return undefined;
+    const f = (e) => { if (!moreRef.current?.contains(e.target)) setMoreOpen(false); };
+    document.addEventListener("mousedown", f);
+    return () => document.removeEventListener("mousedown", f);
+  }, [moreOpen]);
   const [done, setDone] = useState(() => readTopics(id));
   const [open, setOpen] = useState({ [YEARS[0]]: true });
   const [tierOpen, setTierOpen] = useState(false);
-  if (study && pack) return <StudyView sub={study.sub} mode={study.mode} subs={pack.subs} onMode={(mode) => setStudy({ ...study, mode })} onSub={(sub) => setStudy({ ...study, sub })} onClose={() => { setStudy(null); refresh((n) => n + 1); }} theme={theme} setTheme={setTheme} report={report || (() => {})} />;
-  if (!course) return <div className="cg-page"><div className="cg-empty">That course could not be found. <button className="cg-link" onClick={() => nav("/")}>Back to the dashboard</button></div></div>;
-  const subject = SUBJECTS.find((s) => `igcse-${s.id}` === id);
+  const extra = useMemo(() => (pack && subject ? {
+    bank: pack.subs.flatMap((s) => s.questions),
+    groups: pack.topics.map((t) => t.name),
+    sheets: sheetsOf(pack, subject),
+    terms: termsOf(pack),
+  } : null), [pack, subject]);
+  const decksKey = `testiddle-decks:${id}`;
+  const back = () => refresh((n) => n + 1);
+
+  if (study && pack) return <StudyView sub={study.sub} mode={study.mode} subs={pack.subs} onMode={(mode) => setStudy({ ...study, mode })} onSub={(sub) => setStudy({ ...study, sub })} onClose={() => { setStudy(null); back(); }} theme={theme} setTheme={setTheme} report={report} />;
+  if (exam) return <ExamView {...exam} onClose={() => { setExam(null); back(); }} report={report} />;
+  if (deck) return (
+    <div className="cg-reader"><header className="cg-rtop"><button className="cg-wx" aria-label="Back to the course" onClick={() => { setDeck(null); back(); }}>&larr;</button><b className="cg-switcher plain">{deck.title}</b><span className="cg-rprogress" /></header>
+      <div className="cg-rbody"><CardDeck cards={deck.cards} /></div></div>
+  );
+  const cardsForSkills = (skills) => pack.subs.filter((s) => skills.has(`${s.topic.name}|${s.skill}`));
+  const makeDeck = (skills) => {
+    const subs = cardsForSkills(skills), decks = readDecks(decksKey);
+    const d = { id: Date.now(), name: `My deck ${decks.length + 1}`, skills: subs.map((s) => s.id) };
+    writeDecks([...decks, d], decksKey);
+    setWizard(false); setDeck({ cards: subs.flatMap(cardsFor), title: d.name });
+  };
+  if (wizard && extra) return <Wizard bank={extra.bank} groups={extra.groups} done={doneFrom(quizLog())} onClose={() => { setWizard(false); back(); }}
+    onExam={(picked) => { setWizard(false); setExam({ picked, title: "Your paper" }); }} onCards={makeDeck} />;
+  if (!course || !subject) return <div className="cg-page"><div className="cg-empty">That course could not be found. <button className="cg-link" onClick={() => nav("/")}>Back to the dashboard</button></div></div>;
+
   const toggle = (i) => { const n = done.includes(i) ? done.filter((x) => x !== i) : [...done, i]; setDone(n); try { localStorage.setItem(KEY(id), JSON.stringify(n)); window.dispatchEvent(new Event("testiddle:progress")); } catch { /* private mode */ } };
   const change = (patch) => { const list = myCourses(); const n = list.some((x) => x.id === id) ? list.map((x) => (x.id === id ? { ...x, ...patch } : x)) : [...list, { ...sel, ...patch }]; setMyCourses(n); };
   const read = notesRead(), answered = doneFrom(quizLog()), rated = cardRatings();
   const progress = {
     notes: (s) => (read[s.id] ? 1 : 0),
-    quiz: (s) => (s.questions.length ? s.questions.filter((q) => q.id in answered).length / s.questions.length : 0),
     cards: (s) => { const c = cardsFor(s); return c.filter((x) => rated[x.id]).length / c.length; },
   };
-  const tabs = [...(pack ? [["notes", "Notes"], ["quiz", "Quiz"], ["cards", "Flashcards"]] : []), ["topics", pack ? "Syllabus" : "Topics"], ["papers", "Past papers"]];
   const pct = course.topics.length ? done.length / course.topics.length : 0;
   const what = `${course.board === "cie" ? "Cambridge IGCSE" : "Edexcel International GCSE"} ${course.syllabus} ${course.code || ""}`.trim();
+  const mineIds = extra ? extra.bank.filter((q) => q.id in answered) : [];
+  const right = mineIds.filter((q) => answered[q.id]).length;
+  const tabs = pack ? [["notes", "Notes"], ["quiz", "Quiz"], ["cards", "Flashcards"], ["sheets", "Cheat sheets"], ["exam", "Exam practice"], ["papers", "Past papers"]] : [["topics", "Topics"], ["papers", "Past papers"]];
+  const more = pack ? [["terms", "Key terms"], ["tests", "Topic tests"], ["marks", "Mark schemes"], ["topics", "Syllabus checklist"], ["results", "Results"]] : [];
+  const banner = { cards: "Build your own deck", exam: "Build your own paper" }[tab] || "Study multiple skills";
+  const subOf = (s) => pack.subs.find((x) => x.skill === s.skill && x.topic.name === s.subject);
 
   return (
     <div className="cg-page">
@@ -56,12 +98,56 @@ export default function IgcsePage({ id, nav, theme, setTheme, report }) {
             {Object.keys(subject.boards).length > 1 && Object.keys(subject.boards).map((b) => <button key={b} className={"cg-chipsm" + (course.board === b ? " blue" : "")} onClick={() => change({ board: b })}>{BOARDS[b]}</button>)}
           </div>
         </div>
-        <div className="cg-bannerstats"><div><b>{done.length}/{course.topics.length}</b><span>topics</span></div><div><b>{Math.round(pct * 100)}%</b><span>covered</span></div></div>
+        {extra && <button className="cg-btn primary cg-multi" onClick={() => (tab === "quiz" ? setTab("quiz-open") : setWizard(true))}>{banner} &rarr;</button>}
+        <div className="cg-bannerstats">
+          {extra && <div><b>{mineIds.length}</b><span>answered</span></div>}
+          {extra && <div><b>{mineIds.length ? `${Math.round((right / mineIds.length) * 100)}%` : "-"}</b><span>right</span></div>}
+          <div><b>{done.length}/{course.topics.length}</b><span>topics</span></div>
+        </div>
       </section>
 
-      <nav className="cg-tabs" aria-label="Course sections">{tabs.map(([t, l]) => <button key={t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}>{l}</button>)}</nav>
+      <nav className="cg-tabs" aria-label="Course sections">
+        {tabs.map(([t, l]) => <button key={t} className={tab.startsWith(t) ? "on" : ""} onClick={() => setTab(t)}>{l}</button>)}
+        {more.length > 0 && <span className="cg-more" ref={moreRef}>
+          <button className={more.some(([t]) => t === tab) ? "on" : ""} aria-expanded={moreOpen} onClick={() => setMoreOpen(!moreOpen)}>{more.find(([t]) => t === tab)?.[1] || "More"} <span aria-hidden="true">{moreOpen ? "▴" : "▾"}</span></button>
+          {moreOpen && <div className="cg-menulist"><div className="cg-menusub first">Study tools</div>{more.map(([t, l]) => <button key={t} onClick={() => { setTab(t); setMoreOpen(false); }}>{l}</button>)}</div>}
+        </span>}
+      </nav>
 
-      {pack && ["notes", "quiz", "cards"].includes(tab) && <TopicList key={tab} topics={pack.topics} subs={pack.subs} terms={[]} progressOf={progress[tab]} onOpen={(sub) => setStudy({ sub, mode: tab })} />}
+      {!pack && hasPack(subjectId) && <div className="cg-empty">Loading the course</div>}
+      {extra && tab === "notes" && <TopicList topics={pack.topics} subs={pack.subs} terms={extra.terms} progressOf={progress.notes} onOpen={(sub) => setStudy({ sub, mode: "notes" })} />}
+      {extra && tab.startsWith("quiz") && <QuizTab key={tab} bank={extra.bank} total={extra.bank.length} groups={extra.groups} startOpen={tab === "quiz-open"} onXp={back}
+        onExam={(picked) => setExam({ picked, title: "Your paper" })} onCards={makeDeck} openSkill={(s) => { const sub = subOf(s); if (sub) setStudy({ sub, mode: "quiz" }); }} />}
+      {extra && tab === "cards" && <FlashcardsIndex topics={pack.topics} subs={pack.subs} storeKey={decksKey} icon={subject.icon} fixed={[["Key terms", subject.icon, extra.terms]]} openDeck={(cards, title) => setDeck({ cards, title })} build={() => setWizard(true)} />}
+      {extra && tab === "sheets" && <CheatSheets sheets={extra.sheets} groups={[pack.name]} />}
+      {extra && tab === "exam" && <ExamTab topics={pack.topics} subs={pack.subs} openExam={setExam} />}
+      {extra && tab === "terms" && <TermsTab terms={extra.terms} groups={extra.groups} />}
+      {extra && tab === "tests" && <div className="cg-list">{pack.topics.map((t, i) => {
+        const qs = pack.subs.filter((s) => s.topic.id === t.id).flatMap((s) => s.questions);
+        const got = qs.filter((q) => answered[q.id]).length, seen = qs.filter((q) => q.id in answered).length;
+        return <button key={t.id} className="cg-row" onClick={() => setExam({ sub: { id: `${pack.id}-test-${t.id}`, skill: t.name }, picked: qs, title: `Topic test: ${t.name}` })}>
+          <span className="cg-rownum" aria-hidden="true">{i + 1}</span>
+          <span className="cg-rowtext"><b>{t.name}</b><span className="small muted">{qs.length} questions, marked one by one</span></span>
+          {seen ? <span className="cg-pill good">{Math.round((got / seen) * 100)}% right</span> : <span className="cg-pill">Not started</span>}
+          <i className="cg-chev" aria-hidden="true">&rsaquo;</i>
+        </button>;
+      })}</div>}
+      {extra && tab === "marks" && <div className="cg-stack tight">
+        <p className="small muted">{what}. Each button searches for that exact mark scheme on the board's site and revision sites.</p>
+        <section className="cg-card cg-years">{YEARS.map((y) => (
+          <div key={y} className="cg-year open"><div className="cg-yearhead"><b>{y}</b></div>
+            <div className="cg-yearrows">{SESSIONS[course.board].map(([session]) => <div key={session} className="cg-yearrow"><span>{session} {y}</span><span className="cg-pair"><a href={search(`${what} ${session} ${y} mark scheme pdf`)} target="_blank" rel="noopener noreferrer">Mark scheme</a></span></div>)}</div>
+          </div>))}</section>
+      </div>}
+      {extra && tab === "results" && <div className="cg-list">
+        {mineIds.length === 0 && <div className="cg-empty">No results yet. Answer some quiz or exam questions and they will show up here.</div>}
+        {mineIds.length > 0 && pack.topics.map((t) => {
+          const qs = pack.subs.filter((s) => s.topic.id === t.id).flatMap((s) => s.questions).filter((q) => q.id in answered);
+          if (!qs.length) return null;
+          const ok = qs.filter((q) => answered[q.id]).length;
+          return <div key={t.id} className="cg-row static"><span className="cg-rowtext"><b>{t.name}</b><span className="small muted">{qs.length} questions answered</span></span><span className="cg-score"><b>{ok} / {qs.length}</b><span className="small muted">{Math.round((ok / qs.length) * 100)}%</span></span></div>;
+        })}
+      </div>}
 
       {tab === "topics" && <div className="cg-stack tight">
         <div className="cg-listbar"><div className="cg-overall"><span className="small">Overall progress:</span><span className="cg-meter wide"><i style={{ width: `${pct * 100}%` }} /></span><b className="small">{Math.round(pct * 100)}%</b></div><span className="cg-spacer" />

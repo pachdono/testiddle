@@ -10,6 +10,7 @@ export default {
   topics: [
     one("recording", "Recording observations", "Recording observations", 6, "Drawing and photographing from first hand observation.", [
       ["Recording", ["Work from first hand sources wherever you can: objects, people, places.", "Use a range of methods: drawing, photography, notes, rubbings.", "Explore the formal elements: line, tone, shape, form, texture, colour, pattern, composition.", "Annotate to explain what you noticed and why it interests you."]],
+      ["Key terms", ["Line: a mark that shows edges, direction and movement.", "Tone: how light or dark something is.", "Texture: how a surface feels, or looks as if it would feel.", "Composition: the arrangement of parts within an artwork.", "Contrast: strong differences, such as light against dark, that create interest.", "Proportion: the size of parts in relation to each other and the whole."]],
     ], ["First hand observation is valued most.", "Use all the formal elements.", "Annotate with purpose."], [
       ["Which is a first hand source?", ["A photo from the internet", "A real object you draw in front of you", "A book illustration", "A film still"], "B", "Direct observation."],
       ["Which is a formal element?", ["Tone", "Price", "Size of paper", "Artist's age"], "A", "Line, tone, shape, form, texture, colour, pattern."],

@@ -3,6 +3,7 @@
 // and drawings are Testiddle's own.
 
 import { Mascot } from "./Mascot.jsx";
+import { SubjectIcon } from "./SubjectIcons.jsx";
 
 const INK = "#3b4654";
 const HAND = "'Patrick Hand', 'Comic Sans MS', cursive";
@@ -303,13 +304,44 @@ const FIG = {
 
 const DECOR = ["tape", "pin", "fold", "tape"];
 
-export function SheetPoster({ sheet }) {
-  const p = POSTER[sheet.id] || POSTER.linear;
-  const fig = FIG[sheet.id];
+/** Splits a heading into short lines so it fits a label. */
+function wrap(text, max = 22) {
+  const out = [];
+  text.split(" ").forEach((w) => { const l = out[out.length - 1]; if (l && (l + " " + w).length <= max) out[out.length - 1] = l + " " + w; else out.push(w); });
+  return out.slice(0, 2);
+}
+
+/** For courses without a hand drawn diagram: the subject's own icon in the middle, with arrows out
+ * to each part of the sheet, placed in the corners so nothing overlaps. */
+function MindMap({ sheet, color }) {
+  const heads = sheet.blocks.map(([h]) => h).slice(0, 4);
+  const W = 760, H = 300, cx = W / 2, cy = H / 2;
+  const spots = [[24, 22], [W - 254, 22], [24, H - 112], [W - 254, H - 112]];
   return (
-    <article className="poster" style={{ "--pc": p.color, "--ps": p.soft }}>
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`The parts of ${sheet.title}`}>
+      <Defs c={color} />
+      <circle cx={cx} cy={cy} r="86" fill="url(#pc)" stroke={color} strokeWidth="1.4" strokeDasharray="4 5" />
+      <g filter="url(#ps)"><circle cx={cx} cy={cy} r="64" fill="#fff" stroke={color} strokeWidth="1.6" /></g>
+      <g transform={`translate(${cx - 52} ${cy - 52})`}><SubjectIcon id={sheet.icon} size={104} /></g>
+      {heads.map((h, i) => {
+        const [x, y] = spots[i], left = i % 2 === 0, top = i < 2;
+        const from = [left ? x + 230 : x, top ? y + 46 : y + 30];
+        const to = [cx + (left ? -1 : 1) * 70, cy + (top ? -1 : 1) * 40];
+        return <g key={h}><Link from={from} to={to} color={color} bend={left ? 18 : -18} /><Label x={x} y={y} w={230} color={color} title={`Part ${i + 1}`} lines={wrap(h)} /></g>;
+      })}
+    </svg>
+  );
+}
+
+
+export function SheetPoster({ sheet }) {
+  const p = sheet.meta || POSTER[sheet.id] || POSTER.linear;
+  const fig = FIG[sheet.id] || (sheet.icon ? (c) => <MindMap sheet={sheet} color={c} /> : null);
+  const chips = sheet.chips || ["SAT", sheet.subject === "Math" ? "MATH" : "READING & WRITING"];
+  return (
+    <article className={"poster" + (sheet.icon ? " keepcase" : "")} style={{ "--pc": p.color, "--ps": p.soft }}>
       <header className="poster-head">
-        <span className="poster-chip">SAT</span><span className="poster-chip soft">{sheet.subject === "Math" ? "MATH" : "READING & WRITING"}</span>
+        <span className="poster-chip">{chips[0]}</span><span className="poster-chip soft">{chips[1]}</span>
         <h2>{sheet.title}</h2><span className="poster-rule" />
         <Mascot size={70} pose={p.pose} />
       </header>
@@ -317,7 +349,7 @@ export function SheetPoster({ sheet }) {
       {fig && <section className="poster-fig">{fig(p.color)}</section>}
       <div className="poster-grid">
         {sheet.blocks.map(([h, lines], i) => (
-          <section key={h} className={"poster-box " + DECOR[i % DECOR.length] + (i === 1 ? " dashed" : "")} style={{ "--r": `${((i % 3) - 1) * 0.5}deg` }}>
+          <section key={h + i} className={"poster-box " + DECOR[i % DECOR.length] + (i === 1 ? " dashed" : "")} style={{ "--r": `${((i % 3) - 1) * 0.5}deg` }}>
             <h3>{i + 1}. {h}</h3>
             <ul>{lines.map((l) => <li key={l}>{l}</li>)}</ul>
           </section>
@@ -331,6 +363,6 @@ export function SheetPoster({ sheet }) {
 
 /** A small preview of a sheet's diagram for the list. */
 export function SheetThumb({ sheet }) {
-  const p = POSTER[sheet.id] || POSTER.linear;
-  return <span className="poster-thumb" style={{ "--pc": p.color, "--ps": p.soft }}><span className="poster-thumb-title">{sheet.title}</span>{FIG[sheet.id] && FIG[sheet.id](p.color)}</span>;
+  const p = sheet.meta || POSTER[sheet.id] || POSTER.linear;
+  return <span className="poster-thumb" style={{ "--pc": p.color, "--ps": p.soft }}><span className="poster-thumb-title">{sheet.title}</span>{FIG[sheet.id] ? FIG[sheet.id](p.color) : sheet.icon ? <MindMap sheet={sheet} color={p.color} /> : null}</span>;
 }

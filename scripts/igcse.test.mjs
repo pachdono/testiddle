@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { shape, PACK_IDS } from "../src/igcse/index.js";
+import { shape, PACK_IDS, sheetsOf, termsOf } from "../src/igcse/index.js";
 import { SUBJECTS } from "../src/catalog.js";
 
 const packs = await Promise.all(PACK_IDS.map(async (id) => (await import(`../src/igcse/${id}.js`)).default));
@@ -37,6 +37,20 @@ for (const pack of packs) {
       const [, choices, answer] = raw[i];
       assert.equal(q.choices["ABCD".indexOf(q.answer)], choices["ABCD".indexOf(answer)]);
     });
+  });
+  test(`${pack.id}: a cheat sheet for every topic, and key terms`, () => {
+    const shaped = shape(pack), subject = SUBJECTS.find((s) => s.id === pack.id);
+    const sheets = sheetsOf(shaped, subject);
+    assert.equal(sheets.length, pack.topics.length);
+    for (const s of sheets) {
+      assert.ok(s.blocks.length >= 1 && s.blocks.length <= 6, s.id);
+      assert.ok(s.blocks.every(([h, lines]) => h && lines.length && lines.length <= 5), s.id);
+      assert.match(s.meta.color, /^#[0-9a-f]{6}$/i); assert.match(s.meta.soft, /^#[0-9a-f]{6}$/i);
+      assert.ok(s.meta.key.length > 10, s.id);
+    }
+    const terms = termsOf(shaped);
+    assert.ok(terms.length >= 5, `${pack.id} has ${terms.length} terms`);
+    assert.equal(new Set(terms.map((x) => x.term.toLowerCase())).size, terms.length);
   });
   test(`${pack.id}: no em or en dashes`, () => {
     assert.ok(!/[–—]/.test(readFileSync(new URL(`../src/igcse/${pack.id}.js`, import.meta.url), "utf8")));

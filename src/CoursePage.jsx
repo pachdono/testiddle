@@ -6,8 +6,8 @@ import { historyOf, summary } from "./courses.js";
 import { CourseMark } from "./Courses.jsx";
 import { QuizTab, TermsTab, Wizard } from "./Study.jsx";
 import { NotesTab, StudyView, ExamTab, ExamView, CardDeck, cardsFor } from "./Learn.jsx";
-import { SUBTOPICS, TOPICS } from "./notes.js";
-import { CARDS, SHEETS } from "./content.js";
+import { SUBTOPICS, SUBTOPICS as SAT_SUBTOPICS, TOPICS as SAT_TOPICS } from "./notes.js";
+import { CARDS, SHEETS as SAT_SHEETS } from "./content.js";
 import { cardRatings, quizLog } from "./progress.js";
 import { SheetPoster, SheetThumb } from "./Posters.jsx";
 import { SubjectIcon } from "./SubjectIcons.jsx";
@@ -15,8 +15,8 @@ import { doneFrom, loadBank } from "./bank.js";
 
 const base = import.meta.env.BASE_URL;
 const DECKS_KEY = "testiddle-decks";
-const readDecks = () => { try { const d = JSON.parse(localStorage.getItem(DECKS_KEY)); return Array.isArray(d) ? d : []; } catch { return []; } };
-const writeDecks = (d) => { try { localStorage.setItem(DECKS_KEY, JSON.stringify(d)); } catch { /* private mode */ } };
+export const readDecks = (key = DECKS_KEY) => { try { const d = JSON.parse(localStorage.getItem(key)); return Array.isArray(d) ? d : []; } catch { return []; } };
+export const writeDecks = (d, key = DECKS_KEY) => { try { localStorage.setItem(key, JSON.stringify(d)); } catch { /* private mode */ } };
 const pct = (h) => Math.round((h.right / Math.max(1, h.total)) * 100);
 
 function TestRow({ entry, last, onOpen }) {
@@ -67,21 +67,22 @@ function DeckRow({ icon, title, sub, done, total, onOpen, onDelete }) {
   );
 }
 
-function FlashcardsIndex({ openDeck, build }) {
+const SAT_FIXED = () => [["Reading and Writing terms", "rw", CARDS.filter((c) => c.subject === "Reading and Writing" && !c.formula)], ["Math terms", "math", CARDS.filter((c) => c.subject === "Math" && !c.formula)], ["Formulas", "addmaths", CARDS.filter((c) => c.formula)]];
+
+export function FlashcardsIndex({ openDeck, build, topics: TOPICS = SAT_TOPICS, subs: SUBTOPICS = SAT_SUBTOPICS, fixed = SAT_FIXED(), storeKey = DECKS_KEY, icon = "global" }) {
   const ratings = cardRatings();
-  const [decks, setDecks] = useState(readDecks);
+  const [decks, setDecks] = useState(() => readDecks(storeKey));
   const [open, setOpen] = useState({});
   const conf = (cards) => cards.filter((c) => (ratings[c.id]?.level || 0) >= 3).length;
-  const fixed = [["Reading and Writing terms", "rw", CARDS.filter((c) => c.subject === "Reading and Writing" && !c.formula)], ["Math terms", "math", CARDS.filter((c) => c.subject === "Math" && !c.formula)], ["Formulas", "addmaths", CARDS.filter((c) => c.formula)]];
   const asCards = (list) => list.map((c) => ({ id: c.id, front: c.term, back: c.def }));
   return (
     <div className="cg-stack tight">
       <div className="cg-listbar"><span className="cg-chipsm">{TOPICS.length} topics, {SUBTOPICS.length} skill decks</span><span className="cg-spacer" /><button className="cg-btn primary" onClick={build}>Build your own deck</button></div>
       {decks.length > 0 && <section className="cg-card cg-decks"><span className="cg-tag">Your decks</span>{decks.map((d) => {
         const cards = SUBTOPICS.filter((s) => d.skills.includes(s.id)).flatMap(cardsFor);
-        return <DeckRow key={d.id} icon="global" title={d.name} sub={`${d.skills.length} skills, ${cards.length} cards`} done={conf(cards)} total={cards.length} onOpen={() => openDeck(cards, d.name)} onDelete={() => { const n = decks.filter((x) => x.id !== d.id); setDecks(n); writeDecks(n); }} />;
+        return <DeckRow key={d.id} icon={icon} title={d.name} sub={`${d.skills.length} skills, ${cards.length} cards`} done={conf(cards)} total={cards.length} onOpen={() => openDeck(cards, d.name)} onDelete={() => { const n = decks.filter((x) => x.id !== d.id); setDecks(n); writeDecks(n, storeKey); }} />;
       })}</section>}
-      <section className="cg-card cg-decks"><span className="cg-tag">Term and formula decks</span>{fixed.map(([name, icon, list]) => <DeckRow key={name} icon={icon} title={name} done={conf(list)} total={list.length} onOpen={() => openDeck(asCards(list), name)} />)}</section>
+      <section className="cg-card cg-decks"><span className="cg-tag">Term and formula decks</span>{fixed.map(([name, deckIcon, list]) => list.length > 0 && <DeckRow key={name} icon={deckIcon} title={name} done={conf(list)} total={list.length} onOpen={() => openDeck(asCards(list), name)} />)}</section>
       {TOPICS.map((t, i) => {
         const subs = SUBTOPICS.filter((s) => s.topic.id === t.id);
         const all = subs.flatMap(cardsFor);
@@ -105,7 +106,7 @@ async function savePng(node, name) {
   document.body.appendChild(a); a.click(); a.remove();
 }
 
-function CheatSheets() {
+export function CheatSheets({ sheets: SHEETS = SAT_SHEETS, groups = ["Math", "Reading and Writing"] }) {
   const [open, setOpen] = useState(null);
   const [big, setBig] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -120,7 +121,7 @@ function CheatSheets() {
         <div className="cg-spread"><button className="cg-link" onClick={() => setOpen(null)}>&larr; See all cheat sheets</button><button className="cg-link" onClick={() => setOpen(next.id)}>Next cheat sheet &rarr;</button></div>
         <section className="cg-card cg-sheetview"><span className="cg-tag dark">Cheat sheet</span>
           <div className="cg-sheetleft"><div className="cg-spread"><small className="muted">A ONE PAGE SUMMARY OF {sheet.title.toUpperCase()}</small><button className="cg-link" onClick={() => setBig(true)}>{"\u26f6"} Expand</button></div><div className="cg-sheet" ref={posterRef}><SheetPoster sheet={sheet} /></div></div>
-          <aside className="cg-sheetside"><h2>{sheet.title}</h2><p className="muted">{sheet.desc}</p><small className="muted">Illustrated by the Testiddle team</small>
+          <aside className="cg-sheetside"><h2>{sheet.title}</h2><p className="muted">{sheet.desc}</p><small className="muted">{sheet.icon ? "Made from the notes by the Testiddle team" : "Illustrated by the Testiddle team"}</small>
             <button className="cg-btn primary" disabled={saving} onClick={save}>{saving ? "Saving" : "\u2913 Save as PNG"}</button>
             <button className="cg-btn" onClick={() => window.print()}>{"\u2399"} Print</button></aside>
         </section>
@@ -131,7 +132,7 @@ function CheatSheets() {
   return (
     <div className="cg-stack tight">
       <span className="cg-chipsm">{SHEETS.length} cheat sheets</span>
-      {["Math", "Reading and Writing"].map((subject) => <section key={subject} className="cg-card cg-sheetlist"><span className="cg-tag dark">{subject}</span>
+      {groups.map((subject) => <section key={subject} className="cg-card cg-sheetlist"><span className="cg-tag dark">{subject}</span>
         {SHEETS.filter((s) => s.subject === subject).map((s) => <button key={s.id} onClick={() => setOpen(s.id)}><SheetThumb sheet={s} /><span><b>{s.title}</b><small className="muted">{s.desc}</small></span></button>)}
       </section>)}
     </div>

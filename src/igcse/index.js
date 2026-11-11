@@ -51,7 +51,7 @@ export function shape(pack) {
     const id = `${pack.id}-${t.id}-${j + 1}`;
     return {
       ...s, id, code: `${i + 1}.${j + 1}`, topic: t, topicNo: i + 1, n: n++,
-      questions: (s.questions || []).map(([q, choices, answer, why], k) => ({ id: `${id}-q${k + 1}`, kind: "mc", q, ...mix(`${id}-q${k + 1}`, choices, answer), why, skill: s.skill })),
+      questions: (s.questions || []).map(([q, choices, answer, why], k) => ({ id: `${id}-q${k + 1}`, kind: "mc", q, ...mix(`${id}-q${k + 1}`, choices, answer), why, skill: s.skill, subject: t.name })),
     };
   }));
   return { ...pack, topics, subs };
@@ -62,4 +62,41 @@ export async function loadPack(subjectId) {
   if (!LOADERS[subjectId]) return null;
   if (!cache[subjectId]) cache[subjectId] = shape((await LOADERS[subjectId]()).default);
   return cache[subjectId];
+}
+
+/** Mixes a colour with white, for the soft background of a poster. */
+const soften = (hex, amount = 0.86) => {
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => Math.round(v + (255 - v) * amount));
+  return `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+};
+const POSES = ["think", "read", "cheer", "wave"];
+
+/** One cheat sheet per topic, made from that topic's notes. */
+export function sheetsOf(pack, subject) {
+  return pack.topics.map((t, i) => {
+    const subs = pack.subs.filter((s) => s.topic.id === t.id);
+    const blocks = subs.flatMap((s) => s.sections).slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 5)]);
+    return {
+      id: `${pack.id}-${t.id}`, title: t.name, subject: pack.name, icon: subject.icon, desc: subs[0].intro, blocks,
+      chips: ["IGCSE", pack.name.toUpperCase()],
+      meta: { color: subject.tint, soft: soften(subject.tint), tagline: subs[0].intro, key: subs.flatMap((s) => s.points).slice(0, 2).join(" "), pose: POSES[i % POSES.length] },
+    };
+  });
+}
+
+// Lines in the notes written as "Term: what it means" become key terms. Labels that only group a
+// list (Examples, Uses and so on) are not terms, so they are left out.
+const NOT_TERMS = new Set(["example", "examples", "uses", "use", "tips", "note", "notes", "types", "type", "causes", "solutions", "impacts", "benefits", "problems", "factors", "method", "methods", "approach", "time", "transport", "grammar", "vocabulary", "opinions", "directions", "controls", "protection", "prevention", "threats", "input", "output", "balanced", "word equation", "balanced equation", "fixings", "adhesives", "risks", "users", "stores", "wood joints", "finishes", "sound", "imagery", "structure", "proofing", "processes", "fractions", "description", "narrative", "in muscles", "in yeast", "male", "female", "breathing in", "breathing out", "too hot", "too cold", "source area", "destination", "upper course", "middle course", "lower course", "self pollination", "describing", "aims", "weaknesses", "failures", "successes", "successes in the 1920s", "march 1939", "key areas", "skills", "tips", "answering", "the test", "the talk", "discussion", "planning", "craft", "selecting", "writing", "forms", "language", "structure and form"]);
+
+export function termsOf(pack) {
+  const seen = new Set(), out = [];
+  pack.subs.forEach((s) => s.sections.forEach(([, lines]) => lines.forEach((line) => {
+    const m = /^([A-Z][^:.]{1,40}): (.{8,})$/.exec(line);
+    if (!m) return;
+    const term = m[1].trim();
+    if (term.split(" ").length > 5 || NOT_TERMS.has(term.toLowerCase()) || seen.has(term.toLowerCase())) return;
+    seen.add(term.toLowerCase());
+    out.push({ id: `t-${s.id}-${out.length}`, term, def: m[2].replace(/\.$/, ""), subject: s.topic.name });
+  })));
+  return out;
 }
