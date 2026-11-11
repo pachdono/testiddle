@@ -43,8 +43,8 @@ for (const pack of packs) {
     const sheets = sheetsOf(shaped, subject);
     assert.equal(sheets.length, shaped.subs.length);
     for (const s of sheets) {
-      assert.ok(s.blocks.length >= 1 && s.blocks.length <= 6, s.id);
-      assert.ok(s.blocks.every(([h, lines]) => h && lines.length && lines.length <= 6), s.id);
+      assert.ok(s.blocks.length >= 1 && s.blocks.length <= 8, s.id);
+      assert.ok(s.blocks.every(([h, lines]) => h && lines.length && lines.length <= 12), s.id);
       assert.match(s.meta.color, /^#[0-9a-f]{6}$/i); assert.match(s.meta.soft, /^#[0-9a-f]{6}$/i);
       assert.ok(s.meta.key.length > 10, s.id);
     }

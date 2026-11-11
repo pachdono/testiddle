@@ -113,7 +113,7 @@ export const sheetIdOf = (sub) => sub.id.replace(/-1$/, "");
 export function sheetsOf(pack, subject) {
   return pack.subs.map((s, i) => {
     const many = pack.subs.filter((x) => x.topic.id === s.topic.id).length > 1;
-    const blocks = s.sections.slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 6).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l.startsWith("[H] ") ? `${plain(l)} (Higher)` : l))]);
+    const blocks = s.sections.slice(0, 8).map(([h, lines]) => [h, lines.slice(0, 12).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l.startsWith("[H] ") ? `${plain(l)} (Higher)` : l))]);
     return {
       id: sheetIdOf(s), title: many ? s.skill : s.topic.name, subject: pack.name, icon: subject.icon, desc: s.intro, blocks,
       chips: ["IGCSE", pack.name.toUpperCase()],

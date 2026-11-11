@@ -9,7 +9,7 @@ export default {
   name: "Additional Mathematics",
   topics: [
     one("functions", "Functions", "Functions", 8, "Domain, range, composite and inverse functions, and the modulus function.", [
-      ["Key ideas", ["A function maps each input in the domain to exactly one output; the set of outputs is the range.", "One to one functions have inverses. The graph of f⁻¹ is the reflection of f in y = x.", "To find f⁻¹: write y = f(x), swap x and y, rearrange for y.", "fg(x) means apply g first, then f."]],
+      ["Key ideas", ["A function maps each input in the domain to exactly one output; the set of outputs is the range.", "One to one functions have inverses. The graph of f⁻¹ is the reflection of f in y = x.", "To find f⁻¹: write y = f(x), swap x and y, rearrange for y.", "fg(x) means apply g first, then f.", "Domain and range use inequalities: f(x) = x² + 1 for x ∈ ℝ has range f(x) ≥ 1.", "The domain of f⁻¹ is the range of f, and the range of f⁻¹ is the domain of f.", "ff⁻¹(x) = x. eˣ and ln x are inverse functions, as are 10ˣ and lg x."]],
       ["Modulus", ["|x| is the size of x without its sign.", "The graph of y = |f(x)| reflects the parts below the x axis upwards.", "Solve |x - 2| = 5 by x - 2 = 5 or x - 2 = -5, so x = 7 or -3."]],
     ], ["Inverse: swap x and y, then rearrange.", "fg: g first.", "Modulus equations have two cases."], [
       ["f(x) = 3x - 1. What is f⁻¹(x)?", ["(x + 1)/3", "(x - 1)/3", "3x + 1", "1/(3x - 1)"], "A", "y = 3x - 1, swap: x = 3y - 1, so y = (x + 1)/3."],
@@ -20,7 +20,7 @@ export default {
     ]),
     one("quadratics", "Quadratic functions", "Quadratic functions", 8, "Completing the square, the discriminant and quadratic inequalities.", [
       ["Completing the square", ["x² + bx + c = (x + b/2)² - (b/2)² + c.", "The turning point of y = (x + p)² + q is (-p, q).", "Example: x² - 6x + 11 = (x - 3)² + 2, minimum point (3, 2)."]],
-      ["The discriminant", ["b² - 4ac > 0: two distinct real roots.", "b² - 4ac = 0: one repeated root (the line touches the curve).", "b² - 4ac < 0: no real roots.", "Use it to find when a line meets, touches or misses a curve."]],
+      ["The discriminant", ["b² - 4ac > 0: two distinct real roots.", "b² - 4ac = 0: one repeated root (the line touches the curve).", "b² - 4ac < 0: no real roots.", "Use it to find when a line meets, touches or misses a curve.", "Example: y = kx - 1 touches y = x² + 3 when x² - kx + 4 = 0 has b² - 4ac = 0: k² - 16 = 0, so k = ±4."]],
       ["Inequalities", ["Find the roots, sketch the parabola, then read off the region.", "x² - x - 6 < 0 gives (x - 3)(x + 2) < 0, so -2 < x < 3."]],
     ], ["Turning point from completed square: (-p, q).", "Discriminant decides the number of roots.", "Sketch before solving inequalities."], [
       ["Write x² + 8x + 3 in the form (x + p)² + q.", ["(x + 4)² - 13", "(x + 4)² + 3", "(x + 8)² - 61", "(x + 4)² + 19"], "A", "(x + 4)² - 16 + 3 = (x + 4)² - 13."],
@@ -60,13 +60,15 @@ export default {
     ]),
     one("logs", "Logarithmic and exponential functions", "Logarithms and exponentials", 8, "Log laws, solving exponential equations and the graphs of eˣ and ln x.", [
       ["Log laws", ["logₐ x = y means aʸ = x.", "log(ab) = log a + log b; log(a/b) = log a - log b; log aⁿ = n log a.", "logₐ a = 1 and logₐ 1 = 0. Change of base: logₐ b = log b / log a."]],
-      ["Solving and graphs", ["Solve aˣ = b by taking logs: x = log b / log a.", "ln x is the natural log, the inverse of eˣ.", "y = eˣ passes through (0, 1); y = ln x passes through (1, 0).", "Straight line graphs: plotting ln y against x for y = Aeᵏˣ gives a line with gradient k and intercept ln A."]],
+      ["Solving and graphs", ["Solve aˣ = b by taking logs: x = log b / log a.", "Hidden quadratics: for 4ˣ - 5(2ˣ) + 4 = 0, let u = 2ˣ: u² - 5u + 4 = 0, u = 1 or 4, so x = 0 or 2.", "Solve log equations by combining into one log, then writing in exponential form: lg x + lg 4 = 2 gives 4x = 100, x = 25.", "ln x is the natural log, the inverse of eˣ.", "y = eˣ passes through (0, 1); y = ln x passes through (1, 0).", "Straight line graphs: plotting ln y against x for y = Aeᵏˣ gives a line with gradient k and intercept ln A."]],
     ], ["Three log laws: add, subtract, bring down the power.", "Take logs to solve for a power.", "eˣ and ln x are inverses."], [
       ["What is log₂ 8?", ["2", "3", "4", "16"], "B", "2³ = 8."],
       ["Simplify log 6 + log 5.", ["log 11", "log 30", "log 1.2", "11"], "B", "log a + log b = log ab."],
       ["Solve 2ˣ = 10 (to 2 decimal places).", ["3.32", "5.00", "0.30", "2.30"], "A", "x = log 10 / log 2 ≈ 3.32."],
       ["Where does y = ln x cross the x axis?", ["(0, 0)", "(1, 0)", "(e, 0)", "It does not"], "B", "ln 1 = 0."],
       ["What is 3 log x written as a single log?", ["log 3x", "log x³", "log (x + 3)", "3x"], "B", "n log a = log aⁿ."],
+      ["Solve 9ˣ - 4(3ˣ) + 3 = 0.", ["x = 0 or 1", "x = 1 or 3", "x = 0 or 3", "x = 1 only"], "A", "Let u = 3ˣ: u² - 4u + 3 = 0, u = 1 or 3, so x = 0 or 1."],
+      ["Solve lg x + lg 5 = 2.", ["x = 20", "x = 95", "x = 10", "x = 2.5"], "A", "lg 5x = 2, so 5x = 100."],
     ]),
     one("lines", "Straight line graphs", "Straight lines and linear law", 6, "Gradients, perpendicular lines, and changing curves into straight lines.", [
       ["Lines", ["y - y₁ = m(x - x₁) gives a line with gradient m through (x₁, y₁).", "Perpendicular gradients multiply to -1.", "Perpendicular bisector of AB: passes through the midpoint with gradient -1/m."]],
@@ -79,7 +81,7 @@ export default {
       ["What is the midpoint of A(1, 5) and B(7, 1)?", ["(4, 3)", "(3, 4)", "(8, 6)", "(6, -4)"], "A", "((1 + 7)/2, (5 + 1)/2)."],
     ]),
     one("circle", "Coordinate geometry of the circle", "Equation of a circle", 6, "The circle equation, tangents and intersections with lines.", [
-      ["The equation", ["(x - a)² + (y - b)² = r² has centre (a, b) and radius r.", "Complete the square to find the centre and radius from the expanded form.", "A tangent is perpendicular to the radius at the point of contact."]],
+      ["The equation", ["(x - a)² + (y - b)² = r² has centre (a, b) and radius r.", "Complete the square to find the centre and radius from the expanded form.", "A tangent is perpendicular to the radius at the point of contact.", "Equation of a tangent: find the gradient of the radius to the point, take -1 ÷ that gradient, then use y - y₁ = m(x - x₁).", "A point is inside the circle if its distance from the centre is less than r."]],
       ["Intersections", ["Substitute the line into the circle equation.", "Use the discriminant: two points, one point (tangent) or no intersection."]],
     ], ["Centre (a, b), radius r.", "Tangent perpendicular to radius.", "Discriminant for line and circle."], [
       ["What are the centre and radius of (x - 2)² + (y + 3)² = 16?", ["(2, -3), 4", "(-2, 3), 4", "(2, -3), 16", "(2, 3), 4"], "A", "Centre (2, -3), radius √16 = 4."],
@@ -99,22 +101,24 @@ export default {
     ]),
     one("trig", "Trigonometry", "Identities, equations and graphs", 9, "Trig graphs, identities and solving trigonometric equations.", [
       ["Identities", ["tan θ = sin θ / cos θ.", "sin²θ + cos²θ = 1.", "sec θ = 1/cos θ, cosec θ = 1/sin θ, cot θ = 1/tan θ.", "1 + tan²θ = sec²θ and 1 + cot²θ = cosec²θ."]],
-      ["Equations and graphs", ["Find the principal value, then use the symmetry of the graph for others in the range.", "sin is positive in the first and second quadrants; cos in the first and fourth; tan in the first and third (CAST).", "y = a sin bx + c: amplitude a, period 360/b degrees, shifted up by c."]],
+      ["Equations and graphs", ["Find the principal value, then use the symmetry of the graph for others in the range.", "sin is positive in the first and second quadrants; cos in the first and fourth; tan in the first and third (CAST).", "y = a sin bx + c: amplitude a, period 360/b degrees, shifted up by c.", "Multiple angles: for sin 2x = 0.5 with 0° ≤ x ≤ 360°, solve 2x in 0° to 720°: 2x = 30°, 150°, 390°, 510°, so x = 15°, 75°, 195°, 255°.", "Proving identities: start with one side, use sin²θ + cos²θ = 1 and tan θ = sin θ/cos θ, and work to the other side.", "Equations in radians: give answers in radians when the range is in radians (such as 0 ≤ x ≤ 2π)."]],
     ], ["Use CAST for all solutions.", "sin² + cos² = 1.", "Period of sin bx is 360/b degrees."], [
       ["Solve sin x = 0.5 for 0 ≤ x ≤ 360 degrees.", ["30 and 150", "30 and 210", "60 and 120", "30 and 330"], "A", "sin is positive in quadrants 1 and 2: 30 and 180 - 30."],
       ["Simplify 1 - cos²θ.", ["sin θ", "sin²θ", "tan²θ", "cos θ"], "B", "From sin²θ + cos²θ = 1."],
       ["What is the period of y = sin 3x (degrees)?", ["120", "360", "1080", "3"], "A", "360 / 3 = 120."],
       ["What is 1 + tan²θ equal to?", ["sec²θ", "cosec²θ", "cot²θ", "1"], "A", "Divide sin² + cos² = 1 by cos²."],
       ["What is the amplitude of y = 4 cos x + 1?", ["1", "4", "5", "3"], "B", "The amplitude is the coefficient, 4."],
+      ["Solve sin 2x = 0.5 for 0° ≤ x ≤ 180°.", ["15° and 75°", "30° and 150°", "15° only", "60° and 120°"], "A", "2x = 30° or 150°."],
     ]),
     one("perms", "Permutations and combinations", "Arrangements and selections", 6, "Counting orders (permutations) and choices (combinations).", [
-      ["Counting", ["n! ways to arrange n different items.", "Permutations ⁿPᵣ = n! / (n - r)!: order matters.", "Combinations ⁿCᵣ = n! / (r!(n - r)!): order does not matter.", "For restrictions, deal with the restricted items first, or treat items that must be together as one block."]],
+      ["Counting", ["n! ways to arrange n different items.", "Permutations ⁿPᵣ = n! / (n - r)!: order matters.", "Combinations ⁿCᵣ = n! / (r!(n - r)!): order does not matter.", "For restrictions, deal with the restricted items first, or treat items that must be together as one block.", "Example: arrangements of 5 books with 2 particular books together: treat them as one block, 4! x 2! = 48.", "Example: choose a team of 4 from 6 boys and 5 girls with exactly 2 girls: ⁵C₂ x ⁶C₂ = 10 x 15 = 150."]],
     ], ["Order matters: P. Order does not: C.", "Together: treat as one block.", "Not together: total minus together."], [
       ["How many ways can 5 different books be arranged on a shelf?", ["25", "60", "120", "720"], "C", "5! = 120."],
       ["How many ways can a committee of 3 be chosen from 7 people?", ["21", "35", "210", "343"], "B", "⁷C₃ = 35."],
       ["How many ways can 1st, 2nd and 3rd be awarded among 6 runners?", ["20", "120", "216", "720"], "B", "⁶P₃ = 6 x 5 x 4 = 120."],
       ["When does order matter?", ["Combinations", "Permutations", "Both", "Neither"], "B", "Permutations count orders."],
       ["How many arrangements of A, B, C, D have A and B next to each other?", ["6", "12", "24", "48"], "B", "Treat AB as one block: 3! x 2! = 12."],
+      ["In how many ways can 5 people sit in a row if two of them must sit together?", ["24", "48", "120", "240"], "B", "Treat the two as one block: 4! x 2! = 48."],
     ]),
     one("series", "Series", "Binomial expansion and progressions", 8, "Binomial expansion, arithmetic and geometric progressions.", [
       ["Binomial", ["(a + b)ⁿ = aⁿ + ⁿC₁aⁿ⁻¹b + ⁿC₂aⁿ⁻²b² + ... + bⁿ.", "Use Pascal's triangle or ⁿCᵣ for the coefficients.", "To find a specific term, write the general term ⁿCᵣ aⁿ⁻ʳ bʳ."]],
@@ -137,17 +141,20 @@ export default {
     ]),
     { id: "calculus", name: "Differentiation and integration", subs: [
       N("Differentiation", 9, "Gradients, tangents, stationary points and rates of change.", [
-        ["Rules", ["d/dx (xⁿ) = nxⁿ⁻¹.", "d/dx (eᵏˣ) = keᵏˣ; d/dx (ln x) = 1/x; d/dx (sin x) = cos x; d/dx (cos x) = -sin x.", "Chain rule: dy/dx = dy/du x du/dx. Product rule: (uv)' = u'v + uv'. Quotient rule: (u/v)' = (u'v - uv')/v²."]],
-        ["Uses", ["Gradient of a tangent at a point: substitute x into dy/dx.", "Stationary points where dy/dx = 0. Second derivative positive: minimum; negative: maximum.", "Connected rates of change: dV/dt = dV/dr x dr/dt.", "Small changes: δy ≈ (dy/dx) δx."]],
+        ["Rules", ["d/dx (xⁿ) = nxⁿ⁻¹.", "d/dx (eᵏˣ) = keᵏˣ; d/dx (ln x) = 1/x; d/dx (sin x) = cos x; d/dx (cos x) = -sin x; d/dx (tan x) = sec²x.", "d/dx (ax + b)ⁿ = an(ax + b)ⁿ⁻¹ (by the chain rule).", "Chain rule: dy/dx = dy/du x du/dx. Product rule: (uv)' = u'v + uv'. Quotient rule: (u/v)' = (u'v - uv')/v²."]],
+        ["Uses", ["Gradient of a tangent at a point: substitute x into dy/dx. Equation of the tangent: y - y₁ = m(x - x₁).", "The normal is perpendicular to the tangent: gradient -1/m.", "Stationary points where dy/dx = 0. Second derivative positive: minimum; negative: maximum.", "Connected rates of change: dV/dt = dV/dr x dr/dt.", "Small changes: δy ≈ (dy/dx) δx."]],
       ], ["Power rule: bring down, subtract one.", "dy/dx = 0 at stationary points.", "Chain rule links rates of change."], [
         ["Differentiate y = 4x³.", ["12x²", "4x²", "12x³", "x⁴"], "A", "3 x 4x² = 12x²."],
         ["What is the gradient of y = x² + 3x at x = 2?", ["7", "10", "4", "13"], "A", "dy/dx = 2x + 3 = 7."],
         ["At a stationary point, d²y/dx² = -4. What kind of point is it?", ["Minimum", "Maximum", "Point of inflection", "Not stationary"], "B", "Negative second derivative means a maximum."],
         ["Differentiate y = e³ˣ.", ["e³ˣ", "3e³ˣ", "3e²ˣ", "e³ˣ/3"], "B", "d/dx eᵏˣ = keᵏˣ."],
         ["Differentiate y = sin x.", ["cos x", "-cos x", "-sin x", "tan x"], "A", "The derivative of sin x is cos x."],
+        ["What is d/dx of (3x + 1)⁴?", ["4(3x + 1)³", "12(3x + 1)³", "(3x + 1)³", "12x³"], "B", "Chain rule: 4 x 3 x (3x + 1)³."],
+        ["The tangent to a curve at a point has gradient 2. What is the gradient of the normal?", ["2", "-2", "½", "-½"], "D", "Normal gradient is -1/m."],
+        ["What is d/dx of tan x?", ["sec x", "sec²x", "-cos x", "cot x"], "B", "A standard result to learn."],
       ]),
       N("Integration and kinematics", 9, "Reversing differentiation, areas under curves and motion in a line.", [
-        ["Integration", ["∫xⁿ dx = xⁿ⁺¹/(n + 1) + c, for n ≠ -1.", "∫eᵏˣ dx = eᵏˣ/k + c; ∫1/x dx = ln x + c; ∫cos x dx = sin x + c; ∫sin x dx = -cos x + c.", "Definite integrals give the area between a curve and the x axis; areas below the axis come out negative."]],
+        ["Integration", ["∫xⁿ dx = xⁿ⁺¹/(n + 1) + c, for n ≠ -1.", "∫eᵏˣ dx = eᵏˣ/k + c; ∫1/x dx = ln x + c; ∫cos x dx = sin x + c; ∫sin x dx = -cos x + c; ∫sec²x dx = tan x + c.", "∫(ax + b)ⁿ dx = (ax + b)ⁿ⁺¹ / (a(n + 1)) + c. ∫1/(ax + b) dx = (1/a) ln(ax + b) + c.", "Integration is the reverse of differentiation; use a given point to find c.", "Definite integrals give the area between a curve and the x axis; areas below the axis come out negative.", "Area between a curve and a line: integrate (top - bottom) between the x values where they meet, or find the area under the curve and add or subtract a triangle or trapezium."]],
         ["Kinematics", ["Velocity v = ds/dt; acceleration a = dv/dt.", "Displacement s = ∫v dt; velocity v = ∫a dt.", "The particle is at rest when v = 0."]],
       ], ["Add one to the power, divide by the new power, add c.", "Area below the axis is negative.", "s, v, a: differentiate down, integrate up."], [
         ["Find ∫6x² dx.", ["2x³ + c", "12x + c", "6x³ + c", "3x³ + c"], "A", "6x³/3 = 2x³."],
@@ -155,6 +162,7 @@ export default {
         ["s = t³ - 3t. What is the velocity at t = 2?", ["2", "9", "12", "6"], "B", "v = 3t² - 3 = 9."],
         ["Find ∫cos x dx.", ["sin x + c", "-sin x + c", "cos x + c", "-cos x + c"], "A", "The integral of cos x is sin x."],
         ["Why must you add c to an indefinite integral?", ["To make it bigger", "Because any constant differentiates to zero", "For units", "It is a rule with no reason"], "B", "Many functions have the same derivative, differing only by a constant."],
+        ["What is ∫(2x + 1)³ dx?", ["(2x + 1)⁴/8 + c", "(2x + 1)⁴/4 + c", "3(2x + 1)² + c", "(2x + 1)⁴ + c"], "A", "Divide by 2 x 4 = 8."],
       ]),
     ] },
   ],
