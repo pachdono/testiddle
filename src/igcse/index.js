@@ -100,7 +100,7 @@ const POSES = ["think", "read", "cheer", "wave"];
 export function sheetsOf(pack, subject) {
   return pack.topics.map((t, i) => {
     const subs = pack.subs.filter((s) => s.topic.id === t.id);
-    const blocks = subs.flatMap((s) => s.sections).slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 5).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l))]);
+    const blocks = subs.flatMap((s) => s.sections).slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 5).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l.startsWith("[H] ") ? `${plain(l)} (Higher)` : l))]);
     return {
       id: `${pack.id}-${t.id}`, title: t.name, subject: pack.name, icon: subject.icon, desc: subs[0].intro, blocks,
       chips: ["IGCSE", pack.name.toUpperCase()],
