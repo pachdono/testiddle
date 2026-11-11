@@ -1,7 +1,7 @@
 // Diagrams for the IGCSE Economics, Business, History, PE, Accounting and Design and Technology
 // cheat sheets.
 
-import { INK, Label, Link, Dot, Defs, plot, T, Arrow } from "../posterKit.jsx";
+import { INK, Label, Dot, Defs, plot, T, Arrow } from "../posterKit.jsx";
 
 const V = "0 0 680 310";
 
@@ -115,40 +115,6 @@ export default {
   "history-containment": timeline([["1950", "North Korea invades the South"], ["1953", "Korean armistice"], ["1961", "Bay of Pigs fails"], ["1962", "Cuban Missile Crisis"], ["1964", "Gulf of Tonkin"], ["1968", "Tet Offensive"], ["1973", "US troops leave Vietnam"], ["1975", "Saigon falls"]]),
   "history-eastern-europe": timeline([["1956", "Hungarian rising crushed"], ["1961", "Berlin Wall built"], ["1968", "Prague Spring crushed"], ["1980", "Solidarity in Poland"], ["1985", "Gorbachev's reforms"], ["1989", "Berlin Wall falls"], ["1991", "USSR breaks up"]]),
   "history-depth": timeline([["1919", "Weimar Republic set up"], ["1923", "Hyperinflation, Munich Putsch"], ["1924", "Dawes Plan, recovery"], ["1929", "Depression hits"], ["1933", "Chancellor, Enabling Act"], ["1934", "Night of the Long Knives"], ["1935", "Nuremberg Laws"], ["1938", "Kristallnacht"]]),
-  "pe-anatomy": (c) => (
-    <svg viewBox={V}><Defs c={c} />
-      <path d="M110 60 L120 200" stroke="#d6cfbf" strokeWidth="14" strokeLinecap="round" />
-      <path d="M120 200 L270 120" stroke="#d6cfbf" strokeWidth="12" strokeLinecap="round" />
-      <circle cx="110" cy="56" r="16" fill="#e8e1d2" stroke={INK} /><circle cx="120" cy="200" r="11" fill="#e8e1d2" stroke={INK} />
-      <g filter="url(#ps)"><path d="M126 76 Q168 120 138 188 Q120 150 126 76 Z" fill="#e88a9a" stroke="#b8475f" strokeWidth="1.4" /></g>
-      <path d="M100 82 Q88 140 108 196 Q102 140 100 82 Z" fill="#f6c3cc" stroke="#b8475f" strokeWidth="1.2" />
-      <path d="M138 186 L176 176" stroke="#b8475f" strokeWidth="2" /><path d="M126 76 L116 66" stroke="#b8475f" strokeWidth="2" />
-      <Label x={200} y={30} w={200} color="#d0496d" title="biceps contracts" lines={["agonist"]} /><Link from={[200, 60]} to={[150, 120]} color="#d0496d" bend={10} />
-      <Label x={10} y={226} w={180} color="#c0702a" title="triceps relaxes" lines={["antagonist"]} /><Link from={[60, 226]} to={[96, 160]} color="#c0702a" bend={-10} />
-      <Label x={210} y={190} w={190} color={INK} title="elbow: hinge joint" lines={["flexion bends it"]} /><Link from={[210, 216]} to={[132, 202]} color={INK} bend={-8} />
-      <Label x={430} y={6} w={240} color={c} title="cardiac output" lines={["stroke volume × heart rate"]} />
-      <Label x={430} y={78} w={240} color="#2a8fd6" title="aerobic" lines={["glucose + oxygen →", "CO₂ + water + energy"]} />
-      <Label x={430} y={168} w={240} color="#d0496d" title="anaerobic" lines={["glucose → lactic acid", "+ a little energy"]} />
-    </svg>
-  ),
-  "pe-skill": (c) => {
-    const { X, Y, path } = plot([50, 40, 330, 200], [0, 10], [0, 10]);
-    const f = (x) => 9 - 0.36 * (x - 5) ** 2;
-    return (
-      <svg viewBox={V}><Defs c={c} />
-        <path d={`M${X(0)} ${Y(0)} H${X(10) + 10} M${X(0)} ${Y(0)} V${Y(10) - 10}`} stroke={INK} strokeWidth="1.5" />
-        <T x={X(10)} y={Y(0) + 20} s={14} anchor="end">AROUSAL</T><T x={X(0) + 8} y={Y(10) - 6} s={14}>PERFORMANCE</T>
-        <path d={path(f, 0.3, 9.7)} fill="none" stroke={c} strokeWidth="3.2" filter="url(#ps)" />
-        <Dot x={X(5)} y={Y(9)} color="#f2b632" />
-        <T x={X(5)} y={Y(9) - 14} s={14} anchor="middle" fill="#c0902a">OPTIMUM</T>
-        <T x={X(1.4)} y={Y(2.6)} s={13} anchor="middle">UNDER</T><T x={X(1.4)} y={Y(2.6) + 16} s={13} anchor="middle">AROUSED</T>
-        <T x={X(8.6)} y={Y(2.6)} s={13} anchor="middle">OVER</T><T x={X(8.6)} y={Y(2.6) + 16} s={13} anchor="middle">AROUSED</T>
-        <Label x={420} y={6} w={250} color={c} title="stages of learning" lines={["cognitive → associative", "→ autonomous"]} />
-        <Label x={420} y={96} w={250} color="#c0702a" title="SMART targets" keep lines={["SPECIFIC, MEASURABLE, ACHIEVABLE,", "REALISTIC, TIME BOUND"]} />
-        <Label x={420} y={186} w={250} color={INK} title="feedback" lines={["intrinsic (feel) or extrinsic", "(coach, video)"]} />
-      </svg>
-    );
-  },
   "accounting-fundamentals": (c) => (
     <svg viewBox={V}><Defs c={c} />
       <path d="M340 70 L320 250 H360 Z" fill="#c9cfd6" stroke={INK} strokeWidth="1.4" />

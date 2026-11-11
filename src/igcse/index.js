@@ -103,14 +103,17 @@ const soften = (hex, amount = 0.86) => {
 const POSES = ["think", "read", "cheer", "wave"];
 
 /** One cheat sheet per topic, made from that topic's notes. */
+/** The cheat sheet for a subtopic: the first in a topic keeps the topic's id. */
+export const sheetIdOf = (sub) => sub.id.replace(/-1$/, "");
+
 export function sheetsOf(pack, subject) {
-  return pack.topics.map((t, i) => {
-    const subs = pack.subs.filter((s) => s.topic.id === t.id);
-    const blocks = subs.flatMap((s) => s.sections).slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 5).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l.startsWith("[H] ") ? `${plain(l)} (Higher)` : l))]);
+  return pack.subs.map((s, i) => {
+    const many = pack.subs.filter((x) => x.topic.id === s.topic.id).length > 1;
+    const blocks = s.sections.slice(0, 6).map(([h, lines]) => [h, lines.slice(0, 6).map((l) => (isExt(l) ? `${plain(l)} (Extended)` : l.startsWith("[H] ") ? `${plain(l)} (Higher)` : l))]);
     return {
-      id: `${pack.id}-${t.id}`, title: t.name, subject: pack.name, icon: subject.icon, desc: subs[0].intro, blocks,
+      id: sheetIdOf(s), title: many ? s.skill : s.topic.name, subject: pack.name, icon: subject.icon, desc: s.intro, blocks,
       chips: ["IGCSE", pack.name.toUpperCase()],
-      meta: { color: subject.tint, soft: soften(subject.tint), tagline: subs[0].intro, key: subs.flatMap((s) => s.points).slice(0, 2).join(" "), pose: POSES[i % POSES.length] },
+      meta: { color: subject.tint, soft: soften(subject.tint), tagline: s.intro, key: s.points.slice(0, 2).join(" "), pose: POSES[i % POSES.length] },
     };
   });
 }

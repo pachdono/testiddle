@@ -1,8 +1,16 @@
 // Exam style written questions for IGCSE Physical Education, one per topic, with mark schemes.
 export default {
-  anatomy: [["Explain how the biceps and triceps work together to bend the elbow.", ["They are an antagonistic pair", "The biceps contracts (agonist)", "The triceps relaxes (antagonist)", "Flexion at the hinge joint"], 4]],
+  anatomy: [
+    ["Explain how the biceps and triceps work together to bend the elbow.", ["They are an antagonistic pair", "The biceps contracts (agonist)", "The triceps relaxes (antagonist)", "Flexion at the hinge joint"], 4],
+    ["Name four parts of a synovial joint and give the function of each.", ["Articular cartilage: reduces friction and absorbs shock", "Synovial membrane: produces synovial fluid", "Synovial fluid: lubricates the joint", "Ligaments: join bone to bone and stabilise", "Joint capsule: surrounds and protects the joint"], 4],
+    ["Identify the type of joint and the movement at the shoulder when a cricketer bowls, and at the ankle when a sprinter pushes off.", ["Shoulder: ball and socket joint", "Shoulder movement: circumduction", "Ankle: hinge joint", "Ankle movement: plantar flexion"], 4],
+    ["Compare slow twitch and fast twitch (type 2b) muscle fibres, with a sporting example of each.", ["Slow twitch contract slowly and resist fatigue", "Slow twitch suit endurance, such as a marathon", "Fast twitch contract quickly and powerfully but tire quickly", "Fast twitch suit sprinting or weightlifting"], 4],
+    ["Name the class of lever used at the elbow in a biceps curl and explain why.", ["Third class lever", "The effort (biceps) is between the fulcrum and the load", "The fulcrum is the elbow joint", "The load is the weight in the hand"], 3],
+    ["Describe the types of muscle contraction in the quadriceps when a basketball player jumps and lands.", ["Jumping: concentric contraction, the muscle shortens", "Landing: eccentric contraction, the muscle lengthens under tension", "Eccentric controls the landing"], 3],
+    ["Explain vascular shunting during exercise.", ["Blood is redirected to the working muscles", "Arterioles to the muscles dilate (vasodilation)", "Arterioles to the digestive system constrict (vasoconstriction)", "Muscles get more oxygen"], 4],
+  ],
   health: [["Describe a fitness test for cardiovascular endurance and how to make it reliable.", ["Multi stage fitness (beep) test", "Run 20 m shuttles in time with the beeps until you cannot keep up", "Same surface, warm up and conditions each time", "Repeat and compare with norms"], 4]],
-  skill: [["Explain the inverted U theory of arousal and performance.", ["Performance improves as arousal increases", "Up to an optimum level", "Beyond the optimum, performance falls", "Optimum depends on the skill and the performer"], 4]],
+  skill: [["Classify a penalty kick in football on the open/closed and self/externally paced continua, and justify.", ["Closely closed", "The environment is stable, the ball is still", "Self paced", "The kicker decides when to start"], 4], ["Explain the inverted U theory of arousal and performance.", ["Performance improves as arousal increases", "Up to an optimum level", "Beyond the optimum, performance falls", "Optimum depends on the skill and the performer"], 4]],
   social: [["Explain why some athletes take beta blockers, and why they are banned.", ["They lower heart rate and reduce anxiety or shaking", "Help in precision sports such as archery or shooting", "Banned because they give an unfair advantage", "And have health risks"], 4]],
   practical: [["Analyse a performance in your chosen activity and set a target.", ["Identifies a strength", "Identifies a weakness", "Suggests a specific practice or drill", "Sets a measurable target"], 4]],
 };

@@ -41,10 +41,10 @@ for (const pack of packs) {
   test(`${pack.id}: a cheat sheet for every topic, and key terms`, () => {
     const shaped = shape(pack), subject = SUBJECTS.find((s) => s.id === pack.id);
     const sheets = sheetsOf(shaped, subject);
-    assert.equal(sheets.length, pack.topics.length);
+    assert.equal(sheets.length, shaped.subs.length);
     for (const s of sheets) {
       assert.ok(s.blocks.length >= 1 && s.blocks.length <= 6, s.id);
-      assert.ok(s.blocks.every(([h, lines]) => h && lines.length && lines.length <= 5), s.id);
+      assert.ok(s.blocks.every(([h, lines]) => h && lines.length && lines.length <= 6), s.id);
       assert.match(s.meta.color, /^#[0-9a-f]{6}$/i); assert.match(s.meta.soft, /^#[0-9a-f]{6}$/i);
       assert.ok(s.meta.key.length > 10, s.id);
     }

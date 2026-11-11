@@ -1,61 +1,210 @@
-// Revision notes, quizzes and flashcards for IGCSE Physical Education (Cambridge 0413). Written
-// for Testiddle.
+// Revision notes, quizzes and flashcards for IGCSE Physical Education (Cambridge 0413), following
+// the syllabus sections, with sporting examples throughout. Written for Testiddle.
 
 const N = (skill, minutes, intro, sections, points, questions) => ({ skill, minutes, intro, sections, points, questions });
-const one = (id, name, ...rest) => ({ id, name, subs: [N(...rest)] });
 
 export default {
   id: "pe",
   name: "Physical Education",
   topics: [
-    one("anatomy", "Anatomy and physiology", "Anatomy and physiology", 9, "Skeleton, muscles, joints, the heart and lungs, and energy systems.", [
-      ["Skeleton and muscles", ["Functions of the skeleton: support, protection, movement, blood cell production, mineral storage.", "Joint types: ball and socket (shoulder, hip), hinge (knee, elbow). Movements: flexion, extension, abduction, adduction, rotation.", "Antagonistic pairs: biceps and triceps; one contracts (agonist) as the other relaxes (antagonist).", "Slow twitch fibres for endurance; fast twitch for power."]],
-      ["Heart, lungs and energy", ["Cardiac output = stroke volume x heart rate.", "Tidal volume increases during exercise; gas exchange happens in the alveoli.", "Aerobic respiration: glucose + oxygen → carbon dioxide + water + energy.", "Anaerobic: glucose → lactic acid + energy, for short intense exercise. EPOC (oxygen debt) repays it afterwards."]],
-    ], ["Cardiac output = stroke volume x heart rate.", "Antagonistic pairs work together.", "Anaerobic produces lactic acid."], [
-      ["What is cardiac output?", ["Breaths per minute", "Stroke volume x heart rate", "Heart rate only", "Blood pressure"], "B", "Blood pumped per minute."],
-      ["Which type of joint is the knee?", ["Ball and socket", "Hinge", "Pivot", "Fixed"], "B", "It allows flexion and extension."],
-      ["When the biceps contracts to bend the elbow, what does the triceps do?", ["Contracts", "Relaxes", "Nothing", "Breaks"], "B", "The antagonist relaxes."],
-      ["What does anaerobic respiration produce?", ["Carbon dioxide and water", "Lactic acid", "Oxygen", "Glycogen"], "B", "Lactic acid builds up."],
-      ["Which muscle fibre suits a marathon?", ["Fast twitch", "Slow twitch", "Smooth muscle", "Cardiac only"], "B", "Slow twitch fibres resist fatigue."],
-    ]),
-    one("health", "Health, fitness and training", "Health, fitness and training", 8, "Components of fitness, training principles and methods.", [
-      ["Fitness", ["Health related: cardiovascular endurance, strength, muscular endurance, flexibility, body composition.", "Skill related: agility, balance, coordination, power, reaction time, speed.", "Fitness tests: multi stage fitness test (beep test), sit and reach, hand grip, vertical jump, Illinois agility run."]],
-      ["Training", ["Principles (SPORT and FITT): specificity, progression, overload, reversibility, tedium; frequency, intensity, time, type.", "Methods: continuous, interval, fartlek, circuit, weight, plyometric training.", "Training zones based on maximum heart rate (220 - age).", "Warm up and cool down reduce injury risk and help recovery."]],
-    ], ["Health versus skill related fitness.", "SPORT and FITT principles.", "Max heart rate = 220 - age."], [
-      ["What is the estimated maximum heart rate of a 20 year old?", ["180", "200", "220", "240"], "B", "220 - 20 = 200."],
-      ["Which test measures flexibility?", ["Beep test", "Sit and reach", "Hand grip", "Vertical jump"], "B", "It measures hamstring and lower back flexibility."],
-      ["Which training mixes speed and terrain without rest?", ["Interval", "Fartlek", "Weight", "Circuit"], "B", "Fartlek means speed play."],
-      ["What is reversibility?", ["Fitness gains are lost when training stops", "Training gets harder", "Training matches the sport", "Variety"], "A", "Use it or lose it."],
-      ["Which is a skill related component?", ["Flexibility", "Reaction time", "Body composition", "Muscular endurance"], "B", "It relates to performing skills."],
-    ]),
-    one("skill", "Skill acquisition and psychology", "Skill acquisition and psychology", 7, "How skills are learned, feedback, motivation and arousal.", [
-      ["Skills", ["Skills are open (affected by environment) or closed; basic or complex; gross or fine.", "Information processing: input, decision making, output, feedback.", "Stages of learning: cognitive, associative, autonomous.", "Guidance: visual, verbal, manual, mechanical. Feedback: intrinsic and extrinsic, knowledge of results and of performance."]],
-      ["Psychology", ["Motivation: intrinsic (enjoyment) and extrinsic (rewards).", "Arousal and performance: the inverted U theory says performance is best at moderate arousal.", "Goal setting with SMART targets: specific, measurable, achievable, realistic, time bound.", "Mental preparation: imagery, relaxation, positive self talk."]],
-    ], ["Cognitive, associative, autonomous.", "Inverted U: best at moderate arousal.", "SMART targets."], [
-      ["Which is an open skill?", ["A golf swing", "Passing in football during a match", "A gymnastics vault", "A free throw"], "B", "The environment keeps changing."],
-      ["At which stage are skills automatic?", ["Cognitive", "Associative", "Autonomous", "Beginner"], "C", "Autonomous performers need little thought."],
-      ["What does the inverted U theory say?", ["More arousal is always better", "Performance is best at a moderate level of arousal", "Arousal has no effect", "Low arousal is best"], "B", "Too little or too much harms performance."],
-      ["What is intrinsic motivation?", ["Motivation from within, such as enjoyment", "Trophies", "Money", "Praise from others"], "A", "Inner drive."],
-      ["What does the M in SMART stand for?", ["Motivating", "Measurable", "Maximum", "Mental"], "B", "Targets must be measurable."],
-    ]),
-    one("social", "Social, cultural and ethical influences", "Social, cultural and ethical influences", 6, "Participation, sponsorship, media, technology and drugs in sport.", [
-      ["Influences", ["Participation is affected by age, gender, disability, culture, cost, access and role models.", "The media and sponsorship bring money and exposure but can change rules and timings.", "Technology: goal line technology, VAR, Hawk-Eye; better equipment and analysis.", "Globalisation of sport: international events and players."]],
-      ["Ethics", ["Performance enhancing drugs: anabolic steroids (muscle), stimulants, beta blockers (calm), diuretics (weight loss and masking), EPO and blood doping (oxygen carrying).", "Risks to health and the integrity of sport; testing by WADA.", "Sportsmanship and gamesmanship."]],
-    ], ["Factors affecting participation.", "Know each drug type and its effect.", "Sportsmanship versus gamesmanship."], [
-      ["What do beta blockers do?", ["Build muscle", "Reduce heart rate and anxiety", "Increase red blood cells", "Lose weight"], "B", "Useful in archery and shooting, and banned."],
-      ["What does EPO increase?", ["Muscle size", "Red blood cell production", "Flexibility", "Reaction time"], "B", "More oxygen can be carried."],
-      ["Which organisation leads anti doping worldwide?", ["FIFA", "WADA", "UEFA", "IOC only"], "B", "World Anti-Doping Agency."],
-      ["What is gamesmanship?", ["Bending the rules to gain an advantage without breaking them", "Fair play", "Doping", "Training hard"], "A", "Such as time wasting."],
-      ["How can sponsorship affect sport?", ["It brings money but may influence event timings", "It has no effect", "It bans players", "It removes the media"], "A", "Sponsors and broadcasters have influence."],
-    ]),
-    one("practical", "Practical activities", "Practical activities", 5, "Performing and analysing in your chosen activities.", [
-      ["Assessment", ["You are assessed in practical activities from different categories, such as games, athletics, gymnastics, dance and outdoor activities.", "Marks reflect skill, decision making, tactics and consistency under pressure.", "Analyse performance: identify strengths and weaknesses, and plan improvements.", "Know the rules, safety and etiquette of each activity."]],
-    ], ["Skill, tactics and consistency.", "Analyse and improve.", "Rules and safety."], [
-      ["What is assessed in practical activities?", ["Only fitness", "Skill, decisions, tactics and consistency", "Only attendance", "Only kit"], "B", "Performance in realistic situations."],
-      ["What is performance analysis?", ["Identifying strengths and weaknesses and planning improvements", "Watching TV", "Buying kit", "Resting"], "A", "It drives improvement."],
-      ["Why know the rules of your activity?", ["To play fairly and safely", "They do not matter", "Only referees need them", "To argue"], "A", "Rules and safety are part of competence."],
-      ["What is a tactic?", ["A plan used to outwit opponents", "A muscle", "A training zone", "A drug"], "A", "Tactics apply in competition."],
-      ["Why is consistency valued?", ["It shows skills hold up under pressure", "It is easier", "It is not valued", "Only for athletics"], "A", "Reliable performance matters."],
-    ]),
+    { id: "anatomy", name: "Anatomy and physiology", subs: [
+      N("The skeleton and its functions", 8, "The bones you need to name, the types of bone, and what the skeleton does in sport.", [
+        ["Functions of the skeleton", ["Support: gives the body shape and holds it upright.", "Protection: the cranium protects the brain; the ribs and sternum protect the heart and lungs; vertebrae protect the spinal cord.", "Movement: bones act as levers and give muscles something to pull on.", "Blood cell production: red and white blood cells and platelets are made in the bone marrow of long bones such as the femur.", "Mineral storage: calcium and phosphorus are stored and released when needed."]],
+        ["Bones to know", ["Head and trunk: cranium, vertebrae (cervical, thoracic, lumbar, sacrum, coccyx), ribs, sternum.", "Shoulder and arm: clavicle, scapula, humerus, radius, ulna, carpals, metacarpals, phalanges.", "Hip and leg: pelvis, femur, patella, tibia, fibula, tarsals, metatarsals, phalanges."]],
+        ["Types of bone", ["Long bones (femur, humerus): act as levers for large movements, such as kicking.", "Short bones (carpals, tarsals): strength and fine movement, such as wrist action in a netball pass.", "Flat bones (cranium, scapula, sternum, pelvis): protection and large areas for muscle attachment.", "Irregular bones (vertebrae): protection of the spinal cord and support."]],
+      ], ["Five functions: support, protection, movement, blood cell production, mineral storage.", "Learn the bones by region, top to bottom.", "Match each bone type to a job in sport."], [
+        ["Which function of the skeleton helps a rugby player in a tackle?", ["Protection of vital organs", "Blood cell production", "Mineral storage", "Hearing"], "A", "The ribs and sternum protect the heart and lungs from impact."],
+        ["Where are red blood cells made?", ["In the cartilage", "In the bone marrow of long bones", "In the ligaments", "In the synovial fluid"], "B", "Bone marrow in long bones such as the femur makes blood cells."],
+        ["Which is a flat bone?", ["Femur", "Carpal", "Scapula", "Vertebra"], "C", "The scapula is flat, giving a large area for muscles to attach."],
+        ["Which bone is in the lower leg on the big toe side?", ["Fibula", "Tibia", "Femur", "Patella"], "B", "The tibia is the shin bone; the thinner fibula is on the outside."],
+        ["Which section of the vertebrae is in the neck?", ["Lumbar", "Thoracic", "Cervical", "Sacrum"], "C", "The cervical vertebrae are in the neck."],
+        ["Why are long bones useful in sport?", ["They protect organs", "They act as levers for large, powerful movements", "They store fat", "They make synovial fluid"], "B", "Long bones like the femur act as levers when running and kicking."],
+      ]),
+      N("Joints and the synovial joint", 9, "Types of joint, types of synovial joint with sporting examples, and the parts of a synovial joint.", [
+        ["Types of joint", ["Fixed (fibrous) joints: no movement, such as the cranium.", "Slightly movable (cartilaginous) joints: a little movement, such as between vertebrae.", "Freely movable (synovial) joints: lots of movement, such as the knee and shoulder."]],
+        ["Types of synovial joint", ["Ball and socket (shoulder, hip): movement in all directions, including rotation. Example: bowling in cricket, a golf swing.", "Hinge (elbow, knee, ankle): flexion and extension only. Example: kicking a football, a biceps curl.", "Pivot (atlas and axis in the neck; radius and ulna): rotation only. Example: turning the head to breathe in front crawl.", "Condyloid (wrist): flexion, extension, abduction, adduction, circumduction, but no rotation. Example: wrist flick in a basketball shot.", "Gliding (carpals, tarsals): small sliding movements.", "Saddle (thumb): gripping, such as holding a racket."]],
+        ["Parts of a synovial joint", ["Articular (hyaline) cartilage: covers the ends of bones, reduces friction and absorbs shock.", "Synovial membrane: lines the joint capsule and produces synovial fluid.", "Synovial fluid: lubricates the joint so bones move smoothly.", "Joint capsule: a tough fibrous sac surrounding the joint.", "Ligaments: join bone to bone and stabilise the joint.", "Bursae: small fluid filled sacs that reduce friction between tendons and bones."]],
+      ], ["Ball and socket: shoulder and hip. Hinge: elbow, knee, ankle.", "Ligaments join bone to bone; tendons join muscle to bone.", "Cartilage absorbs shock; synovial fluid lubricates."], [
+        ["Which type of joint is the hip?", ["Hinge", "Pivot", "Ball and socket", "Gliding"], "C", "The hip allows movement in all directions, including rotation."],
+        ["What does synovial fluid do?", ["Joins bone to bone", "Lubricates the joint and reduces friction", "Joins muscle to bone", "Makes red blood cells"], "B", "Synovial fluid keeps the joint moving smoothly."],
+        ["What joins bone to bone?", ["Tendons", "Ligaments", "Cartilage", "Bursae"], "B", "Ligaments join bone to bone and keep the joint stable."],
+        ["Which joint allows a swimmer to turn their head to breathe?", ["Hinge joint at the elbow", "Pivot joint in the neck", "Ball and socket at the hip", "Gliding joint in the wrist"], "B", "The atlas and axis form a pivot joint that allows rotation."],
+        ["What is the job of articular cartilage?", ["Producing synovial fluid", "Reducing friction and absorbing shock at the ends of bones", "Joining muscles to bones", "Storing calcium"], "B", "It cushions the bone ends, for example when landing from a jump."],
+        ["Which movement can the knee NOT do?", ["Flexion", "Extension", "Rotation as at the shoulder", "Bending to kick"], "C", "The knee is a hinge joint: mainly flexion and extension."],
+      ]),
+      N("Types of movement", 8, "Every movement in the syllabus, with a sporting example for each.", [
+        ["Bending and straightening", ["Flexion: decreasing the angle at a joint. Example: bending the knee to prepare to kick, or the elbow in the upward phase of a biceps curl.", "Extension: increasing the angle at a joint. Example: straightening the leg as you kick a ball, or the arm in a chest pass."]],
+        ["Away and towards the body", ["Abduction: moving a limb away from the midline of the body. Example: arms and legs moving out in a star jump, or the leg moving out in a side step in tennis.", "Adduction: moving a limb towards the midline. Example: arms coming back down in a star jump, or the arms pulling in during breaststroke."]],
+        ["Turning", ["Rotation: a bone turning around its long axis. Example: the shoulder rotating in a tennis serve, the hip in a golf swing, the neck in front crawl breathing.", "Circumduction: the end of a limb moving in a circle, combining flexion, extension, abduction and adduction. Example: arm action in a cricket bowl or butterfly stroke."]],
+        ["At the ankle", ["Plantar flexion: pointing the toes, increasing the angle at the ankle. Example: pushing off in sprinting, jumping for a rebound, pointing toes in gymnastics.", "Dorsiflexion: pulling the toes up towards the shin, decreasing the angle. Example: the recovery phase of running, or landing from a jump."]],
+      ], ["Flexion bends, extension straightens.", "Abduction away, adduction towards (add back in).", "Plantar flexion points the toes; dorsiflexion pulls them up."], [
+        ["A sprinter pushes off the blocks by pointing the toes. What is this movement at the ankle?", ["Dorsiflexion", "Plantar flexion", "Abduction", "Rotation"], "B", "Pointing the toes is plantar flexion."],
+        ["What movement happens at the shoulder when the arms go out in a star jump?", ["Adduction", "Abduction", "Flexion", "Circumduction"], "B", "Moving away from the midline is abduction."],
+        ["Bowling a ball in cricket uses which movement at the shoulder?", ["Circumduction", "Plantar flexion", "Dorsiflexion", "Adduction only"], "A", "The arm moves in a circle: circumduction."],
+        ["What is extension?", ["Decreasing the angle at a joint", "Increasing the angle at a joint", "Moving towards the midline", "Turning around the long axis"], "B", "Extension straightens a joint, such as the leg kicking a ball."],
+        ["Pulling the toes up towards the shin is called:", ["Plantar flexion", "Dorsiflexion", "Extension", "Abduction"], "B", "Dorsiflexion decreases the angle at the ankle."],
+        ["Which movement happens at the hip in a golf swing?", ["Rotation", "Plantar flexion", "Dorsiflexion", "Adduction only"], "A", "The hip turns around its long axis: rotation."],
+      ]),
+      N("Muscles, antagonistic pairs and contractions", 10, "Where the main muscles are, how they work in pairs, the types of contraction and muscle fibre types.", [
+        ["Muscles to know", ["Deltoid (shoulder): abducts the arm, such as raising the arm to block in volleyball.", "Trapezius (upper back): moves the shoulders and holds the head steady.", "Latissimus dorsi (side of the back): pulls the arm down and back, such as in a butterfly stroke.", "Pectoralis major (chest): moves the arm across the body, such as a forehand drive.", "Biceps and triceps (upper arm): flex and extend the elbow.", "Abdominals: flex the trunk, such as in a sit up; obliques rotate it.", "Gluteus maximus (buttocks): extends the hip, such as driving up a hill.", "Quadriceps (front of thigh): extend the knee, such as kicking.", "Hamstrings (back of thigh): flex the knee.", "Gastrocnemius (calf): plantar flexes the ankle. Tibialis anterior (shin): dorsiflexes it."]],
+        ["Antagonistic pairs", ["Muscles work in pairs because they can only pull, not push.", "Agonist (prime mover): the muscle that contracts to cause the movement.", "Antagonist: the muscle that relaxes to allow it.", "Fixator (stabiliser): steadies the joint so the agonist can work, such as the trapezius stabilising the shoulder.", "Pairs: biceps and triceps (elbow), quadriceps and hamstrings (knee), gastrocnemius and tibialis anterior (ankle), hip flexors and gluteus maximus (hip), pectorals and latissimus dorsi."]],
+        ["Types of contraction", ["Isotonic concentric: the muscle shortens under tension, such as the biceps in the upward phase of a curl.", "Isotonic eccentric: the muscle lengthens under tension, controlling a movement, such as the biceps lowering a weight or the quadriceps when landing.", "Isometric: the muscle contracts but does not change length, so there is no movement, such as holding a plank or a rugby scrum."]],
+        ["Muscle fibre types", ["Slow twitch (type 1): contract slowly, resist fatigue, use oxygen. Suited to endurance, such as marathon running.", "Fast twitch (type 2a): fast and strong, but tire more quickly, can work aerobically and anaerobically. Suited to middle distance, such as 800 m.", "Fast twitch (type 2b): fastest and most powerful, tire very quickly, anaerobic. Suited to sprinting, throwing and weightlifting.", "The mix of fibres is largely inherited, which helps explain why athletes suit different events."]],
+      ], ["Agonist contracts, antagonist relaxes, fixator stabilises.", "Concentric shortens, eccentric lengthens, isometric stays the same length.", "Slow twitch for endurance, fast twitch for power."], [
+        ["In the upward phase of a biceps curl, which muscle is the agonist?", ["Triceps", "Biceps", "Deltoid", "Hamstrings"], "B", "The biceps contracts concentrically to flex the elbow."],
+        ["What type of contraction happens in the quadriceps when landing from a jump?", ["Concentric", "Eccentric", "Isometric", "None"], "B", "The muscle lengthens under tension to control the landing."],
+        ["Holding a plank uses which type of contraction?", ["Isotonic concentric", "Isotonic eccentric", "Isometric", "Plantar"], "C", "The muscles contract without changing length."],
+        ["Which fibre type suits a marathon runner?", ["Type 2b", "Type 2a", "Type 1 (slow twitch)", "All equally"], "C", "Slow twitch fibres resist fatigue and work aerobically."],
+        ["Which muscle plantar flexes the ankle?", ["Tibialis anterior", "Gastrocnemius", "Quadriceps", "Gluteus maximus"], "B", "The calf muscle points the toes, such as when sprinting."],
+        ["What does a fixator do?", ["Causes the movement", "Relaxes to allow the movement", "Stabilises a joint so the agonist can work", "Joins bone to bone"], "C", "Fixators steady the joint."],
+      ]),
+      N("Levers, planes and axes", 8, "How the body uses levers, and the planes and axes movements happen in.", [
+        ["Parts of a lever", ["Fulcrum: the pivot point (the joint).", "Effort: the force applied (by the muscle).", "Load: the resistance moved (body weight or equipment).", "Remember FLE (1, 2, 3): the part in the middle names the class: Fulcrum, Load, Effort."]],
+        ["The three classes", ["First class: fulcrum in the middle. Example: the neck nodding to head a ball, or the triceps extending the elbow.", "Second class: load in the middle. Example: going on to the toes at the ankle when jumping or sprinting. High mechanical advantage: a large load moved with little effort.", "Third class: effort in the middle. Example: a biceps curl at the elbow, kicking at the knee. Most common in the body, giving speed and range of movement but low mechanical advantage.", "Mechanical advantage = effort arm ÷ load arm."]],
+        ["Planes and axes", ["Sagittal plane, frontal axis: flexion and extension. Examples: running, a forward roll, a somersault.", "Frontal plane, sagittal axis: abduction and adduction. Examples: a star jump, a cartwheel.", "Transverse plane, longitudinal axis: rotation. Examples: a discus spin, a full twist in trampolining, a golf swing."]],
+      ], ["FLE 1 2 3: the middle part names the class.", "Second class: best mechanical advantage. Third class: speed and range.", "Sagittal: forwards and back. Frontal: sideways. Transverse: turning."], [
+        ["A biceps curl is which class of lever?", ["First", "Second", "Third", "None"], "C", "The effort (biceps) is between the fulcrum (elbow) and the load (weight)."],
+        ["Rising onto the toes uses which class of lever?", ["First", "Second", "Third", "Fourth"], "B", "The load (body weight) is between the fulcrum (ball of the foot) and the effort (calf)."],
+        ["Which lever has the fulcrum in the middle?", ["First class", "Second class", "Third class", "All of them"], "A", "First class: fulcrum between load and effort, such as nodding."],
+        ["A cartwheel happens in which plane?", ["Sagittal", "Frontal", "Transverse", "Horizontal only"], "B", "Sideways movement around a sagittal axis is in the frontal plane."],
+        ["A discus thrower spinning uses which axis?", ["Frontal", "Sagittal", "Longitudinal", "None"], "C", "Rotation in the transverse plane is around the longitudinal axis."],
+        ["Which class of lever gives the greatest mechanical advantage?", ["First", "Second", "Third", "They are equal"], "B", "Second class levers move large loads with little effort."],
+      ]),
+      N("The heart, lungs and blood", 10, "The circulatory and respiratory systems at rest and during exercise.", [
+        ["The heart and circulation", ["Four chambers: right and left atria, right and left ventricles. The right side pumps blood to the lungs; the left side pumps it to the body.", "Heart rate: beats per minute. Stroke volume: blood pumped per beat. Cardiac output = stroke volume x heart rate.", "Arteries carry blood away from the heart at high pressure; veins return it with valves; capillaries allow gas exchange.", "Red blood cells carry oxygen using haemoglobin; plasma carries nutrients, carbon dioxide and heat."]],
+        ["Vascular shunting", ["During exercise blood is redirected to the working muscles and away from the digestive system.", "Arterioles to the muscles widen (vasodilation); those to the gut narrow (vasoconstriction).", "This is why you should not eat a big meal just before exercise."]],
+        ["Breathing and gas exchange", ["Air passes: mouth and nose, trachea, bronchi, bronchioles, alveoli.", "Gas exchange at the alveoli by diffusion: oxygen into the blood, carbon dioxide out.", "Tidal volume: air breathed in or out per normal breath. Vital capacity: the most air you can breathe out after breathing in as much as possible. Residual volume: air left in the lungs after breathing out fully.", "Minute ventilation = tidal volume x breathing rate.", "Exhaled air has less oxygen and more carbon dioxide than inhaled air."]],
+        ["Effects of exercise", ["Short term: heart rate, stroke volume, breathing rate and tidal volume rise; body temperature rises; sweating increases.", "Long term (training): lower resting heart rate (bradycardia), bigger stroke volume, stronger heart, more capillaries, bigger lung capacity and stronger respiratory muscles."]],
+      ], ["Cardiac output = stroke volume x heart rate.", "Minute ventilation = tidal volume x breathing rate.", "Vascular shunting sends blood to the working muscles."], [
+        ["A heart rate of 70 bpm and a stroke volume of 80 ml give what cardiac output?", ["150 ml/min", "5600 ml/min", "800 ml/min", "70 ml/min"], "B", "70 x 80 = 5600 ml per minute (5.6 litres)."],
+        ["What is vital capacity?", ["Air breathed per normal breath", "The most air breathed out after the deepest breath in", "Air left after breathing out fully", "Breaths per minute"], "B", "That is the definition of vital capacity."],
+        ["What happens to blood flow to the stomach during exercise?", ["It increases", "It decreases due to vasoconstriction", "It stays the same", "It stops completely"], "B", "Blood is shunted to the working muscles."],
+        ["What is a long term effect of endurance training on the heart?", ["Higher resting heart rate", "Lower resting heart rate and bigger stroke volume", "Smaller heart", "Fewer capillaries"], "B", "A stronger heart pumps more per beat, so it beats less often at rest."],
+        ["Where does gas exchange happen?", ["Trachea", "Bronchi", "Alveoli", "Diaphragm"], "C", "Oxygen and carbon dioxide diffuse across the alveoli walls."],
+        ["Tidal volume 0.5 litres, breathing rate 12 per minute. Minute ventilation?", ["6 litres per minute", "12.5 litres per minute", "24 litres per minute", "0.04 litres per minute"], "A", "0.5 x 12 = 6 litres per minute."],
+      ]),
+      N("Energy supply and recovery", 7, "Aerobic and anaerobic work, lactic acid, EPOC and recovering after exercise.", [
+        ["Energy systems", ["Aerobic: glucose + oxygen → carbon dioxide + water + energy. Used for long, steady activity, such as a 10 km run.", "Anaerobic: glucose → lactic acid + energy. Used for short, intense activity without enough oxygen, such as a 400 m sprint.", "Most sports use both, such as football: jogging aerobically, sprinting anaerobically."]],
+        ["Lactic acid and EPOC", ["Lactic acid builds up in muscles during anaerobic work, causing fatigue and pain.", "EPOC (excess post exercise oxygen consumption), or oxygen debt: extra oxygen needed after exercise to remove lactic acid and recover.", "Breathing and heart rate stay high after exercise to repay it."]],
+        ["Recovery", ["Cool down: light exercise and stretching keeps blood flowing to remove lactic acid and reduces muscle soreness (DOMS).", "Ice baths and massage reduce inflammation and soreness.", "Rehydration and refuelling with carbohydrates and protein.", "Rest and sleep allow the body to adapt."]],
+      ], ["Aerobic: with oxygen, long and steady. Anaerobic: without, short and intense.", "EPOC repays the oxygen debt.", "Cool downs help remove lactic acid."], [
+        ["Which activity is mainly anaerobic?", ["Marathon", "100 m sprint", "A long walk", "A 30 minute jog"], "B", "Short, maximal efforts are anaerobic."],
+        ["What is EPOC?", ["Extra oxygen needed after exercise to recover", "A type of muscle fibre", "A warm up method", "A fitness test"], "A", "Excess post exercise oxygen consumption."],
+        ["Why do a cool down?", ["To raise heart rate", "To help remove lactic acid and reduce soreness", "To build muscle", "To increase stroke volume instantly"], "B", "Keeping blood flowing clears lactic acid."],
+        ["What are the products of aerobic respiration?", ["Lactic acid", "Carbon dioxide, water and energy", "Oxygen and glucose", "Lactic acid and oxygen"], "B", "Glucose and oxygen give carbon dioxide, water and energy."],
+        ["Football uses which energy systems?", ["Only aerobic", "Only anaerobic", "Both, depending on the intensity", "Neither"], "C", "Jogging is aerobic; sprints are anaerobic."],
+      ]),
+    ] },
+    { id: "health", name: "Health, fitness and training", subs: [
+      N("Health, fitness and the components of fitness", 9, "Definitions, health and skill related fitness, and the fitness test for each.", [
+        ["Definitions", ["Health: a state of complete physical, mental and social well being, not just the absence of disease.", "Fitness: the ability to meet the demands of the environment.", "Exercise: activity to maintain or improve health and fitness.", "Performance: how well a task is completed."]],
+        ["Health related components", ["Cardiovascular endurance: the heart and lungs supplying oxygen for a long time. Test: multi stage fitness test, Cooper 12 minute run, Harvard step test. Example: a marathon runner.", "Muscular strength: maximum force from a muscle. Test: hand grip dynamometer. Example: a weightlifter.", "Muscular endurance: muscles working repeatedly without tiring. Test: one minute sit up or press up test. Example: a rower.", "Flexibility: range of movement at a joint. Test: sit and reach. Example: a gymnast.", "Body composition: percentages of fat, muscle and bone. Test: skinfold callipers or BMI."]],
+        ["Skill related components", ["Agility: changing direction quickly with control. Test: Illinois agility run. Example: a netball centre dodging.", "Balance: keeping the centre of mass over a base of support. Test: stork stand. Example: a gymnast on a beam.", "Coordination: using body parts together. Test: wall toss test. Example: a tennis serve.", "Power: strength x speed. Test: vertical jump. Example: a high jumper.", "Reaction time: time from a stimulus to the start of a response. Test: ruler drop. Example: a sprinter at the start.", "Speed: moving the body quickly. Test: 30 m sprint. Example: a winger in rugby."]],
+      ], ["Five health related and six skill related components.", "Know a test and a sporting example for each.", "Power = strength x speed."], [
+        ["Which test measures cardiovascular endurance?", ["Sit and reach", "Multi stage fitness test", "Hand grip", "Ruler drop"], "B", "The bleep test measures aerobic endurance."],
+        ["Which test measures reaction time?", ["Stork stand", "Vertical jump", "Ruler drop", "Illinois run"], "C", "The ruler drop measures how quickly you respond."],
+        ["Power is a combination of:", ["Strength and speed", "Balance and agility", "Flexibility and endurance", "Coordination and balance"], "A", "Power = strength x speed."],
+        ["Which component is most important for a gymnast on a beam?", ["Balance", "Cardiovascular endurance", "Muscular endurance", "Reaction time"], "A", "Keeping the centre of mass over the beam."],
+        ["Which is a skill related component of fitness?", ["Flexibility", "Body composition", "Agility", "Muscular strength"], "C", "Agility is skill related."],
+        ["What does the Illinois agility run test?", ["Speed only", "Agility", "Strength", "Flexibility"], "B", "It measures changing direction quickly."],
+      ]),
+      N("Principles and methods of training", 10, "SPORT and FITT, training zones, and the main methods of training with examples.", [
+        ["Principles of training", ["Specificity: training matches the sport and the muscles and energy systems it uses.", "Progression: gradually increase the demands.", "Overload: work harder than normal to cause adaptation, using FITT.", "Reversibility: fitness is lost when training stops.", "Tedium: vary training to avoid boredom.", "FITT: frequency, intensity, time, type.", "Overtraining: too much training without rest causes injury and poorer performance."]],
+        ["Heart rate and training zones", ["Maximum heart rate = 220 - age.", "Aerobic training zone: about 60 to 80 percent of maximum heart rate.", "Anaerobic training zone: about 80 to 90 percent of maximum heart rate.", "Example: a 16 year old has maximum 204 bpm; aerobic zone about 122 to 163 bpm."]],
+        ["Methods of training", ["Continuous: steady aerobic work for at least 20 minutes, such as a long run. Good for endurance athletes.", "Fartlek: changes of speed and terrain without rest, such as jogging and sprinting in a park. Good for games players.", "Interval: periods of work followed by rest, such as 10 x 200 m sprints. Can be aerobic or anaerobic.", "Circuit: a series of stations, each a different exercise. Can target fitness or skills.", "Weight training: low reps and heavy weights for strength; high reps and light weights for muscular endurance.", "Plyometrics: jumping and bounding to develop power, such as box jumps for a basketball player.", "Cross training: combining methods, such as swimming and cycling for a triathlete.", "High altitude training: less oxygen leads to more red blood cells, helping endurance."]],
+        ["Warm up and cool down", ["Warm up: pulse raiser, stretching (mobility), then skill specific practice. Raises heart rate and muscle temperature, reduces injury and prepares mentally.", "Cool down: light exercise and stretching to lower heart rate gradually and remove lactic acid."]],
+      ], ["SPORT and FITT.", "Max HR = 220 - age.", "Match the method to the sport."], [
+        ["What is the maximum heart rate of a 15 year old?", ["185", "205", "215", "220"], "B", "220 - 15 = 205 bpm."],
+        ["Which training method changes speed and terrain without rest?", ["Interval", "Fartlek", "Continuous", "Weight"], "B", "Fartlek means speed play."],
+        ["Which method develops power for a basketball player?", ["Continuous running", "Plyometrics", "Long distance swimming", "Yoga"], "B", "Jumping and bounding builds power."],
+        ["What is reversibility?", ["Training matched to the sport", "Fitness gains are lost when training stops", "Gradually increasing load", "Varying training"], "B", "Use it or lose it."],
+        ["Low reps with heavy weights mainly develop:", ["Muscular endurance", "Strength", "Flexibility", "Balance"], "B", "Heavy loads build strength."],
+        ["What does the I in FITT stand for?", ["Interval", "Intensity", "Injury", "Inspiration"], "B", "Frequency, intensity, time, type."],
+      ]),
+      N("Injuries, diet and lifestyle", 9, "Common sports injuries and treatment, a balanced diet for performers, and lifestyle choices.", [
+        ["Injuries", ["Soft tissue: sprains (ligament damage, such as an ankle twist in netball), strains (muscle or tendon tears, such as a hamstring pull in sprinting), tennis elbow.", "Hard tissue: fractures (simple, compound, stress), dislocations (bone out of the joint, such as the shoulder in rugby).", "Concussion: a brain injury from a blow to the head; stop playing straight away.", "Treatment for soft tissue: RICE, rest, ice, compression, elevation.", "Prevention: warm up, correct technique, protective equipment, following the rules, suitable footwear."]],
+        ["Diet", ["Carbohydrates: the main energy source; carbohydrate loading before endurance events stores more glycogen.", "Proteins: growth and repair of muscle, important for power athletes.", "Fats: slow release energy for low intensity work.", "Vitamins and minerals: such as calcium for bones and iron for haemoglobin.", "Fibre: digestion. Water: prevents dehydration, which reduces performance.", "Energy balance: energy in from food should match energy used, or weight changes."]],
+        ["Lifestyle and body type", ["Smoking reduces oxygen carried by the blood (carbon monoxide) and damages the lungs.", "Alcohol slows reaction time and dehydrates.", "Sleep and stress management help recovery and performance.", "Somatotypes: ectomorph (tall, thin, such as a high jumper), mesomorph (muscular, such as a sprinter), endomorph (wider, more fat, such as a sumo wrestler or shot putter)."]],
+      ], ["RICE for soft tissue injuries.", "Carbohydrates for energy, protein for repair.", "Ectomorph thin, mesomorph muscular, endomorph wide."], [
+        ["What does RICE stand for?", ["Run, ice, cool, eat", "Rest, ice, compression, elevation", "Rest, inject, compress, exercise", "Recover, ice, carry, elevate"], "B", "The standard treatment for soft tissue injuries."],
+        ["A torn hamstring muscle is a:", ["Sprain", "Strain", "Fracture", "Dislocation"], "B", "Strains are muscle or tendon injuries; sprains are ligaments."],
+        ["Why do marathon runners carbohydrate load?", ["To build muscle", "To store more glycogen for energy", "To lose weight", "To improve flexibility"], "B", "More glycogen delays fatigue."],
+        ["Which body type suits a sprinter?", ["Ectomorph", "Mesomorph", "Endomorph", "None"], "B", "Muscular mesomorphs have power and speed."],
+        ["Which nutrient is mainly for growth and repair?", ["Carbohydrate", "Fat", "Protein", "Fibre"], "C", "Protein repairs and builds muscle."],
+        ["How does smoking affect performance?", ["Improves stamina", "Carbon monoxide reduces oxygen carried by the blood", "Increases vital capacity", "No effect"], "B", "Less oxygen reaches the muscles."],
+      ]),
+    ] },
+    { id: "skill", name: "Skill acquisition and psychology", subs: [
+      N("Skill, ability and classifying skills", 8, "What a skill is, how skills are classified on continua, and examples.", [
+        ["Skill and ability", ["Skill: a learned action with a predetermined result, performed with maximum certainty and minimum time and energy. Skills are learned.", "Ability: inherited qualities that underpin skills, such as balance or coordination. Abilities are mostly innate."]],
+        ["Classification continua", ["Environmental: open (affected by the environment, such as a pass in football) to closed (not affected, such as a free throw).", "Difficulty: basic (simple, such as running) to complex (many decisions, such as a tennis volley).", "Muscular involvement: gross (large muscle groups, such as a shot put) to fine (small, precise movements, such as a dart throw).", "Pacing: self paced (the performer decides when, such as a golf shot) to externally paced (the environment decides, such as receiving a serve)."]],
+      ], ["Skills are learned; abilities are mostly inherited.", "Place skills on a continuum, not in a box.", "Open, basic, gross, self paced and their opposites."], [
+        ["A free throw in basketball is mostly:", ["Open", "Closed", "Externally paced", "Fine"], "B", "The environment does not change it."],
+        ["Which is a fine skill?", ["Shot put", "Darts throw", "Sprint", "Rugby tackle"], "B", "Small, precise movements."],
+        ["What is an ability?", ["A learned action", "An inherited quality that underpins skills", "A type of practice", "A goal"], "B", "Abilities are mostly innate."],
+        ["Receiving a serve in tennis is:", ["Self paced", "Externally paced", "Closed", "Basic"], "B", "The opponent decides the timing."],
+        ["A pass in football during a match is:", ["Open", "Closed", "Fine", "Self paced"], "A", "Teammates and opponents keep changing the situation."],
+      ]),
+      N("Learning skills: processing, guidance, feedback and practice", 10, "How we learn movements, and how coaches help.", [
+        ["Information processing", ["Input: information from the senses, with selective attention filtering what matters (such as the ball, not the crowd).", "Decision making: using memory (short term and long term) to choose a response.", "Output: the movement is carried out.", "Feedback: information about the result, used next time."]],
+        ["Stages of learning", ["Cognitive: beginner, lots of errors, needs demonstrations and simple instructions.", "Associative: practising, fewer errors, starting to use intrinsic feedback.", "Autonomous: expert, skills are automatic, attention can go to tactics."]],
+        ["Guidance", ["Visual: demonstrations, videos, diagrams. Best for beginners.", "Verbal: instructions and explanations. Best with experienced performers.", "Manual: physically moving the performer, such as in gymnastics.", "Mechanical: using equipment, such as a float in swimming or a harness on a trampoline."]],
+        ["Feedback and practice", ["Intrinsic feedback: from within, the feel of the movement. Extrinsic: from others, such as a coach or video.", "Knowledge of results: the outcome (did it go in?). Knowledge of performance: the technique.", "Positive and negative feedback.", "Practice: massed (no rests, for simple skills and fit performers), distributed (with rests, for beginners and complex skills), fixed (one skill repeated, for closed skills), variable (changing situations, for open skills).", "Whole (practise the full skill), part (break it down), whole part whole (try it, practise a part, put it back)."]],
+      ], ["Input, decision, output, feedback.", "Cognitive, associative, autonomous.", "Visual, verbal, manual and mechanical guidance."], [
+        ["At which stage of learning are skills automatic?", ["Cognitive", "Associative", "Autonomous", "Beginner"], "C", "Experts perform without thinking about technique."],
+        ["Which guidance suits a beginner best?", ["Verbal only", "Visual", "None", "Mechanical always"], "B", "Beginners need to see a clear demonstration."],
+        ["Knowledge of results is feedback about:", ["The technique", "The outcome", "The weather", "The opponent"], "B", "Whether it worked, such as scoring."],
+        ["A swimming float is an example of:", ["Manual guidance", "Mechanical guidance", "Visual guidance", "Verbal guidance"], "B", "Equipment helps the performer."],
+        ["Which practice suits an open skill such as passing in hockey?", ["Fixed", "Variable", "Massed only", "None"], "B", "Changing situations prepare for the real game."],
+        ["What does selective attention do?", ["Filters out irrelevant information", "Stores long term memories", "Produces movement", "Gives feedback"], "A", "It focuses on what matters."],
+      ]),
+      N("Psychology: goals, motivation, arousal and anxiety", 9, "Mental factors that affect performance.", [
+        ["Goal setting", ["SMART goals: specific, measurable, achievable, realistic, time bound.", "Performance goals (about your own technique or time) and outcome goals (about winning).", "Goals increase motivation, focus and confidence."]],
+        ["Motivation", ["Intrinsic: from within, such as enjoyment and pride.", "Extrinsic: from outside, such as trophies, money and praise. Tangible (medals) or intangible (praise).", "Too much reliance on extrinsic rewards can reduce intrinsic motivation."]],
+        ["Arousal and anxiety", ["Arousal: how alert and ready a performer is.", "Inverted U theory: performance improves with arousal up to an optimum, then falls.", "Gross skills (such as a rugby tackle) need higher arousal; fine skills (such as archery) need lower arousal.", "Anxiety: negative worry. Cognitive anxiety is in the mind; somatic anxiety is physical (sweating, butterflies).", "Stress management: deep breathing, mental rehearsal (imagery), positive self talk."]],
+        ["Personality", ["Introverts: quiet, prefer individual and fine skill sports such as archery.", "Extroverts: outgoing, prefer team and gross skill sports such as rugby."]],
+      ], ["SMART goals.", "Inverted U: best at moderate arousal.", "Fine skills need lower arousal."], [
+        ["What does the A in SMART stand for?", ["Active", "Achievable", "Accurate", "Aerobic"], "B", "Goals must be achievable."],
+        ["Which skill needs the lowest arousal?", ["Rugby tackle", "Shot put", "Archery", "Sprint start"], "C", "Fine, precise skills need calm."],
+        ["What is somatic anxiety?", ["Worry in the mind", "Physical symptoms such as sweating", "Motivation", "A goal"], "B", "Body based anxiety."],
+        ["A medal is which type of motivation?", ["Intrinsic", "Extrinsic tangible", "Extrinsic intangible", "Neither"], "B", "A physical reward from outside."],
+        ["What happens past the optimum on the inverted U?", ["Performance keeps rising", "Performance falls", "Nothing", "Arousal falls"], "B", "Over arousal harms performance."],
+      ]),
+    ] },
+    { id: "social", name: "Social, cultural and ethical influences", subs: [
+      N("Participation, leisure and commercialisation", 9, "Why people take part, the media, sponsorship and technology in sport.", [
+        ["Leisure and participation", ["Leisure: free time. Recreation: active leisure for enjoyment.", "Factors affecting participation: age, gender, disability, ethnicity and religion, family and friends, socio economic status (cost), access and facilities, role models, media coverage.", "Benefits: physical (health, fitness), mental (stress relief, confidence) and social (friends, teamwork)."]],
+        ["Commercialisation", ["The golden triangle: sport, media and sponsorship depend on each other.", "Media: TV, radio, newspapers, internet and social media increase interest and money, but can change event times and rules.", "Sponsorship: money or equipment in return for advertising. Benefits: funding and exposure. Drawbacks: pressure, unhealthy products, sponsor control.", "Professional performers are paid; amateurs are not."]],
+        ["Technology", ["For performers: better equipment, clothing, training and analysis (GPS trackers, video).", "For officials: Hawk-Eye, VAR, goal line technology, TMO in rugby.", "For spectators: replays, better broadcasts.", "Drawbacks: cost, stoppages, unfair advantage for richer teams."]],
+      ], ["Golden triangle: sport, media, sponsorship.", "Know factors that affect participation.", "Technology helps performers, officials and spectators."], [
+        ["What is the golden triangle?", ["Sport, media and sponsorship", "Coach, player and referee", "Speed, strength and stamina", "Aerobic, anaerobic and EPOC"], "A", "They depend on each other."],
+        ["Which technology helps officials in football?", ["Plyometrics", "VAR", "Fartlek", "Heart rate monitors only"], "B", "Video assistant referees review decisions."],
+        ["Which is a drawback of sponsorship?", ["More money", "Pressure from the sponsor and possible promotion of unhealthy products", "More exposure", "Better equipment"], "B", "Sponsors may control or pressure performers."],
+        ["Which factor could reduce participation?", ["Good local facilities", "High cost", "Positive role models", "Supportive family"], "B", "Cost can be a barrier."],
+        ["What is recreation?", ["Paid sport", "Active leisure for enjoyment", "Elite competition", "Sponsorship"], "B", "Recreation is done for fun."],
+      ]),
+      N("Ethics and performance enhancing drugs", 8, "Sportsmanship, gamesmanship, deviance and drugs in sport.", [
+        ["Ethics", ["Sportsmanship: fair play and respect, such as kicking the ball out when a player is injured.", "Gamesmanship: bending the rules to gain an advantage without breaking them, such as time wasting.", "Deviance: breaking rules or moral codes, such as violence, match fixing or doping."]],
+        ["Performance enhancing drugs", ["Stimulants: increase alertness and reduce tiredness.", "Narcotic analgesics: mask pain, risking worse injury.", "Anabolic agents (steroids): build muscle and speed recovery. Used by sprinters and weightlifters. Side effects include liver damage and aggression.", "Peptide hormones (EPO): more red blood cells for endurance athletes; thickens the blood.", "Beta blockers: calm nerves and steady the hands, such as in archery and shooting.", "Diuretics: lose weight quickly and mask other drugs, such as in boxing and horse racing.", "Blood doping: adding red blood cells to carry more oxygen.", "WADA runs drug testing. Consequences: bans, loss of medals and reputation, health risks."]],
+      ], ["Sportsmanship, gamesmanship, deviance.", "Know each drug type, effect and who might use it.", "WADA tests athletes."], [
+        ["Time wasting is an example of:", ["Sportsmanship", "Gamesmanship", "Doping", "Recreation"], "B", "Bending the rules without breaking them."],
+        ["Which drug calms nerves for archers?", ["Stimulants", "Beta blockers", "Anabolic steroids", "Diuretics"], "B", "Beta blockers reduce heart rate and shaking."],
+        ["Why might a boxer use diuretics?", ["Build muscle", "Lose weight quickly to make a weight category", "Increase red blood cells", "Mask pain"], "B", "Diuretics remove water."],
+        ["What does EPO do?", ["Builds muscle", "Increases red blood cell production", "Calms nerves", "Masks pain"], "B", "More oxygen can be carried."],
+        ["Kicking the ball out when an opponent is injured is:", ["Gamesmanship", "Sportsmanship", "Deviance", "Doping"], "B", "Fair play and respect."],
+      ]),
+    ] },
+    { id: "practical", name: "Practical activities", subs: [
+      N("Practical assessment and analysis", 6, "How the practical activities are assessed, and how to analyse and improve performance.", [
+        ["The practical", ["You are assessed in practical activities chosen from different categories, such as games, gymnastics, dance, athletics, outdoor and adventurous activities, swimming and combat sports. Check your syllabus for the exact rules.", "Marks reward skills, techniques, decision making and tactics in realistic, competitive situations.", "Know the rules, safety procedures and etiquette of each activity."]],
+        ["Analysing performance", ["Observe: compare a performance with a perfect model.", "Identify strengths and weaknesses in skills, tactics and fitness.", "Plan: choose drills, practice types and training methods to fix weaknesses.", "Set SMART targets and re test to measure improvement."]],
+      ], ["Skills, decisions and tactics under pressure.", "Compare with a perfect model.", "Plan, train, re test."], [
+        ["What is used to judge a performance in analysis?", ["A perfect model", "The weather", "The crowd", "The cost"], "A", "Compare against the ideal technique."],
+        ["After identifying a weakness, what comes next?", ["Ignore it", "Plan practices and training to improve it", "Change sport", "Rest only"], "B", "Plan an action to improve."],
+        ["Why know the rules of your activity?", ["To play safely and fairly", "They do not matter", "To argue", "Only coaches need them"], "A", "Rules and safety are part of competence."],
+        ["What is a tactic?", ["A plan to outwit opponents", "A muscle", "A bone", "A fitness test"], "A", "Tactics are used in competition."],
+        ["How do you know if training worked?", ["Guess", "Re test and compare", "Ask a friend once", "Count sessions"], "B", "Re testing measures improvement."],
+      ]),
+    ] },
   ],
 };

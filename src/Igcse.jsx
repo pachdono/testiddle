@@ -11,7 +11,8 @@ import { TopicList, StudyView, ExamTab, ExamView, CardDeck, notesRead, cardsFor 
 import { QuizTab, TermsTab, Wizard } from "./Study.jsx";
 import { CheatSheets, FlashcardsIndex, readDecks, writeDecks } from "./CoursePage.jsx";
 import { doneFrom } from "./bank.js";
-import { hasPack, loadPack, sheetsOf, termsOf, forLevel, withoutTopics } from "./igcse/index.js";
+import { hasPack, loadPack, sheetsOf, sheetIdOf, termsOf, forLevel, withoutTopics } from "./igcse/index.js";
+import { IFIG } from "./figs/index.js";
 
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
 const SESSIONS = { cie: [["May/June", "s"], ["October/November", "w"], ["February/March", "m"]], edexcel: [["May/June", "Jun"], ["January", "Jan"], ["October/November", "Nov"]] };
@@ -37,7 +38,11 @@ export default function IgcsePage({ id, nav, theme, setTheme, report = nothing }
   const moreRef = useRef(null);
   useEffect(() => { loadPack(subjectId).then(setPack).catch(() => setPack(null)); }, [subjectId]);
   const skip = (course?.tripleOnly?.pack || []).join(",");
-  const pack = useMemo(() => (raw ? withoutTopics(forLevel(raw, course?.level, course?.board), skip ? skip.split(",") : []) : null), [raw, course?.level, course?.board, skip]);
+  const pack = useMemo(() => {
+    if (!raw) return null;
+    const p = withoutTopics(forLevel(raw, course?.level, course?.board), skip ? skip.split(",") : []);
+    return { ...p, subs: p.subs.map((s) => ({ ...s, fig: IFIG[sheetIdOf(s)], figColor: course?.tint })) };
+  }, [raw, course?.level, course?.board, course?.tint, skip]);
   useEffect(() => {
     if (!moreOpen) return undefined;
     const f = (e) => { if (!moreRef.current?.contains(e.target)) setMoreOpen(false); };

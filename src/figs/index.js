@@ -10,5 +10,6 @@ import humanities from "./humanities.jsx";
 import moreStem from "./more-stem.jsx";
 import moreHumanities from "./more-humanities.jsx";
 import moreLang from "./more-lang.jsx";
+import pe from "./pe.jsx";
 
-export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities, ...moreStem, ...moreHumanities, ...moreLang };
+export const IFIG = { ...biology, ...chemistry, ...physics, ...maths, ...techGeo, ...humanities, ...moreStem, ...moreHumanities, ...moreLang, ...pe };

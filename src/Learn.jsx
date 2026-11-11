@@ -153,6 +153,7 @@ function NotesBody({ sub, compact }) {
         <h2>{sub.skill}</h2>
         {sub.sections.map(([h, lines]) => <div key={h}><h3>{h}</h3><ul>{lines.map((l) => <li key={l}><Line l={l} /></li>)}</ul></div>)}
       </section>
+      {sub.fig && <section className="cg-ncard"><span className="cg-chipr">Diagram</span><div className="poster-fig" style={{ "--pc": sub.figColor }}>{sub.fig(sub.figColor)}</div></section>}
       {compact && <section className="cg-ncard"><h3>Key points</h3><ul>{sub.points.map((p) => <li key={p}>{p}</li>)}</ul></section>}
     </>
   );
