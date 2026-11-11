@@ -59,6 +59,34 @@ function Beak({ y = 74, open = false, tongue = true, small = false }) {
 
 const Sparkle = ({ x, y, r = 1, c = "#ffd25e" }) => <path transform={`translate(${x} ${y}) scale(${r})`} d="M0 -6 C.8 -1.6 1.6 -.8 6 0 C1.6 .8 .8 1.6 0 6 C-.8 1.6 -1.6 .8 -6 0 C-1.6 -.8 -.8 -1.6 0 -6 Z" fill={c} stroke={LINE} strokeWidth=".7" strokeLinejoin="round" />;
 
+/** A wing raised as an arm: an outlined tube with a shaded side and a shine. n points to the shade. */
+function Arm({ d, w = 9, fill = MINT, shade = MINT_S, n = [1, 0] }) {
+  return (
+    <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d={d} stroke={LINE} strokeWidth={w + 2.4} /><path d={d} stroke={fill} strokeWidth={w} />
+      <path d={d} stroke={shade} strokeWidth={w * 0.42} transform={`translate(${n[0] * w * 0.22} ${n[1] * w * 0.22})`} />
+      <path d={d} stroke="#fff" strokeWidth="1.3" opacity=".7" transform={`translate(${-n[0] * w * 0.27} ${-n[1] * w * 0.27})`} />
+    </g>
+  );
+}
+/** A round mitten hand with a shaded side and knuckle creases. */
+function Mitt({ x, y, r = 9, rot = 0, fill = MINT, shade = MINT_S, fist = true }) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rot})`}>
+      <ellipse rx={r} ry={r * 1.05} fill={fill} />
+      <path d={`M${r * .15} ${-r} C${r * .9} ${-r * .7} ${r * 1.05} 0 ${r * .75} ${r * .7} C${r * .5} ${r} ${r * .1} ${r * 1.05} 0 ${r * 1.05} C${r * .6} ${r * .5} ${r * .7} ${-r * .4} ${r * .15} ${-r} Z`} fill={shade} />
+      <ellipse rx={r} ry={r * 1.05} fill="none" {...s} />
+      {fist && <path d={`M${-r * .8} ${-r * .3} Q${-r * .45} ${-r * .7} ${-r * .1} ${-r * .3} M${-r * .1} ${-r * .35} Q${r * .25} ${-r * .75} ${r * .6} ${-r * .35}`} {...thin} />}
+      <path d={`M${-r * .55} ${-r * .75} C${-r * .25} ${-r} ${r * .1} ${-r * 1.05} ${r * .35} ${-r * .95}`} stroke="#fff" strokeWidth="1.3" opacity=".8" fill="none" />
+    </g>
+  );
+}
+const Motion = ({ d }) => <path d={d} {...thin} strokeWidth="1.3" />;
+/** Wedges from the centre, like sun rays, every other one coloured. */
+const rays = (n, fill, cx = 70, cy = 90) => Array.from({ length: n }, (_, i) => { const a1 = (i * 2 / (n * 2)) * Math.PI * 2, a2 = ((i * 2 + 1) / (n * 2)) * Math.PI * 2; return <path key={i} d={`M${cx} ${cy} L${(cx + 90 * Math.cos(a1)).toFixed(1)} ${(cy + 90 * Math.sin(a1)).toFixed(1)} L${(cx + 90 * Math.cos(a2)).toFixed(1)} ${(cy + 90 * Math.sin(a2)).toFixed(1)} Z`} fill={fill} />; });
+/** A spiky burst, for a comic background. */
+const burst = (n, r1, r2, cx = 70, cy = 82) => Array.from({ length: n * 2 }, (_, i) => { const a = (i / (n * 2)) * Math.PI * 2, r = i % 2 ? r1 : r2; return `${i ? "L" : "M"}${(cx + r * Math.cos(a)).toFixed(1)} ${(cy + r * Math.sin(a)).toFixed(1)}`; }).join(" ") + " Z";
+
 /** Tiddle is drawn a little smaller than the disc, anchored at its bottom, so the colour shows round him. */
 const SHRINK = "translate(70 134) scale(.84) translate(-70 -134)";
 
@@ -75,7 +103,7 @@ function Frame({ id, bg, rim, tilt = 0, flip = false, children, props, back }) {
       <circle cx="74" cy="87" r="50" fill={rim} />
       <circle cx="70" cy="82" r="50" fill={bg} />
       <circle cx="70" cy="82" r="50" fill={`url(#bg-${id})`} />
-      {back}
+      <g clipPath={`url(#disc-${id})`}>{back}</g>
       <g clipPath={`url(#disc-${id})`}><g transform={`${SHRINK} ${turn} rotate(${tilt} 70 130) translate(7 5)`}><path d={BODY} fill="#1d3340" opacity=".16" /></g></g>
       <g clipPath={`url(#tav-${id})`}><g transform={`${SHRINK} ${turn} rotate(${tilt} 70 130)`}>{children}</g></g>
       <circle cx="70" cy="82" r="50" fill="none" stroke={LINE} strokeWidth=".9" opacity=".55" />
@@ -86,37 +114,46 @@ function Frame({ id, bg, rim, tilt = 0, flip = false, children, props, back }) {
 
 const AV = {
   cool: {
-    name: "Cool", bg: "#ffe39a", rim: "#f2c45a", tilt: -7,
+    name: "Cool", bg: "#ffc98a", rim: "#ee9a52", tilt: -7,
+    back: <g>{rays(12, "#ffdca8")}<circle cx="70" cy="90" r="22" fill="#fff0c4" /></g>,
     body: <><Body id="cool" /><Tuft /><Cheeks />
       <g {...s} stroke="#1c2633"><path d="M44 57 L36 53" strokeWidth="1.8" /><path d="M46 56 Q60 51 73 56 Q73 70 60 72 Q47 71 46 56 Z" fill="#263445" /><path d="M81 56 Q93 52 100 56 Q100 67 92 70 Q82 69 81 56 Z" fill="#263445" /><path d="M73 57 Q77 54 81 57" fill="none" strokeWidth="1.8" /></g>
       <path d="M50 58 L57 68 M55 57 L61 65 M84 58 L89 66" stroke="#9fd2f7" strokeWidth="1.5" opacity=".85" />
+      <path d="M84 50 Q92 45 99 49" {...s} strokeWidth="2.2" fill="none" />
       <Beak y={78} open /></>,
     props: <g>
-      <g transform="translate(26 92) rotate(-22)" {...s}>
+      <g transform="translate(26 34) rotate(-12)" {...s}>
         <rect x="-2" y="4" width="4.4" height="22" rx="2" fill="#e8c08a" /><path d="M0 4 V26" stroke="#c99a5d" strokeWidth="1.2" />
         <path d="M-10 -24 C-10 -33 10 -33 10 -24 V4 C10 8 -10 8 -10 4 Z" fill="#f79bb4" /><path d="M3 -30 C8 -28 10 -24 10 -20 V4 C10 8 4 8 3 7 Z" fill="#e26d8f" stroke="none" />
         <path d="M-10 -10 H10 V4 C10 8 -10 8 -10 4 Z" fill="#a9daf7" /><path d="M3 -10 H10 V4 C10 8 4 8 3 7 Z" fill="#7cbde8" stroke="none" />
         <path d="M-6 -27 V-14" stroke="#fff" strokeWidth="1.8" opacity=".8" /><path d="M-10 4 C-10 10 -6 11 -6 6" fill="#f79bb4" />
       </g>
-      <Sparkle x={118} y={34} r={1.1} /><Sparkle x={106} y={18} r={.6} />
+      <path d="M17 44 C16 48 18 50 20 49 C21 47 19 45 17 44 Z" fill="#f79bb4" {...s} strokeWidth=".8" />
+      <Arm d="M42 98 Q24 92 24 66" n={[1, 0]} /><Mitt x={25} y={60} r={8.5} rot={-10} />
+      <Sparkle x={112} y={50} r={1.1} /><Sparkle x={104} y={34} r={.6} /><Motion d="M8 64 C4 60 4 54 8 50 M40 50 C44 46 44 40 40 36" />
     </g>,
   },
   panic: {
-    name: "Exam panic", bg: "#ffd3d6", rim: "#f2a1a9", tilt: 9, flip: true,
+    name: "Exam panic", bg: "#ffc2c8", rim: "#ec8792", tilt: 9, flip: true,
+    back: <g><path d={burst(9, 26, 50)} fill="#ffe3e6" /><path d={burst(9, 14, 26)} fill="#fff4f5" /></g>,
     body: <><Body id="panic" /><Tuft /><Eyes r={11} pupil={2.4} px={0} /><path d="M47 47 L62 52 M98 46 L86 51" {...s} /><Cheeks y={81} /><Beak y={81} small />
       <path d="M103 50 C105 55 106 58 104 61 C102 63 99 61 100 57 C101 54 102 52 103 50 Z" fill="#9ed2f5" {...s} strokeWidth=".9" />
       <path d="M36 52 C34 57 33 60 35 63 C37 65 40 63 39 59 C38 57 37 54 36 52 Z" fill="#9ed2f5" {...s} strokeWidth=".9" /></>,
     props: <g {...s}>
-      {[[100, 20, 16], [118, 46, 32], [20, 26, -20]].map(([x, y, r], i) => <g key={i} transform={`translate(${x} ${y}) rotate(${r})`}>
+      {[[96, 14, 16], [128, 30, 32], [16, 24, -20]].map(([x, y, r], i) => <g key={i} transform={`translate(${x} ${y}) rotate(${r})`}>
         <path d="M-10 -13 H6 L10 -9 V13 H-10 Z" fill="#fffdf6" /><path d="M6 -13 V-9 H10" fill="#e7e2d4" /><path d="M-10 13 H10 V10 H-10 Z" fill="#ece6d6" stroke="none" />
         <path d="M-6 -7 H5 M-6 -3 H6 M-6 1 H3" {...thin} opacity=".55" /><text x="1" y="10" fontFamily="Patrick Hand, cursive" fontSize="8" fill="#d9534f" stroke="none">{["?", "x", "!"][i]}</text></g>)}
       <g transform="translate(44 30) rotate(-40)"><rect x="-2.8" y="-16" width="5.6" height="28" rx="1" fill="#f5c45a" /><rect x=".4" y="-16" width="2.4" height="28" fill="#d9a43a" stroke="none" /><path d="M-2.8 12 L0 18 L2.8 12 Z" fill="#f3d9b8" /><path d="M-.9 16 L0 18 L.9 16 Z" fill={LINE} /><rect x="-2.8" y="-21" width="5.6" height="5" fill="#f59ab3" /></g>
-      <path d="M12 72 C8 68 8 64 12 61 M128 72 C132 68 132 64 128 61" {...thin} strokeWidth="1.2" />
+      <Arm d="M38 98 Q20 86 18 64" n={[1, 0]} /><Mitt x={18} y={58} r={8} rot={-20} fist={false} />
+      <Arm d="M102 98 Q120 86 122 64" n={[1, 0]} /><Mitt x={122} y={58} r={8} rot={20} fist={false} />
+      <Motion d="M6 60 C2 56 2 50 6 46 M134 60 C138 56 138 50 134 46 M10 74 C6 72 4 68 5 64 M130 74 C134 72 136 68 135 64" />
+      <text x="58" y="12" fontFamily="Patrick Hand, cursive" fontSize="14" fill="#d9534f" stroke="none">!!</text>
     </g>,
   },
   astronaut: {
     name: "Astronaut", bg: "#2c3a66", rim: "#1b2547", tilt: -10,
-    back: <g>{[[36, 54], [52, 112], [104, 104], [96, 52], [44, 92], [112, 80]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i % 2 ? 1 : 1.5} fill="#fff" opacity=".8" />)}</g>,
+    back: <g>{[[36, 54], [52, 112], [104, 104], [96, 52], [44, 92], [112, 80], [86, 40], [28, 76]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i % 2 ? 1 : 1.5} fill="#fff" opacity=".8" />)}
+      <path d="M24 44 L56 64" stroke="#9fc1ff" strokeWidth="4" strokeLinecap="round" opacity=".35" /><circle cx="56" cy="64" r="2.4" fill="#fff" /><path d={burst(14, 40, 50)} fill="#3a4a80" opacity=".5" /></g>,
     body: <><path d="M26 124 C26 102 40 92 70 92 C100 92 114 102 114 124 V146 H26 Z" fill="#eef2f6" {...s} /><path d="M92 94 C108 100 114 112 114 124 V146 H96 C100 128 98 110 92 94 Z" fill="#c9d3de" />
       <path d="M52 108 L88 106 V122 L52 124 Z" fill="#dfe6ee" {...s} strokeWidth="1" /><circle cx="60" cy="116" r="2.6" fill="#f26b6b" /><circle cx="70" cy="115.5" r="2.6" fill="#f5c45a" /><circle cx="80" cy="115" r="2.4" fill="#6fb3ea" />
       <defs><clipPath id="head-astro"><path d="M68 38 C92 37 103 54 102 72 C101 87 88 95 68 95 C50 95 38 86 37 72 C36 54 46 39 68 38 Z" /></clipPath></defs>
@@ -128,12 +165,17 @@ const AV = {
       <circle cx="70" cy="65" r="41" fill="#d8ecfb" fillOpacity=".22" stroke="#9fc1dd" strokeWidth="1.6" />
       <path d="M36 50 C42 36 56 27 70 26" stroke="#fff" strokeWidth="4" fill="none" opacity=".85" />
       <path d="M100 44 C103 49 104 54 104 59" stroke="#fff" strokeWidth="2.2" fill="none" opacity=".7" />
-      <g transform="translate(118 26) rotate(-18)"><path d="M-17 2 C-17 -2 17 -6 17 -2" fill="none" stroke="#c98a3a" strokeWidth="1.6" /><circle r="9.5" fill="#f6b660" /><path d="M2 -9 C8 -6 10 0 8 6 C5 9 2 9.5 0 9.5 Z" fill="#e0923f" stroke="none" /><path d="M-17 2 C-10 6 10 4 17 -2" fill="none" stroke="#c98a3a" strokeWidth="1.6" /><path d="M-4 -6 C-2 -7 0 -7 2 -6" {...thin} stroke="#fff" opacity=".85" /></g>
+      <g transform="translate(104 18) rotate(-18)"><path d="M-17 2 C-17 -2 17 -6 17 -2" fill="none" stroke="#c98a3a" strokeWidth="1.6" /><circle r="9.5" fill="#f6b660" /><path d="M2 -9 C8 -6 10 0 8 6 C5 9 2 9.5 0 9.5 Z" fill="#e0923f" stroke="none" /><path d="M-17 2 C-10 6 10 4 17 -2" fill="none" stroke="#c98a3a" strokeWidth="1.6" /><path d="M-4 -6 C-2 -7 0 -7 2 -6" {...thin} stroke="#fff" opacity=".85" /></g>
+      <Arm d="M102 104 Q122 94 120 70" w={10} fill="#eef2f6" shade="#c9d3de" />
+      <rect x="113" y="66" width="14" height="6" rx="2" fill="#f26b6b" {...s} transform="rotate(8 120 69)" />
+      <Mitt x={121} y={58} r={9.5} rot={12} fill="#fff" shade="#d6dde6" fist={false} />
+      <Motion d="M132 46 C136 50 137 56 135 62 M108 44 C106 40 107 36 110 33" />
       <Sparkle x={20} y={26} /><Sparkle x={14} y={56} r={.5} c="#fff" />
     </g>,
   },
   chef: {
-    name: "Chef", bg: "#ffd9b8", rim: "#f2ad7a", tilt: 7,
+    name: "Chef", bg: "#ffe1c2", rim: "#f2ad7a", tilt: 7,
+    back: <g>{Array.from({ length: 110 }, (_, i) => { const c = i % 11, r = Math.floor(i / 11); return (c + r) % 2 ? null : <rect key={i} x={15 + c * 10} y={32 + r * 10} width="10" height="10" fill="#f7a99a" opacity=".45" />; })}</g>,
     body: <><Body id="chef" coat={<><path d="M46 98 L94 96 V146 H46 Z" fill="#fff" /><path d="M80 96 H94 V146 H82 Z" fill="#e3e8ee" /><path d="M46 102 L94 100" stroke="#f26b6b" strokeWidth="2.4" /></>} /><Closed up /><Cheeks y={75} />
       <g {...s} stroke={BEAK_S}><path d="M66 74 Q81 67 98 76 Q86 82 66 78 Z" fill={BEAK} /><path d="M66 78 Q86 82 98 76 Q90 86 80 87 Q70 86 66 78 Z" fill={BEAK_S} /><path d="M76 83 Q81 80 86 83 Q85 92 81 94 Q77 92 76 83 Z" fill={TONGUE} stroke="#c95b69" /></g>
       <path d="M46 98 L94 96 V146 H46 Z" fill="none" {...s} /><path d="M46 98 L38 88 M94 96 L102 86" {...s} /><rect x="60" y="112" width="16" height="10" rx="2" fill="#f4f6f8" {...s} strokeWidth=".9" /></>,
@@ -143,11 +185,15 @@ const AV = {
       <path d="M44 36 L98 34 V46 C84 50 58 50 44 47 Z" fill="#f4f6f8" /><path d="M86 35 L98 34 V46 C94 47 90 48 86 48 Z" fill="#d9e0e8" stroke="none" />
       <path d="M58 20 C59 27 59 32 58 36 M71 13 V35 M83 20 C82 27 82 32 83 35" {...thin} opacity=".4" />
       <g transform="translate(26 80) rotate(30)"><rect x="-2.4" y="0" width="4.8" height="38" rx="2" fill="#d9a066" /><path d="M.6 0 H2.4 V38 H.6 Z" fill="#b97d44" stroke="none" /><ellipse cx="0" cy="-4" rx="7.4" ry="9" fill="#e7b57d" /><ellipse cx="0" cy="-5" rx="4.6" ry="5.6" fill="#f08a5d" stroke="none" /><path d="M-4 -9 C-3 -11 -1 -12 1 -12" {...thin} stroke="#fff" opacity=".8" /></g>
-      <path d="M18 66 C14 60 20 56 16 50 M24 64 C20 58 26 54 22 48" {...thin} strokeWidth="1" opacity=".6" />
+      <path d="M18 66 C14 60 20 56 16 50 M24 64 C20 58 26 54 22 48 M30 62 C26 56 32 52 28 46" {...thin} strokeWidth="1.1" opacity=".7" />
+      <Arm d="M42 102 Q30 106 20 98" n={[0, 1]} /><Mitt x={19} y={95} r={8} rot={-30} />
+      <path d="M110 62 C106 56 98 58 100 64 C102 70 110 74 110 74 C110 74 118 70 120 64 C122 58 114 56 110 62 Z" fill="#f7a9bb" {...s} strokeWidth=".9" />
+      <Sparkle x={124} y={50} r={.6} />
     </g>,
   },
   detective: {
-    name: "Detective", bg: "#cfe0f7", rim: "#94b4e0", tilt: -6, flip: true,
+    name: "Detective", bg: "#b9cdee", rim: "#7c98c8", tilt: -6, flip: true,
+    back: <g><path d="M120 20 L20 110 L70 140 Z" fill="#fff" opacity=".35" />{[[28, 96, -30], [34, 82, -30], [32, 66, -20], [106, 58, 20], [112, 72, 20], [110, 88, 10]].map(([x, y, r], i) => <ellipse key={i} cx={x} cy={y} rx="3.4" ry="5" fill="#8fa8d4" transform={`rotate(${r} ${x} ${y})`} />)}</g>,
     body: <><Body id="detective" coat={<><path d="M44 98 C56 106 84 106 96 98 L102 146 H38 Z" fill="#c9a274" /><path d="M84 102 C90 101 94 100 96 98 L102 146 H88 Z" fill="#a8804f" /></>} /><Tuft /><Eyes r={7.8} pupil={3.8} /><path d="M50 52 Q58 47 66 51" {...s} fill="none" /><Cheeks y={78} /><Beak y={78} small />
       <path d="M44 98 C56 106 84 106 96 98 L102 146 H38 Z" fill="none" {...s} /><path d="M70 104 V146" {...thin} /><circle cx="70" cy="114" r="1.6" fill={LINE} /><circle cx="70" cy="126" r="1.6" fill={LINE} /></>,
     props: <g {...s}>
@@ -159,11 +205,15 @@ const AV = {
       <g><path d="M38 76 L16 106" stroke="#6b4626" strokeWidth="6" /><path d="M38 76 L16 106" stroke="#9a6a3e" strokeWidth="2.4" />
         <circle cx="50" cy="62" r="18" fill="#e6f4fd" fillOpacity=".55" stroke="#3e4c5b" strokeWidth="3.4" /><circle cx="50" cy="62" r="18" fill="none" stroke="#8a97a6" strokeWidth="1" />
         <ellipse cx="50" cy="62" rx="12" ry="13" fill="#fff" {...s} /><circle cx="48" cy="64" r="7" fill="#283a4b" /><circle cx="50.6" cy="60.6" r="2.6" fill="#fff" /><path d="M38 52 C42 47 49 45 55 46" stroke="#fff" strokeWidth="2.2" fill="none" opacity=".85" /></g>
+      <Arm d="M42 104 Q30 106 24 98" n={[0, 1]} /><Mitt x={24} y={96} r={8} rot={-30} />
+      <text x="106" y="34" fontFamily="Patrick Hand, cursive" fontSize="18" fill="#3e4c5b" stroke="none">?</text><text x="120" y="22" fontFamily="Patrick Hand, cursive" fontSize="12" fill="#3e4c5b" stroke="none">?</text>
+      <Sparkle x={66} y={50} r={.55} c="#fff" />
     </g>,
   },
   sleepy: {
     name: "Sleepy", bg: "#c9cdf5", rim: "#9097d8", tilt: 13,
-    back: <g><path d="M30 70 A14 14 0 1 0 44 52 A10.5 10.5 0 1 1 30 70 Z" fill="#fff6c8" stroke={LINE} strokeWidth=".7" /><circle cx="104" cy="104" r="1.4" fill="#fff" /><circle cx="36" cy="100" r="1" fill="#fff" /></g>,
+    back: <g><path d="M30 70 A14 14 0 1 0 44 52 A10.5 10.5 0 1 1 30 70 Z" fill="#fff6c8" stroke={LINE} strokeWidth=".7" />{[[104, 104], [36, 100], [92, 44], [114, 70], [26, 90]].map(([x, y], i) => <Sparkle key={i} x={x} y={y} r={.35} c="#fff" />)}
+      <path d="M20 126 C20 116 32 114 36 120 C40 110 56 112 58 120 C64 116 74 120 72 128 Z" fill="#e6e8fb" /></g>,
     body: <><Body id="sleepy" /><Closed y={64} /><Cheeks y={76} /><Beak y={77} small />
       <circle cx="96" cy="88" r="6" fill="#d4ecfb" fillOpacity=".8" {...s} strokeWidth=".9" /><path d="M93.5 85.6 C95 84.6 96.6 84.4 98 84.8" stroke="#fff" strokeWidth="1" />
       <path d="M36 98 C46 92 58 94 62 102 C68 112 62 124 52 126 C40 128 33 118 33 110 C33 104 34 100 36 98 Z" fill="#f7d79b" {...s} /><path d="M52 98 C60 102 62 112 58 120 C62 112 60 104 52 98 Z" fill="#e2b96e" stroke="none" /><path d="M41 102 C39 108 39 114 41 118" {...thin} opacity=".5" /></>,
@@ -173,7 +223,8 @@ const AV = {
       <path d="M38 54 C52 49 86 47 100 50 L100 58 C86 55 52 57 38 61 Z" fill="#fff" /><path d="M86 49 L100 50 V58 L86 56 Z" fill="#e3e8f3" stroke="none" />
       <path d="M58 32 C64 36 66 42 64 48 M76 28 C82 32 84 40 82 48" {...thin} stroke="#fff" opacity=".7" />
       <circle cx="119" cy="60" r="6.4" fill="#fff" /><path d="M121 56 A5 5 0 0 1 124 61" {...thin} stroke="#c8cfe2" />
-      <text x="108" y="26" fontFamily="Patrick Hand, cursive" fontSize="16" fill="#5d6fb8" stroke="none">z</text><text x="122" y="15" fontFamily="Patrick Hand, cursive" fontSize="11" fill="#5d6fb8" stroke="none">z</text>
+      <text x="104" y="30" fontFamily="Patrick Hand, cursive" fontSize="20" fill="#5d6fb8" stroke="none">z</text><text x="118" y="17" fontFamily="Patrick Hand, cursive" fontSize="14" fill="#5d6fb8" stroke="none">z</text><text x="130" y="6" fontFamily="Patrick Hand, cursive" fontSize="10" fill="#5d6fb8" stroke="none">z</text>
+      <Arm d="M38 104 Q40 118 54 120" n={[0, 1]} /><Mitt x={58} y={118} r={7.5} rot={-60} fist={false} />
     </g>,
   },
   superhero: {
@@ -210,6 +261,7 @@ const AV = {
   },
   bookworm: {
     name: "Bookworm", bg: "#d4f0db", rim: "#97d3a9", tilt: 6, flip: true,
+    back: <g>{[52, 92, 132].map((base, row) => <g key={base}>{Array.from({ length: 16 }, (_, i) => { const f = ["#f3b0b9", "#9fc4f0", "#ffd88a", "#b9e3c6", "#c9b6ee"][(i + row * 2) % 5], w = 5 + ((i * 3 + row) % 4), h = 24 + ((i * 7 + row * 3) % 12); return <rect key={i} x={14 + i * 7.2} y={base - h} width={w} height={h} fill={f} opacity=".6" />; })}<path d={`M14 ${base} H126`} stroke="#b08a5c" strokeWidth="3" opacity=".55" /></g>)}</g>,
     body: <><Body id="bookworm" /><Eyes y={64} r={7.2} pupil={3.8} px={-.6} />
       <g {...s} fill="none" stroke="#7a5230" strokeWidth="2.1"><circle cx="60" cy="64" r="11.5" fill="#fff" fillOpacity=".3" /><ellipse cx="89" cy="63" rx="8.6" ry="11" fill="#fff" fillOpacity=".3" /><path d="M71 62 Q76 59 80 62" /><path d="M48.5 62 L40 59" /></g>
       <Cheeks y={81} /><Beak y={80} open tongue={false} /></>,
@@ -219,7 +271,11 @@ const AV = {
         <path d={`M${x + 6} ${y + 3} H${x + w - 10}`} {...thin} stroke="#fff" opacity=".7" /></g>)}
       <path d="M66 12 C64 4 70 0 74 4 C76 0 82 2 80 8" fill="#f6b8c4" /><path d="M76 3 C79 2 81 4 80 8" fill="#e891a3" stroke="none" />
       <circle cx="71.6" cy="5.4" r="1" fill={LINE} /><circle cx="76.4" cy="4.8" r="1" fill={LINE} /><path d="M72 8 Q74 9.4 76 8" {...thin} />
-      <Sparkle x={24} y={34} /><Sparkle x={116} y={28} r={.6} />
+      <Arm d="M102 102 Q122 96 120 76" n={[1, 0]} />
+      <g transform="translate(120 60) rotate(10)" {...s}><path d="M-16 -8 Q-8 -12 0 -8 Q8 -12 16 -8 V10 Q8 6 0 10 Q-8 6 -16 10 Z" fill="#fffaf0" /><path d="M0 -8 V10" /><path d="M-16 10 Q-8 6 0 10 Q8 6 16 10 L16 13 Q8 9 0 13 Q-8 9 -16 13 Z" fill="#5d8ccf" />
+        <path d="M-12 -4 H-4 M-12 0 H-4 M-12 4 H-6 M4 -4 H12 M4 0 H12 M4 4 H10" {...thin} opacity=".5" /></g>
+      <Mitt x={120} y={74} r={7.5} rot={20} />
+      <Sparkle x={24} y={34} /><Sparkle x={100} y={40} r={.6} /><Motion d="M134 50 C137 54 137 58 135 62" />
     </g>,
   },
 };
