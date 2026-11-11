@@ -7,6 +7,16 @@ const LOADERS = {
   physics: () => import("./physics.js"),
   maths: () => import("./maths.js"),
   addmaths: () => import("./addmaths.js"),
+  "english-lang": () => import("./english-lang.js"),
+  "english-lit": () => import("./english-lit.js"),
+  esl: () => import("./esl.js"),
+  french: () => import("./french.js"),
+  german: () => import("./german.js"),
+  spanish: () => import("./spanish.js"),
+  mandarin: () => import("./mandarin.js"),
+  thai: () => import("./thai.js"),
+  cs: () => import("./cs.js"),
+  ict: () => import("./ict.js"),
 };
 
 export const PACK_IDS = Object.keys(LOADERS);
