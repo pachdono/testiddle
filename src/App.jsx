@@ -21,9 +21,8 @@ function GateTop({ onSignIn }) {
   return <header className="cg-top"><a className="cg-brand" href="/"><Mascot size={40} /><b>Testiddle</b></a><span className="cg-spacer" />{onSignIn && <button className="cg-btn primary" onClick={onSignIn}>Sign in</button>}</header>;
 }
 
-// While Testiddle is being tried out it is for testers and staff only. Set VITE_OPEN_TO_ALL=1
-// when it is ready for everyone.
-const OPEN = import.meta.env?.VITE_OPEN_TO_ALL === "1";
+// Testiddle is open to everyone. Setting VITE_OPEN_TO_ALL=0 closes it to testers and staff again.
+const OPEN = import.meta.env?.VITE_OPEN_TO_ALL !== "0";
 
 function TestersOnly({ email, onSignOut }) {
   return (
@@ -61,7 +60,7 @@ export default function App() {
     myAccess().then((v) => live && setAccess(v)).catch(() => live && setAccess({ role: null, tester: false, banned: false }));
     return () => { live = false; };
   }, [auth.user]);
-  const allowed = OPEN || (access && !access.banned && (access.tester === true || Boolean(access.role)));
+  const allowed = OPEN ? !access?.banned : Boolean(access && !access.banned && (access.tester === true || Boolean(access.role)));
   function signOut() { setKept(null); auth.signOut(); }
 
   // The address says where you are, so Back works and a page can be shared.

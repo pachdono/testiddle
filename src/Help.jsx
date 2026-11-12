@@ -43,7 +43,7 @@ export function FeedbackButton({ onClick }) {
 const FAQ = [
   ["Getting started", [
     ["What is Testiddle?", "A place to practise for the digital SAT. It has full length tests on paper and on screen, revision notes for every skill, quizzes, flashcards, cheat sheets and exam practice, all marked with explanations."],
-    ["Is Testiddle free?", "Yes. Everything here is free to use. While it is being tested, only testers and staff can sign in."],
+    ["Is Testiddle free?", "Yes. Everything here is free to use, for everyone: notes, quizzes, flashcards, cheat sheets and practice papers."],
     ["Is it the same account as Dwiddle?", "Yes. Testiddle and Dwiddle share accounts, so sign in with the same email or Google account."],
     ["How do I use the study tools?", "Open a course from the dashboard. Read the notes for a skill, then take its quiz or flashcards from the bottom of the page. Use Exam practice for marked question sets and Past papers for full tests. Your progress fills in as you go."],
   ]],

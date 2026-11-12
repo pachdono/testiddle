@@ -35,7 +35,7 @@ export default function Landing({ onStart }) {
   const faq = [
     ["What is Testiddle?", "Free revision for the digital SAT and 26 IGCSE subjects: notes, quizzes, flashcards, cheat sheets, and full SAT tests."],
     ["Do I need an account?", "Yes, so your tests and progress are kept. Use your Dwiddle account or make one here."],
-    ["Who can use it right now?", "While Testiddle is being tested, testers and staff can sign in. Everyone else can ask to join."],
+    ["Who can use it?", "Anyone. Make a free account and everything is yours, with no card and no trial."],
     ["Are these official College Board tests?", "No. They are original tests in the same format and timing."],
   ];
   return (
